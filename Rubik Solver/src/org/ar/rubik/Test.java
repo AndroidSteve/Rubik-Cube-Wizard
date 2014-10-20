@@ -5,7 +5,9 @@
  * Date:   Nov 1st 2014
  * 
  * Project Description:
- * 
+ *   Android application developed on a commercial Smart Phone which, when run on a pair 
+ *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
+ *   
  * File Description:
  * 
  * License:
@@ -25,9 +27,3 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.ar.rubik;
-
-
-public class Test {
-
-}
