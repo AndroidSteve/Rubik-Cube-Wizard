@@ -9,6 +9,9 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
+ *   Each frame of video is first passed to this Object.
+ *   It's responsibility is to orchestrate the user
+ *   through the various moves to a Rubik solution.
  * 
  * License:
  * 
@@ -29,8 +32,6 @@
  */
 package org.ar.rubik;
 
-import java.io.File;
-
 import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ImageProcessModeEnum;
 import org.ar.rubik.Constants.ImageSourceModeEnum;
@@ -47,24 +48,10 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.highgui.Highgui;
-
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 
-/**
- * Controller
- * 
- * Each frame of video is first passed to this Object.
- * It's responsibility is to orchestrate the user
- * through the various moves to a Rubik solution.
- * 
- * 
- * @author stevep
- *
- */
 public class Controller {
 	
 	public enum ControllerStateEnum { 
@@ -188,12 +175,12 @@ public class Controller {
 			break;
 
 		case SAVE_NEXT:
-			SaveImage(image);
+			Util.saveImage(image);
 			imageSourceMode = ImageSourceModeEnum.NORMAL;
 			break;
 
 		case PLAYBACK:
-			image = loadImage();
+			image = Util.recallImage();
 
 		default:
 			break;
@@ -250,7 +237,6 @@ public class Controller {
        	onFrameStateChanges();
     	
        	Log.d(Constants.TAG_CNTRL, "processRubikFaceSolution() state=" + faceRecogniztionState + " candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " newFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
-//       	Log.e(Constants.TAG_CNTRL, "rubikFace.faceRecognitionStatus= " + rubikFace.faceRecognitionStatus);   	 
 
     	switch(faceRecogniztionState) {
 
@@ -350,7 +336,7 @@ public class Controller {
 	private boolean allowOneMoreRotation = false;
     private void onStableRubikFaceRecognition(RubikFace rubikFace) {
 
-   		Log.w(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + rubikFace.hashCode);
+   		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + rubikFace.hashCode);
     	if(lastStableRubikFace == null || rubikFace.hashCode != lastStableRubikFace.hashCode) {
     		lastStableRubikFace = rubikFace;
     		onNewStableRubikFaceRecognized(rubikFace);
@@ -372,7 +358,7 @@ public class Controller {
     }
     public void offStableRubikFaceRecognition() {
     	
-    	Log.w(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.hashCode);
+    	Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.hashCode);
     	offNewStableRubikFaceRecognition();
     	
     	switch (controllerState) {
@@ -400,7 +386,7 @@ public class Controller {
      */
     private void onNewStableRubikFaceRecognized(RubikFace rubikFace) {
     	
-    	Log.w(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + controllerState);
+    	Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + controllerState);
 
 
     	switch(controllerState) {
@@ -439,7 +425,7 @@ public class Controller {
     }
    private void offNewStableRubikFaceRecognition() {
     	
-    	Log.w(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + controllerState);
+    	Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + controllerState);
     	
        	switch(controllerState) {
 
@@ -491,7 +477,7 @@ public class Controller {
 		   else
 			   controllerState = ControllerStateEnum.INCORRECT;
 
-		   String stringErrorMessage = getTwoPhaseErrorString((char)(verificationResults * -1 + '0'));
+		   String stringErrorMessage = Util.getTwoPhaseErrorString((char)(verificationResults * -1 + '0'));
 
 		   Log.i(Constants.TAG_CNTRL, "Cube String Rep: " + cubeString);
 		   Log.i(Constants.TAG_CNTRL, "Verification Results: (" + verificationResults + ") " + stringErrorMessage);
@@ -507,7 +493,7 @@ public class Controller {
 		   if (solutionResults.contains("Error")) {
 			   char solutionCode = solutionResults.charAt(solutionResults.length() - 1);
 			   verificationResults = solutionCode - '0';
-			   Log.i(Constants.TAG_CNTRL, "Solution Error: " + getTwoPhaseErrorString(solutionCode) );
+			   Log.i(Constants.TAG_CNTRL, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
 			   controllerState = ControllerStateEnum.INCORRECT;
 		   }
 		   else {
@@ -526,8 +512,6 @@ public class Controller {
 		   
 	   default:
 		   break;
-
-
 	   }
    }
 
@@ -803,41 +787,6 @@ public class Controller {
 	}
 	
     
-	/**
-	 * @param image
-	 */
-	private void SaveImage (Mat image) {
-
-		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-		String filename = "cube.png";
-		File file = new File(path, filename);
-
-		Boolean bool = null;
-		filename = file.toString();
-		bool = Highgui.imwrite(filename, image);
-
-		if (bool == true)
-			Log.i(Constants.TAG_CNTRL, "SUCCESS writing image to external storage:" + filename);
-		else
-			Log.e(Constants.TAG_CNTRL, "Fail writing image to external storage");
-	}
-
-
-	/**
-	 * @return
-	 */
-	private Mat loadImage() {
-
-		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-		String filename = "cube.png";
-		File file = new File(path, filename);
-
-		filename = file.toString();
-
-		Mat image = Highgui.imread(filename);
-		return image;
-	}
-
 
 
 	/**
@@ -866,49 +815,6 @@ public class Controller {
 	}
 	
 	
-	/**
-	 * Get Two Phase Error String
-	 * 
-	 * Arg should be a character between 0 and 8 inclusive.
-	 * 
-	 * @param errorCode
-	 * @return
-	 */
-	private String getTwoPhaseErrorString(char errorCode) {
-		String stringErrorMessage;
-		switch (errorCode) {
-		case '0':
-			stringErrorMessage = "Cube is verified and correct!";
-			break;
-		case '1':
-			stringErrorMessage = "There are not exactly nine facelets of each color!";
-			break;
-		case '2':
-			stringErrorMessage = "Not all 12 edges exist exactly once!";
-			break;
-		case '3':
-			stringErrorMessage = "Flip error: One edge has to be flipped!";
-			break;
-		case '4':
-			stringErrorMessage = "Not all 8 corners exist exactly once!";
-			break;
-		case '5':
-			stringErrorMessage = "Twist error: One corner has to be twisted!";
-			break;
-		case '6':
-			stringErrorMessage = "Parity error: Two corners or two edges have to be exchanged!";
-			break;
-		case '7':
-			stringErrorMessage = "No solution exists for the given maximum move number!";
-			break;
-		case '8':
-			stringErrorMessage = "Timeout, no solution found within given maximum time!";
-			break;
-		default:
-			stringErrorMessage = "Unknown error code returned: " + verificationResults;
-			break;
-		}
-		return stringErrorMessage;
-	}
+
 
 }

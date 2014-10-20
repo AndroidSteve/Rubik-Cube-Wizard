@@ -128,19 +128,6 @@ public class RubikCube {
 			return getVirtualTileArrayRotatedClockwise(rubikFace.logicalTileArray);
 		case YELLOW:
 			return rubikFace.logicalTileArray;
-			
-//		case RED:
-//			return rubikFace.logicalTileArray;
-//		case BLUE:
-//			return getVirtualTileArrayRotatedCounterClockwise(rubikFace.logicalTileArray);
-//		case GREEN:
-//			return rubikFace.logicalTileArray;
-//		case ORANGE:
-//			return getVirtualTileArrayRotatedCounterClockwise(rubikFace.logicalTileArray);
-//		case WHITE:
-//			return getVirtualTileArrayRotatedClockwise(rubikFace.logicalTileArray);
-//		case YELLOW:
-//			return rubikFace.logicalTileArray;
 		}
 
 		return null; // =+= ??

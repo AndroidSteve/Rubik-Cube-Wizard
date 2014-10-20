@@ -10,6 +10,28 @@
  *   
  * File Description:
  * 
+ *   Actually, can accommodate any polygon, but logic to filter out all non parallelograms
+ *   is put here.  We use name "Rhombus" because it is succinct and unique.
+ * 
+ * 
+ *   After processing, convex quadrilater vertices should be as show:
+ *  
+ *   *    -----> X
+ *   |
+ *   |
+ *  \ /
+ *   Y                          * 0
+ *                             / \
+ *                       beta /   \ alpha
+ *                           /     \
+ *                        1 *       * 3
+ *                           \     /
+ *                            \   /
+ *                             \ /
+ *                              * 2
+ * 
+ *  As show above alpha angle ~= +60 deg, beta angle ~= +120 deg
+ * 
  * License:
  * 
  *  GPL
@@ -44,44 +66,12 @@ import org.opencv.imgproc.Imgproc;
 
 import android.util.Log;
 
-
-/**
- * Rhombus
- * 
- * Actually, can accommodate any polygon, but logic to filter out all non parallelograms
- * is put here.  We use name "Rhombus" because it is succinct and unique.
- * 
- * 
- *  After processing, convex quadrilater vertices should be as show:
- *  
- *   *    -----> X
- *   |
- *   |
- *  \ /
- *   Y                          * 0
- *                             / \
- *                       beta /   \ alpha
- *                           /     \
- *                        1 *       * 3
- *                           \     /
- *                            \   /
- *                             \ /
- *                              * 2
- * 
- * As show above alpha angle ~= +60 deg, beta angle ~= +120 deg
- * 
- * @author stevep
- * FpsMeter
- *
- */
 public class Rhombus {
 
-	// State: is this a true Quadrilateral?
-//	public enum ObsolteStatusEnum { VALID, INVALID };
-//	public ObsolteStatusEnum obsolte_status = ObsolteStatusEnum.VALID;
-
-	// If not, what is the reason it was rejected.
+	// Possible states that this Rhombus can be identified.
 	public enum StatusEnum { NOT_PROCESSED, NOT_4_POINTS, NOT_CONVEX, AREA, CLOCKWISE, OUTLIER, VALID };
+
+	// Current Status
 	public StatusEnum status = StatusEnum.NOT_PROCESSED;
 
 	// Various forms of storing the corner points.
@@ -145,7 +135,6 @@ public class Rhombus {
 
 		// Check if has four sizes and endpoints.
 		if(polygonPointList.size() != 4) {
-//			obsolte_status = ObsolteStatusEnum.INVALID;
 			status = StatusEnum.NOT_4_POINTS;
 			return;
 		}
@@ -191,14 +180,7 @@ public class Rhombus {
  
 		betaAngle = 180.0 / Math.PI * Math.atan2(
 				(polygonePointArray[2].y - polygonePointArray[1].y) + (polygonePointArray[3].y - polygonePointArray[0].y),
-				(polygonePointArray[2].x - polygonePointArray[1].x) + (polygonePointArray[3].x - polygonePointArray[0].x) );
-
-//		if(alphaAngle < 0)
-//			alphaAngle += 180;
-//		if(betaAngle < 0)
-//			betaAngle += 180;
-		
-		
+				(polygonePointArray[2].x - polygonePointArray[1].x) + (polygonePointArray[3].x - polygonePointArray[0].x) );		
 		
 		alphaLength = (lineLength(polygonePointArray[0], polygonePointArray[1]) + lineLength(polygonePointArray[3], polygonePointArray[2]) ) / 2;
 		betaLength  = (lineLength(polygonePointArray[0], polygonePointArray[3]) + lineLength(polygonePointArray[1], polygonePointArray[2]) ) / 2;
@@ -206,12 +188,10 @@ public class Rhombus {
 		gammaRatio = betaLength / alphaLength;
 		
 		
-//		if(Double.isNaN(alphaAngle))
-		
 		status = StatusEnum.VALID;
 		
 		
-		Log.i(Constants.TAG, String.format( "Rhombus: %4.0f %4.0f %6.0f %4.0f %4.0f %3.0f %3.0f %5.2f {%4.0f,%4.0f} {%4.0f,%4.0f} {%4.0f,%4.0f} {%4.0f,%4.0f}",
+		Log.d(Constants.TAG, String.format( "Rhombus: %4.0f %4.0f %6.0f %4.0f %4.0f %3.0f %3.0f %5.2f {%4.0f,%4.0f} {%4.0f,%4.0f} {%4.0f,%4.0f} {%4.0f,%4.0f}",
 				center.x,
 				center.y,
 				area,
@@ -345,24 +325,6 @@ public class Rhombus {
 		return length;
 	}
 	
-	
-//	/**
-//	 * Line angle between 0 and 180.
-//	 * 
-//	 * @param a
-//	 * @param b
-//	 * @return
-//	 */
-//	private static double lineAngle(Point a, Point b) {
-//		
-//		// This value is between -179.0 and +180.
-//		double angle = Math.atan2(a.y - b.y, a.x - b.x) * 180 / Math.PI;
-//		
-//		if(angle < 0.0)
-//			angle += 180.0;
-//		
-//		return angle;
-//	}
 
 
 	/**
@@ -375,8 +337,6 @@ public class Rhombus {
 	 */
 	public void draw(Mat rgba_gray_image, Scalar color) {
 		
-//		if(gammaRatio < 1.0)
-//			color = Constants.ColorRed;
 
 		// Draw Polygone Edges
 		final LinkedList<MatOfPoint> listOfPolygons = new LinkedList<MatOfPoint>();
@@ -386,22 +346,17 @@ public class Rhombus {
 				listOfPolygons,
 				true,
 				color,
-				3);
-
-//		// Render number of vertices
-//		Core.putText(
-//				rgba_gray_image,
-//				"" + polygon.toArray().length,
-//				new Point(center.x - 10, center.y + 10),
-//				Constants.FontFace,
-//				2,
-//				color,
-//				2);				
+				3);			
 	}
 
+	
+	/**
+	 * Render Rhombus Recognition Metrics
+	 * 
+	 * @param image
+	 * @param rhombusList
+	 */
 	public static void renderRhombusRecognitionMetrics(Mat image, List<Rhombus> rhombusList) {
-		
-//		Core.rectangle(image, new Point(0, 250), new Point(500, 720), Constants.ColorBlack, -1);
 		
 		RubikFace.drawFlatFaceRepresentation(image, RubikCube.active, 50, 50, 50);
 		
@@ -460,7 +415,7 @@ public class Rhombus {
 	 * Remove Outlier Rhombi
 	 * 
 	 * For Alpha and Beta Angles:
-	 *   1) Find Median Value
+	 *   1) Find Median Value: i.e. value in which half are greater and half are less.
 	 *   2) Remove any that are > 10 degrees different
 	 * 
 	 */
@@ -498,6 +453,7 @@ public class Rhombus {
 					(Math.abs(rhombus.betaAngle - medianBetaAngle) > angleOutlierTolerance) ) {
 				rhombus.status = StatusEnum.OUTLIER;
 				rhombusItr.remove();
+				Log.w(Constants.TAG, String.format( "Removed Outlier Rhombus with alphaAngle=%6.0f betaAngle=%6.0f", rhombus.alphaAngle, rhombus.betaAngle));
 			}
 		}
 	}

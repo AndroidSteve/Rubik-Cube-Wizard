@@ -29,8 +29,13 @@
  */
 package org.ar.rubik;
 
-import org.ar.rubik.Constants.LogicalTile;
+import java.io.File;
 
+import org.ar.rubik.Constants.LogicalTile;
+import org.opencv.core.Mat;
+import org.opencv.highgui.Highgui;
+
+import android.os.Environment;
 import android.util.Log;
 
 public class Util {
@@ -77,8 +82,90 @@ public class Util {
 	}
 
 
+	/**
+	 * Get Two Phase Error String
+	 * 
+	 * Arg should be a character between 0 and 8 inclusive.
+	 * 
+	 * @param errorCode
+	 * @return
+	 */
+	public static String getTwoPhaseErrorString(char errorCode) {
+		String stringErrorMessage;
+		switch (errorCode) {
+		case '0':
+			stringErrorMessage = "Cube is verified and correct!";
+			break;
+		case '1':
+			stringErrorMessage = "There are not exactly nine facelets of each color!";
+			break;
+		case '2':
+			stringErrorMessage = "Not all 12 edges exist exactly once!";
+			break;
+		case '3':
+			stringErrorMessage = "Flip error: One edge has to be flipped!";
+			break;
+		case '4':
+			stringErrorMessage = "Not all 8 corners exist exactly once!";
+			break;
+		case '5':
+			stringErrorMessage = "Twist error: One corner has to be twisted!";
+			break;
+		case '6':
+			stringErrorMessage = "Parity error: Two corners or two edges have to be exchanged!";
+			break;
+		case '7':
+			stringErrorMessage = "No solution exists for the given maximum move number!";
+			break;
+		case '8':
+			stringErrorMessage = "Timeout, no solution found within given maximum time!";
+			break;
+		default:
+			stringErrorMessage = "Unknown error code returned: ";
+			break;
+		}
+		return stringErrorMessage;
+	}
 
 
+	/**
+	 * Save Image to a File
+	 * 
+	 * @param image
+	 */
+	public static void saveImage (Mat image) {
+
+		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		String filename = "cube.png";
+		File file = new File(path, filename);
+
+		Boolean bool = null;
+		filename = file.toString();
+		bool = Highgui.imwrite(filename, image);
+
+		if (bool == true)
+			Log.i(Constants.TAG_CNTRL, "SUCCESS writing image to external storage:" + filename);
+		else
+			Log.e(Constants.TAG_CNTRL, "Fail writing image to external storage");
+	}
+
+
+	/**
+	 * Recall Image from a File
+	 * 
+	 * @return
+	 */
+	public static Mat recallImage() {
+
+		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		String filename = "cube.png";
+		File file = new File(path, filename);
+
+		filename = file.toString();
+
+		Mat image = Highgui.imread(filename);
+		return image;
+	}
 
 
 	
