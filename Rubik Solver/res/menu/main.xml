@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:id="@+id/annotationMenuGroupItem"
+        android:title="Annotation">
+        <menu>
+            <group 
+                android:id="@+id/annotationMenuGroup">
+                <item 
+                    android:id="@+id/normalAnnotationMenuItem" 
+                    android:title="Normal" />
+                <item 
+                    android:id="@+id/colorAnnotationMenuItem" 
+                    android:title="Color Annotation" />
+                <item 
+                    android:id="@+id/layoutAnnotationMenuItem" 
+                    android:title="Rubik Cube Layout" />
+                <item 
+                    android:id="@+id/timeAnnotationMenuItem" 
+                    android:title="Time Annotation" />
+                <item 
+                    android:id="@+id/rhombusAnnotationMenuItem" 
+                    android:title="Rhombus Recognition Metrics" />
+                <item 
+                    android:id="@+id/faceMetricsAnnotationMenuItem" 
+                    android:title="Face Recognition Metrics" />
+                <item 
+                    android:id="@+id/cubeMetricsAnnotationMenuItem" 
+                    android:title="Cube Status Metrics" />
+            </group>   
+        </menu>
+    </item>
+       
+        
+    <item android:id="@+id/imageProcessMenuItem"
+        android:title="Image Process">
+        <menu >
+            <group 
+                android:id="@+id/imageProcessMenuGroup" 
+                android:checkableBehavior="single">
+                <item 
+                    android:id="@+id/faceDetectionMenuItem" 
+                    android:title="Normal Rubik Solve" />
+                <item 
+                    android:id="@+id/rhombusProcessMenuItem" 
+                    android:title="Rhombus Recognition" />
+                <item 
+                    android:id="@+id/ploygoneProcessMenuItem" 
+                    android:title="Polygone Recognition" />
+                <item 
+                    android:id="@+id/contourImageProcessMenuItem" 
+                    android:title="Contour Image Process" />
+                <item 
+                    android:id="@+id/dialateImageProcessMenuItem" 
+                    android:title="Dialation Image Process" />
+                <item 
+                    android:id="@+id/cannyImageProcessMenuItem" 
+                    android:title="Canny Edge Process" />
+                <item 
+                    android:id="@+id/boxBlurImageProcessMenuItem" 
+                    android:title="Blur Filter Process" />
+                <item 
+                    android:id="@+id/directImageProcessMenuItem" 
+                    android:title="Direct Image Process" />
+                <item 
+                    android:id="@+id/greyscaleImageProcessMenuItem" 
+                    android:title="Grey-Scale Image Process" />
+            </group>   
+        </menu>
+    </item>
+
+
+
+     <!-- 
+    <item android:id="@+id/colorMenuGroupItem"
+        android:title="Lighting Calibration">
+        <menu>
+            <group 
+                android:id="@+id/colorMenuGroup">
+                <item 
+                    android:id="@+id/morningColorMenuItem" 
+                    android:title="Morning Lighting Conditions" />
+                <item 
+                    android:id="@+id/eveningColorMenuItem" 
+                    android:title="Evening Lighting Conditions" />
+            </group>   
+        </menu>
+    </item>
+     -->
+     
+     
+    <item android:id="@+id/paramMenuGroupItem"
+        android:title="Parameters">
+        <menu>
+            <group 
+                android:id="@+id/paramMenuGroup">
+                <item 
+                    android:id="@+id/luminousOffsetMenuItem" 
+                    android:title="Manual Luminous Offset" />
+                <item 
+                    android:id="@+id/boxBlurKernelSizeMenuItem" 
+                    android:title="Box Blur Kernel Size" />
+                <item 
+                    android:id="@+id/cannyLowerThresholdMenuItem" 
+                    android:title="Canny Lower Threshold" />
+                <item 
+                    android:id="@+id/cannyUpperThresholdMenuItem" 
+                    android:title="Canny Upper Threshold" />
+                <item 
+                    android:id="@+id/dilationKernelMenuItem" 
+                    android:title="Dilation Kernel Size" />
+                <item 
+                    android:id="@+id/polygonEpsilonMenuItem" 
+                    android:title="Polygon Epsilon Threshold" />
+            </group>   
+        </menu>
+    </item>
+
+       
+    <item
+        android:id="@+id/resetImageMenuItem"
+        android:title="Reset"/>           
+    
+    <item
+        android:id="@+id/exitImageMenuItem"
+        android:title="Exit"/>
+    
+    
+    <item android:id="@+id/miscMenuGroupItem"
+        android:title="Miscellaneous">
+        <menu>
+            <group 
+                android:id="@+id/miscMenuGroup">    
+                <item
+        			android:id="@+id/saveImageMenuItem"  
+        			android:title="Save Image"/>  
+    			<item
+        			android:id="@+id/useSavedImageMenuItem"
+        			android:title="Use Saved Image"/>  
+    			<item
+        			android:id="@+id/saveCubeMenuItem"
+        			android:title="Save Cube"/>
+    			<item
+        			android:id="@+id/recallCubeMenuItem"
+        			android:title="Recall Cube"/>  
+    			<item
+        			android:id="@+id/toggleUserTextMenuItem"
+        			android:title="Toggle User Text"/>   
+    			<item
+        			android:id="@+id/toggleCubeOverlayMenuItem"
+        			android:title="Toggle Cube Overlay"/>  
+            </group>   
+        </menu>
+    </item>
+    
+ 
+</menu>
