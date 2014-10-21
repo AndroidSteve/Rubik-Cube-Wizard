@@ -108,6 +108,12 @@ public class Controller {
 
 	// Perform reset on Frame Thread, otherwise if performed asynchronously, there are too many potential null pointer problems.
 	private boolean pendendReset = false;
+	
+	private boolean hackFastMode = false;
+	private boolean hackSkipImageProc = false;
+
+	private RubikFace hackRubikFace;
+	
 
 
 	
@@ -185,17 +191,29 @@ public class Controller {
 		default:
 			break;
 		}
+		
+		
+		Mat resultImage;
   
- 
-    	// Instantiate a Rubik Face Object
-		rubikFace = new RubikFace(imageProcessMode);
-		
-		// Process Image and Obtain a Rubik Face object if possible		
-		Mat resultImage = rubikFace.findSolutionFromImage(image);
+		// Skip any image processing and thus allow controller state machine to proceeded more quickly
+		if(hackSkipImageProc == true && hackFastMode == true) {
+			rubikFace = hackRubikFace;
+			resultImage = image;
+		}
+		else {
 
-		// Process Rubik Face results.
-		processRubikFaceSolution(rubikFace);
+			// Instantiate a Rubik Face Object
+			rubikFace = new RubikFace(imageProcessMode);
+
+			// Process Image and Obtain a Rubik Face object if possible		
+			resultImage = rubikFace.findSolutionFromImage(image);
+
+			hackRubikFace = rubikFace;
+		}
 		
+		// Process Rubik Face results in Controller State Machine
+		processRubikFaceSolution(rubikFace);
+
 		// Add Annotation on right side.
 		addAnnoation(resultImage);
 		
@@ -227,7 +245,7 @@ public class Controller {
     private FaceRecogniztionState faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
     private RubikFace candidateRubikFace = null;
     private int consecutiveCandiateRubikFaceCount = 0;
-	private final int consecutiveCandidateCountThreashold = 3;
+	private final int consecutiveCandidateCountThreashold = 1;
 
     private void processRubikFaceSolution(RubikFace rubikFace) {
     	
@@ -332,7 +350,6 @@ public class Controller {
      * 
      */
     private RubikFace lastStableRubikFace = null;
-
 	private boolean allowOneMoreRotation = false;
     private void onStableRubikFaceRecognition(RubikFace rubikFace) {
 
@@ -394,6 +411,7 @@ public class Controller {
     	case START:
     		RubikCube.adopt(rubikFace);
     		controllerState = ControllerStateEnum.GOT_IT;
+    		hackFastMode = true;
     		break;
     		
     	case SEARCHING:
@@ -402,12 +420,14 @@ public class Controller {
     		// Have not yet seen all six sides.
     		if(RubikCube.isThereAfullSetOfFaces() == false) {
     			controllerState = ControllerStateEnum.GOT_IT;
+    			hackFastMode = true;
     			allowOneMoreRotation = true;
     		}
     		
     		// Do one more turn so cube returns to original orientation.
     		else if(allowOneMoreRotation == true) {
     			controllerState = ControllerStateEnum.GOT_IT;
+    			hackFastMode = true;
     			allowOneMoreRotation = false;
     		}
     		
@@ -451,12 +471,16 @@ public class Controller {
 	   switch(controllerState) {
 
 	   case WAITING:
-		   if(pruneTableLoaderCount == 12)
+		   hackFastMode = false;
+		   if(pruneTableLoaderCount == 12) {
 			   controllerState = ControllerStateEnum.VERIFIED;
+			   hackFastMode = true;
+		   }
 		   break;
 
 
 	   case GOT_IT:
+		   hackFastMode = false;
 		   if(gotItCount < 3)
 			   gotItCount++;
 		   else {
@@ -472,8 +496,10 @@ public class Controller {
 		   // Returns 0 if cube is solvable.
 		   verificationResults = Tools.verify(cubeString);
 
-		   if(verificationResults == 0)
+		   if(verificationResults == 0) {
 			   controllerState = ControllerStateEnum.WAITING;
+			   hackFastMode = true;
+		   }
 		   else
 			   controllerState = ControllerStateEnum.INCORRECT;
 
@@ -485,6 +511,7 @@ public class Controller {
 
 		   
 	   case VERIFIED:
+		   hackFastMode = false;
 		   String cubeString2 = RubikCube.getStringRepresentationOfCube();
 
 		   // Returns 0 if solution computed
@@ -498,11 +525,13 @@ public class Controller {
 		   }
 		   else {
 			   controllerState = ControllerStateEnum.SOLVED;
+			   hackFastMode = true;
 		   }
 		   break;
 
 		   
 	   case SOLVED:
+		   hackFastMode = false;
 		   solutionResultsArray = solutionResults.split(" ");
 		   Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + solutionResultsArray);
 		   solutionResultIndex = 0;
@@ -684,7 +713,7 @@ public class Controller {
 		}
 		
 		// User indicator that tables have been computed.
-		Core.line(image, new Point(0, 0), new Point(1270, 0), pruneTableLoaderCount < 12 ? Constants.ColorRed : Constants.ColorGreen);
+		Core.line(image, new Point(0, 0), new Point(1270, 0), pruneTableLoaderCount < 12 ? Constants.ColorRed : Constants.ColorGreen, 4);
 	}
 
 

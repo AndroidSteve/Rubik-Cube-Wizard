@@ -136,7 +136,7 @@ public class ProcessImage {
 		 */
 		Mat blur_image = new Mat(); 
 //		int blurKernelSize = (int)MainActivity.boxBlurKernelSizeParam;
-//		Imgproc.blur(greyscale_image, blur_image, new Size(blurKernelSize, blurKernelSize));
+//		Imgproc.blur(greyscale_image, blur_image, new Size(7, 7));
 		
 	    Imgproc.GaussianBlur(
 	    		greyscale_image, 
