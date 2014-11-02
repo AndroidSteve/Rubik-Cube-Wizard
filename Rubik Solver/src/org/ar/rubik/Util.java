@@ -9,6 +9,8 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
+ *   Miscellaneous utilities that can exist as simple static functions here in 
+ *   this file, and are relatively uninteresting.
  * 
  * License:
  * 
