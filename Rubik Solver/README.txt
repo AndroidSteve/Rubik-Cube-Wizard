@@ -15,3 +15,6 @@ Notice:
   o  OpenCV, OpenCL, and OpenGL operation of various hardware vendors.
   o  User gesture style.
   
+To Do:
+  o  Refactor out parameter subsystem.
+  
