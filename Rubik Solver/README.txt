@@ -13,8 +13,6 @@ Notice:
   at that time.
 
 
-
-
 Areas that need improve Robustness.  
   o  Rubik Cube manufacturer: shape and exact colors.
   o  Illumination.
