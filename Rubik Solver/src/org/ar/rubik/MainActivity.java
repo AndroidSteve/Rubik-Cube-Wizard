@@ -35,9 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.ar.rubik.Constants.AnnotationModeEnum;
-import org.ar.rubik.Constants.ImageProcessModeEnum;
-import org.ar.rubik.Constants.ImageSourceModeEnum;
 import org.ar.rubik.gl.AnnotationGLRenderer;
 import org.ar.rubik.gl.PilotGLRenderer;
 import org.opencv.android.BaseLoaderCallback;
@@ -77,20 +74,20 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
 
 
-	// Toggles User Text Interface
-	public static boolean userTextDisplay = true;
-	
-	// Toggle Cube Overlay Display
-	public static boolean cubeOverlayDisplay = false;
-        
-    // Specifies where image comes from
-    public ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
-
-	// Specifies what to do with image
-    public ImageProcessModeEnum imageProcessMode = ImageProcessModeEnum.FACE_DETECT;
-    
-    // Specified what annotation to add
-    public AnnotationModeEnum annotationMode = AnnotationModeEnum.NORMAL;
+//	// Toggles User Text Interface
+//	public static boolean userTextDisplay = true;
+//	
+//	// Toggle Cube Overlay Display
+//	public static boolean cubeOverlayDisplay = false;
+//        
+//    // Specifies where image comes from
+//    public ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
+//
+//	// Specifies what to do with image
+//    public ImageProcessModeEnum imageProcessMode = ImageProcessModeEnum.FACE_DETECT;
+//    
+//    // Specified what annotation to add
+//    public AnnotationModeEnum annotationMode = AnnotationModeEnum.NORMAL;
     
 
     
@@ -264,7 +261,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     	Mat resultImage = null;
     	// =+= problem: can't make toast in frame thread.
 //        try {
-	        resultImage = controller.onCameraFrame(inputFrame, imageSourceMode, imageProcessMode, annotationMode);
+	        resultImage = controller.onCameraFrame(
+	        		inputFrame, 
+	        		RubikMenuAndParameters.imageSourceMode, 
+	        		RubikMenuAndParameters.imageProcessMode, 
+	        		RubikMenuAndParameters.annotationMode);
 //        } catch (CvException e) {
 //        	Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 //	        e.printStackTrace();

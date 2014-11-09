@@ -54,12 +54,51 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
  */
 public class RubikMenuAndParameters {
 
-	// User Adjustable Parameters 
+	/**
+	 * Application Mode Control
+	 * 
+	 * These mode controls are typically used for development, debugging, and analysis.
+	 */
+	
+	// Toggles User Text Interface
+	public static boolean userTextDisplay = true;
+	
+	// Toggle Cube Overlay Display
+	public static boolean cubeOverlayDisplay = false;
+        
+    // Specifies where image comes from
+    public static ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
+
+	// Specifies what to do with image
+    public static ImageProcessModeEnum imageProcessMode = ImageProcessModeEnum.FACE_DETECT;
+    
+    // Specified what annotation to add
+    public static AnnotationModeEnum annotationMode = AnnotationModeEnum.NORMAL;
+	
+	
+	
+	/**
+	 * User Adjustable Parameters 
+	 * 
+	 * These typically have been found empirically with respect to what works best.
+	 */
+	
+	// Gaussian Blur Kernal Size
 	public static RubikMenuParam gaussianBlurKernelSizeParam = new RubikMenuParam("Gaussian Blur Kernel Size",  +3.0,  +20.0,   +7.0);
+	
+	// Manual Luminous Offset
 	public static RubikMenuParam luminousOffsetParam         = new RubikMenuParam("Luminous Offset",           -50.0,  +50.0,    0.0);
+	
+	// Canny Edge Detector Upper Threshold Parameter
 	public static RubikMenuParam cannyUpperThresholdParam    = new RubikMenuParam("Canny Upper Threshold",     +50.0, +200.0, +100.0);
+	
+	// Canny Edge Detector Lower Threshold Paramter
 	public static RubikMenuParam cannyLowerThresholdParam    = new RubikMenuParam("Canny Lower Threshold",     +20.0, +100.0,  +50.0);
+	
+	// Dilation Kernel Size Parameter
 	public static RubikMenuParam dilationKernelSizeParam     = new RubikMenuParam("Dilation Kernel Size",       +2.0,  +20.0,  +10.0);
+	
+	// Polygon Epsilon Parameter
 	public static RubikMenuParam polygonEpsilonParam         = new RubikMenuParam("Polygon Epsilon Threshold", +10.0, +100.0,  +30.0);
 	
 
@@ -111,77 +150,77 @@ public class RubikMenuAndParameters {
 
 		// Image Source Mode
 		case R.id.saveImageMenuItem:
-			ma.imageSourceMode = ImageSourceModeEnum.SAVE_NEXT;
+			imageSourceMode = ImageSourceModeEnum.SAVE_NEXT;
 			return true;
 
 		case R.id.useSavedImageMenuItem:
-			ma.imageSourceMode = ImageSourceModeEnum.PLAYBACK;
+			imageSourceMode = ImageSourceModeEnum.PLAYBACK;
 			return true;
 
 		case R.id.directImageProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.DIRECT;
+			imageProcessMode = ImageProcessModeEnum.DIRECT;
 			return true;
 
 		case R.id.greyscaleImageProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.GREYSCALE; 
+			imageProcessMode = ImageProcessModeEnum.GREYSCALE; 
 			return true;
 
 		case R.id.boxBlurImageProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.BOXBLUR; 
+			imageProcessMode = ImageProcessModeEnum.BOXBLUR; 
 			return true;
 
 		case R.id.cannyImageProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.CANNY;
+			imageProcessMode = ImageProcessModeEnum.CANNY;
 			return true;
 
 		case R.id.dialateImageProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.DILATION;
+			imageProcessMode = ImageProcessModeEnum.DILATION;
 			return true;
 
 		case R.id.contourImageProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.CONTOUR; 
+			imageProcessMode = ImageProcessModeEnum.CONTOUR; 
 			return true;
 
 		case R.id.ploygoneProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.POLYGON; 
+			imageProcessMode = ImageProcessModeEnum.POLYGON; 
 			return true;
 
 		case R.id.rhombusProcessMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.RHOMBUS; 
+			imageProcessMode = ImageProcessModeEnum.RHOMBUS; 
 			return true;
 
 		case R.id.faceDetectionMenuItem:
-			ma.imageProcessMode = ImageProcessModeEnum.FACE_DETECT; 
+			imageProcessMode = ImageProcessModeEnum.FACE_DETECT; 
 			return true;
 
 			
 			// Annotation Mode
 			case R.id.normalAnnotationMenuItem:
-				ma.annotationMode = AnnotationModeEnum.NORMAL;
+				annotationMode = AnnotationModeEnum.NORMAL;
 				break;
 
 			case R.id.layoutAnnotationMenuItem:
-				ma.annotationMode = AnnotationModeEnum.LAYOUT;
+				annotationMode = AnnotationModeEnum.LAYOUT;
 				break;
 
 			case R.id.rhombusAnnotationMenuItem:
-				ma.annotationMode = AnnotationModeEnum.RHOMBUS;
+				annotationMode = AnnotationModeEnum.RHOMBUS;
 				break;
 
 			case R.id.faceMetricsAnnotationMenuItem:
-				ma.annotationMode = AnnotationModeEnum.FACE_METRICS;
+				annotationMode = AnnotationModeEnum.FACE_METRICS;
 				break;
 
 			case R.id.cubeMetricsAnnotationMenuItem:
-				ma.annotationMode = AnnotationModeEnum.CUBE_METRICS;
+				annotationMode = AnnotationModeEnum.CUBE_METRICS;
 				break;
 
 			case R.id.timeAnnotationMenuItem:
-				ma.annotationMode = AnnotationModeEnum.TIME;
+				annotationMode = AnnotationModeEnum.TIME;
 				break;
 
 			case R.id.colorAnnotationMenuItem:
-				ma.annotationMode = AnnotationModeEnum.COLOR;
+				annotationMode = AnnotationModeEnum.COLOR;
 				break;
 
 				
@@ -230,11 +269,11 @@ public class RubikMenuAndParameters {
 			break;
 
 		case R.id.toggleUserTextMenuItem:
-			MainActivity.userTextDisplay ^= true;
+			userTextDisplay ^= true;
 			break;
 
 		case R.id.toggleCubeOverlayMenuItem:
-			MainActivity.cubeOverlayDisplay ^= true;
+			cubeOverlayDisplay ^= true;
 			break;
 		}
 

@@ -555,7 +555,7 @@ public class Controller {
 	private void renderUserInstructions(Mat image, RubikFace rubikFace) {
 
 		// Create black area for text
-		if(MainActivity.userTextDisplay == true)
+		if(RubikMenuAndParameters.userTextDisplay == true)
 			Core.rectangle(image, new Point(0, 0), new Point(1270, 60), Constants.ColorBlack, -1);
 
 		pilotGLRenderer.setCubeOrienation(rubikFace);
@@ -563,20 +563,20 @@ public class Controller {
 		switch(controllerState) {
 
 		case START:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Show Me The Rubik Cube", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
 			pilotGLRenderer.setRenderArrow(false);
 			break;
 
 		case GOT_IT:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "OK, Got It", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
 			pilotGLRenderer.setRenderArrow(false);
-			pilotGLRenderer.setRenderCube(MainActivity.cubeOverlayDisplay);
+			pilotGLRenderer.setRenderCube(RubikMenuAndParameters.cubeOverlayDisplay);
 			break;
 
 		case ROTATE:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Please Rotate: " + RubikCube.getNumValidFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
 			if(  RubikCube.getNumValidFaces() % 2 == 0)
 				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
@@ -585,38 +585,38 @@ public class Controller {
 			break;
 
 		case SEARCHING:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Searching for Another Face", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
 			pilotGLRenderer.setRenderArrow(false);
 			break;
 
 		case COMPLETE:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Cube is Complete and has Good Colors", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 			break;
 
 		case WAITING:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Waiting - Preload Next: " + pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
 			break;
 
 		case BAD_COLORS:
-//			if(MainActivity.userTextDisplay == true)
+//			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Cube is Complete but has Bad Colors", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 			break;
 
 		case VERIFIED:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Cube is Complete and Verified", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 			break;
 
 		case INCORRECT:
-//			if(MainActivity.userTextDisplay == true)
+//			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Cube is Complete but Incorrect: " + verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 			break;
 
 		case SOLVED:
-			if(MainActivity.userTextDisplay == true) {
+			if(RubikMenuAndParameters.userTextDisplay == true) {
 				Core.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 				Core.rectangle(image, new Point(0, 60), new Point(1270, 120), Constants.ColorBlack, -1);
 				Core.putText(image, "" + solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
@@ -644,7 +644,7 @@ public class Controller {
 			else
 				moveDescription.append("?");
 
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, moveDescription.toString(), new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 
 
@@ -689,7 +689,7 @@ public class Controller {
 				color = Constants.RubikOrange;
 				break;
 			}
-			pilotGLRenderer.setRenderCube(true && MainActivity.cubeOverlayDisplay);
+			pilotGLRenderer.setRenderCube(true && RubikMenuAndParameters.cubeOverlayDisplay);
 			pilotGLRenderer.showCubeEdgeRotationArrow(
 					rotation,
 					faceType, 
@@ -698,7 +698,7 @@ public class Controller {
 
 		case WAITING_FOR_MOVE_COMPLETE:
 			pilotGLRenderer.setRenderArrow(false);
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Waiting for move to be completed", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 			break;
 
@@ -707,7 +707,7 @@ public class Controller {
 			break;
 
 		default:
-			if(MainActivity.userTextDisplay == true)
+			if(RubikMenuAndParameters.userTextDisplay == true)
 				Core.putText(image, "Oops", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
 			break;
 		}
