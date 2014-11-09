@@ -83,7 +83,7 @@ public class MonoChromatic {
 			    Imgproc.GaussianBlur(
 			    		gray_image, 
 			    		gaussian_image, 
-			    		new Size(MainActivity.boxBlurKernelSizeParam, MainActivity.boxBlurKernelSizeParam), 0, 0);
+			    		new Size(RubikMenuAndParameters.gaussianBlurKernelSizeParam.value, RubikMenuAndParameters.gaussianBlurKernelSizeParam.value), 0, 0);
 //			    		MainActivity.gaussianSigmaBlurParam, 
 //			    		MainActivity.gaussianSigmaBlurParam);
         
@@ -138,8 +138,8 @@ public class MonoChromatic {
         
         // Call C++ code.
     	nativeStepOpenCL(
-    			(int) MainActivity.monochromaticSizeParam,
-    			(int) MainActivity.monochromaticEpsilonParam,
+    			(int) 7,
+    			(int) 5,
     			0,
     			0,
     			true,
@@ -201,8 +201,8 @@ public class MonoChromatic {
 		// Get hue channel into simple byte array for speed efficiency.
 		final int numColumns = (int) original_image.size().width;
 		final int numRows = (int) original_image.size().height;
-		final int span = (int) MainActivity.monochromaticSizeParam;
-		final int accuracy = (int) MainActivity.monochromaticEpsilonParam;		
+		final int span = (int) 7;
+		final int accuracy = (int) 5;		
 		List<Mat> channels = new LinkedList<Mat>();
 		Core.split(hsv_image, channels);
 		Mat hueMat = channels.get(0);
@@ -293,8 +293,8 @@ public class MonoChromatic {
 		final int numColumns = (int) original_image.size().width;
 		final int numRows = (int) original_image.size().height;
 		final int bufferSize = numColumns*numRows;
-		final int span = (int) MainActivity.monochromaticSizeParam;
-		final int accuracy = (int) MainActivity.monochromaticEpsilonParam;
+		final int span = (int) 7;
+		final int accuracy = (int) 5;
 		
 		
 		Mat hsv_image = new Mat(imageSize, CvType.CV_8UC3);
@@ -386,8 +386,8 @@ public class MonoChromatic {
 		final int numColumns = (int) original_image.size().width;
 		final int numRows = (int) original_image.size().height;
 		final int bufferSize = numColumns*numRows;
-		final int span = (int) MainActivity.monochromaticSizeParam;
-		final int accuracy = (int) MainActivity.monochromaticEpsilonParam;
+		final int span = (int) 7;
+		final int accuracy = (int) 5;
 		
 		
 		Mat hsv_image = new Mat(imageSize, CvType.CV_8UC3);
@@ -505,8 +505,8 @@ public class MonoChromatic {
 
 		for(int row=0; row<numRows; row++) {
 
-			final int span = (int) MainActivity.monochromaticSizeParam;
-			final int accuracy = (int) MainActivity.monochromaticEpsilonParam;
+			final int span = (int) 7;
+			final int accuracy = (int) 5;
 
 			byte result_pixel = 0;
 

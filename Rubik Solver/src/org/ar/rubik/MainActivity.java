@@ -49,22 +49,16 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
 
 
 public class MainActivity extends Activity implements CvCameraViewListener2 {
@@ -79,27 +73,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 	private GLSurfaceView annotationGLSurfaceView;
 	
 	// Top Level Controller of this application
-    private Controller controller;
+    public Controller controller;
 
 
-    // Monochromatic Image Process Parameters =+= obsolete
-    public static double monochromaticSizeParam    = 8.0;
-    public static double monochromaticEpsilonParam = 10.0;
-    
-    // Gaussian Blur Parameters 
-    public static double boxBlurKernelSizeParam   = 10.0;
-    
-    // Canny Edge Detection Parameters
-    public static double cannyLowerThresholdParam = 50.0;
-    public static double cannyUpperThresholdParam = 100.0;
-    
-    // Dilation Kernel Size
-    public static double dilationKernelSize       = 10.0;
-    
-    // Ploygone Detection Parameters
-    public static double polygonEpsilonParam      = 30.0;
-    
-    public static double manualLuminousOffset     = 0.0;
 
 	// Toggles User Text Interface
 	public static boolean userTextDisplay = true;
@@ -247,265 +223,30 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        Log.i(Constants.TAG, "called onOptionsItemSelected; selected item: " + item);
-
-
-    	switch (item.getItemId()) {  
-
-    	case R.id.saveImageMenuItem:
-    		imageSourceMode = ImageSourceModeEnum.SAVE_NEXT;
-    		return true;
-
-    	case R.id.useSavedImageMenuItem:
-    		imageSourceMode = ImageSourceModeEnum.PLAYBACK;
-    		return true;
-
-    	case R.id.directImageProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.DIRECT;
-    		return true;
-    		
-    	case R.id.greyscaleImageProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.GREYSCALE; 
-    		return true;
-    		
-    	case R.id.boxBlurImageProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.BOXBLUR; 
-    		return true;
-
-    	case R.id.cannyImageProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.CANNY;
-    		return true;
-
-    	case R.id.dialateImageProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.DILATION;
-    		return true;
-
-    	case R.id.contourImageProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.CONTOUR; 
-    		return true;
-    		
-    	case R.id.ploygoneProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.POLYGON; 
-    		return true;
-    		
-    	case R.id.rhombusProcessMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.RHOMBUS; 
-    		return true;
-    		
-    	case R.id.faceDetectionMenuItem:
-    		imageProcessMode = ImageProcessModeEnum.FACE_DETECT; 
-    		return true;
-    		
-       	case R.id.luminousOffsetMenuItem:
-    		seekerDialog(
-    				"Luminous Offset",
-    				-50.0,
-    				+50.0,
-    				item.getItemId());
-    		break;
-    		
-       	case R.id.boxBlurKernelSizeMenuItem:
-    		seekerDialog(
-    				"Box Blur Kernel Size",
-    				3.0,
-    				20.0,
-    				item.getItemId());
-    		break;
-    		
-       	case R.id.cannyLowerThresholdMenuItem:
-    		seekerDialog(
-    				"Canny Lower Threshold",
-    				20.0,
-    				100.0,
-    				item.getItemId());
-    		break;
-    		
-       	case R.id.cannyUpperThresholdMenuItem:
-    		seekerDialog(
-    				"Canny Upper Threshold",
-    				50.0,
-    				200.0,
-    				item.getItemId());
-    		break;
-    		
-       	case R.id.dilationKernelMenuItem:
-    		seekerDialog(
-    				"Dialation Kernel Size",
-    				5.0,
-    				20.0,
-    				item.getItemId());
-    		break;
-    		
-       	case R.id.polygonEpsilonMenuItem:
-    		seekerDialog(
-    				"Polygone Recognition Epsilon Accuracy",
-    				10.0,
-    				100.0,
-    				item.getItemId());
-    		break;
-    		
-       	case R.id.normalAnnotationMenuItem:
-       		annotationMode = AnnotationModeEnum.NORMAL;
-       		break;
-    		
-       	case R.id.layoutAnnotationMenuItem:
-       		annotationMode = AnnotationModeEnum.LAYOUT;
-       		break;
-    		
-       	case R.id.rhombusAnnotationMenuItem:
-       		annotationMode = AnnotationModeEnum.RHOMBUS;
-       		break;
-    		
-       	case R.id.faceMetricsAnnotationMenuItem:
-       		annotationMode = AnnotationModeEnum.FACE_METRICS;
-       		break;
-    		
-       	case R.id.cubeMetricsAnnotationMenuItem:
-       		annotationMode = AnnotationModeEnum.CUBE_METRICS;
-       		break;
-       		
-       	case R.id.timeAnnotationMenuItem:
-       		annotationMode = AnnotationModeEnum.TIME;
-       		break;
-       		
-       	case R.id.colorAnnotationMenuItem:
-       		annotationMode = AnnotationModeEnum.COLOR;
-       		break;
-       		
-       	case R.id.saveCubeMenuItem:
-       		controller.saveCube();
-       		break;
-       		
-       	case R.id.recallCubeMenuItem:
-       		controller.recallCube();
-       		break;
-       		
-       	case R.id.resetImageMenuItem:
-       		controller.reset();
-       		break;
-    		
-        case R.id.exitImageMenuItem:
-    		finish();
-    		System.exit(0);
-    		break;
-    		
-        case R.id.toggleUserTextMenuItem:
-        	userTextDisplay ^= true;
-        	break;
-
-        case R.id.toggleCubeOverlayMenuItem:
-        	cubeOverlayDisplay ^= true;
-        	break;
-    	}
-    		
-        return true;
-    }
-
     
     /**
-     * Pop-up like slider bar to adjust various parameters.
-     * 
-     * @param name
-     * @param min
-     * @param max
-     * @param paramID
+     *  (non-Javadoc)
+     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
      */
-    private void seekerDialog(String name, final double min, final double max, final int paramID) {
-    	
-		// get prompts.xml view
-		LayoutInflater li = LayoutInflater.from(this);
-		View promptsView = li.inflate(R.layout.prompts, null);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	return RubikMenuAndParameters.onOptionsItemSelected(item, this);
+    }
 
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-		// set prompts.xml to alertdialog builder
-		alertDialogBuilder.setView(promptsView);
-
-		// create alert dialog
-		AlertDialog alertDialog = alertDialogBuilder.create();
-
-		// show it
-		alertDialog.show();
-		
-		double value = 0;
-		switch(paramID) {
-		case R.id.luminousOffsetMenuItem:
-			value = manualLuminousOffset;
-			break;
-		case R.id.boxBlurKernelSizeMenuItem:
-			value = boxBlurKernelSizeParam;
-			break;
-		case R.id.cannyLowerThresholdMenuItem:
-			value = cannyLowerThresholdParam;
-			break;
-		case R.id.cannyUpperThresholdMenuItem:
-			value = cannyUpperThresholdParam;
-			break;
-		case R.id.dilationKernelMenuItem:
-			value = dilationKernelSize;
-			break;
-		case R.id.polygonEpsilonMenuItem:
-			value = polygonEpsilonParam;
-			break;
-		}
-	    
-	    TextView paramTitleTextView = (TextView)(promptsView.findViewById(R.id.param_title_text_view));
-	    paramTitleTextView.setText(name);
-	    
-	    final TextView paramValueTextView = (TextView) promptsView.findViewById(R.id.param_value_text_view);
-	    paramValueTextView.setText(String.format("%5.1f", value));
-	    
-	    
-	    SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.parameter_seekbar);
-	    seekBar.setMax(100);
-	    seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-			
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {}
-			
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {}
-			
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				
-				double newParamValue = (max - min) * ((double)progress) / 100.0 + min;
-			    paramValueTextView.setText(String.format("%5.1f", newParamValue));
-			    
-				switch(paramID) {
-				case R.id.luminousOffsetMenuItem:
-					manualLuminousOffset = newParamValue;
-					break;
-				case R.id.boxBlurImageProcessMenuItem:
-					boxBlurKernelSizeParam = newParamValue;
-					break;
-				case R.id.cannyLowerThresholdMenuItem:
-					cannyLowerThresholdParam = newParamValue;
-					break;
-				case R.id.cannyUpperThresholdMenuItem:
-					cannyUpperThresholdParam = newParamValue;
-					break;
-				case R.id.dilationKernelMenuItem:
-					dilationKernelSize = newParamValue;
-					break;
-				case R.id.polygonEpsilonMenuItem:
-					polygonEpsilonParam = newParamValue;
-					break;
-				}
-			}
-		});
-	    seekBar.setProgress( (int) (100.0 * (value - min) / (max - min)) );
-
-	}
 
     
+	/**
+	 *  (non-Javadoc)
+	 * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraViewStarted(int, int)
+	 */
 	public void onCameraViewStarted(int width, int height) {
     }
 
 	
+    /**
+     *  (non-Javadoc)
+     * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraViewStopped()
+     */
     public void onCameraViewStopped() {
     }
 
@@ -520,7 +261,17 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
      */
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
     	  	
-    	Mat resultImage = controller.onCameraFrame(inputFrame, imageSourceMode, imageProcessMode, annotationMode);
+    	Mat resultImage = null;
+    	// =+= problem: can't make toast in frame thread.
+//        try {
+	        resultImage = controller.onCameraFrame(inputFrame, imageSourceMode, imageProcessMode, annotationMode);
+//        } catch (CvException e) {
+//        	Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+//	        e.printStackTrace();
+//        } catch (Exception e) {
+//        	Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+//	        e.printStackTrace();
+//        }
     	
     	return resultImage;
     }

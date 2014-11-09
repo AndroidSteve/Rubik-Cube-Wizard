@@ -1,0 +1,299 @@
+/**
+ * Augmented Reality Rubik Cube Solver
+ * 
+ * Author: Steven P. Punte (aka Android Steve)
+ * Date:   Nov 1st 2014
+ * 
+ * Project Description:
+ *   Android application developed on a commercial Smart Phone which, when run on a pair 
+ *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
+ *   
+ * File Description:
+ *   This file global configuration and parameters used throughout the Rubik Cube Solver
+ *   program, and also the menu processing system to support the associated UI.
+ * 
+ * License:
+ * 
+ *  GPL
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.ar.rubik;
+
+import org.ar.rubik.Constants.AnnotationModeEnum;
+import org.ar.rubik.Constants.ImageProcessModeEnum;
+import org.ar.rubik.Constants.ImageSourceModeEnum;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
+
+
+
+/**
+ * @author stevep
+ *
+ */
+public class RubikMenuAndParameters {
+
+	// User Adjustable Parameters 
+	public static RubikMenuParam gaussianBlurKernelSizeParam = new RubikMenuParam("Gaussian Blur Kernel Size",  +3.0,  +20.0,   +7.0);
+	public static RubikMenuParam luminousOffsetParam         = new RubikMenuParam("Luminous Offset",           -50.0,  +50.0,    0.0);
+	public static RubikMenuParam cannyUpperThresholdParam    = new RubikMenuParam("Canny Upper Threshold",     +50.0, +200.0, +100.0);
+	public static RubikMenuParam cannyLowerThresholdParam    = new RubikMenuParam("Canny Lower Threshold",     +20.0, +100.0,  +50.0);
+	public static RubikMenuParam dilationKernelSizeParam     = new RubikMenuParam("Dilation Kernel Size",       +2.0,  +20.0,  +10.0);
+	public static RubikMenuParam polygonEpsilonParam         = new RubikMenuParam("Polygon Epsilon Threshold", +10.0, +100.0,  +30.0);
+	
+
+	/**
+	 * Rubik Menu Parameters
+	 * 
+	 * This class is to support a user adjustable parameter.
+	 * 
+	 * @author android.steve@testlens.com
+	 *
+	 */
+	public static class RubikMenuParam {
+
+		/**
+		 * @param label
+		 * @param min
+		 * @param max
+		 * @param value
+		 */
+        public RubikMenuParam(String label, double min, double max, double value) {
+	        this.label = label;
+	        this.min   = min;
+	        this.max   = max;
+	        this.value = value;
+        }
+        
+		public  double value;	
+		private double min;
+		private double max;
+		private String label;
+	}
+	
+	
+	/**
+	 * On Options Item Selected
+	 * 
+	 * This receives and processes every menu action
+	 * 
+	 * @param item
+	 * @param ma
+	 * @return
+	 */
+	public static boolean onOptionsItemSelected(MenuItem item, MainActivity ma) {
+
+		Log.i(Constants.TAG, "called onOptionsItemSelected; selected item: " + item);
+
+
+		switch (item.getItemId()) {  
+
+		// Image Source Mode
+		case R.id.saveImageMenuItem:
+			ma.imageSourceMode = ImageSourceModeEnum.SAVE_NEXT;
+			return true;
+
+		case R.id.useSavedImageMenuItem:
+			ma.imageSourceMode = ImageSourceModeEnum.PLAYBACK;
+			return true;
+
+		case R.id.directImageProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.DIRECT;
+			return true;
+
+		case R.id.greyscaleImageProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.GREYSCALE; 
+			return true;
+
+		case R.id.boxBlurImageProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.BOXBLUR; 
+			return true;
+
+		case R.id.cannyImageProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.CANNY;
+			return true;
+
+		case R.id.dialateImageProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.DILATION;
+			return true;
+
+		case R.id.contourImageProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.CONTOUR; 
+			return true;
+
+		case R.id.ploygoneProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.POLYGON; 
+			return true;
+
+		case R.id.rhombusProcessMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.RHOMBUS; 
+			return true;
+
+		case R.id.faceDetectionMenuItem:
+			ma.imageProcessMode = ImageProcessModeEnum.FACE_DETECT; 
+			return true;
+
+			
+			// Annotation Mode
+			case R.id.normalAnnotationMenuItem:
+				ma.annotationMode = AnnotationModeEnum.NORMAL;
+				break;
+
+			case R.id.layoutAnnotationMenuItem:
+				ma.annotationMode = AnnotationModeEnum.LAYOUT;
+				break;
+
+			case R.id.rhombusAnnotationMenuItem:
+				ma.annotationMode = AnnotationModeEnum.RHOMBUS;
+				break;
+
+			case R.id.faceMetricsAnnotationMenuItem:
+				ma.annotationMode = AnnotationModeEnum.FACE_METRICS;
+				break;
+
+			case R.id.cubeMetricsAnnotationMenuItem:
+				ma.annotationMode = AnnotationModeEnum.CUBE_METRICS;
+				break;
+
+			case R.id.timeAnnotationMenuItem:
+				ma.annotationMode = AnnotationModeEnum.TIME;
+				break;
+
+			case R.id.colorAnnotationMenuItem:
+				ma.annotationMode = AnnotationModeEnum.COLOR;
+				break;
+
+				
+		// Adjustable Parameters
+		case R.id.luminousOffsetMenuItem:
+			seekerDialogNew(luminousOffsetParam, ma);
+			return true;
+
+		case R.id.boxBlurKernelSizeMenuItem:
+			seekerDialogNew(gaussianBlurKernelSizeParam, ma);
+			break;
+
+		case R.id.cannyLowerThresholdMenuItem:
+			seekerDialogNew(cannyLowerThresholdParam, ma);
+			break;
+
+		case R.id.cannyUpperThresholdMenuItem:
+			seekerDialogNew(cannyUpperThresholdParam, ma);
+			break;
+
+		case R.id.dilationKernelMenuItem:
+			seekerDialogNew(dilationKernelSizeParam, ma);
+			break;
+
+		case R.id.polygonEpsilonMenuItem:
+			seekerDialogNew(polygonEpsilonParam, ma);
+			break;
+
+
+		// Miscellaneous
+		case R.id.saveCubeMenuItem:
+			ma.controller.saveCube();
+			break;
+
+		case R.id.recallCubeMenuItem:
+			ma.controller.recallCube();
+			break;
+
+		case R.id.resetImageMenuItem:
+			ma.controller.reset();
+			break;
+
+		case R.id.exitImageMenuItem:
+			ma.finish();
+			System.exit(0);
+			break;
+
+		case R.id.toggleUserTextMenuItem:
+			MainActivity.userTextDisplay ^= true;
+			break;
+
+		case R.id.toggleCubeOverlayMenuItem:
+			MainActivity.cubeOverlayDisplay ^= true;
+			break;
+		}
+
+		return true;
+	}
+	
+	
+	
+	/**
+	 * Pop-up like slider bar to adjust various parameters.
+	 * 
+	 * @param rubikMenuParam
+	 * @param context
+	 */
+	private static void seekerDialogNew(final RubikMenuParam rubikMenuParam, Context context) {
+		
+		// get prompts.xml view
+		LayoutInflater li = LayoutInflater.from(context);
+		View promptsView = li.inflate(R.layout.prompts, null);
+
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+		// set prompts.xml to alertdialog builder
+		alertDialogBuilder.setView(promptsView);
+
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+
+		// show it
+		alertDialog.show();
+		
+		double value = rubikMenuParam.value;
+		
+		TextView paramTitleTextView = (TextView)(promptsView.findViewById(R.id.param_title_text_view));
+		paramTitleTextView.setText(rubikMenuParam.label);
+
+		final TextView paramValueTextView = (TextView) promptsView.findViewById(R.id.param_value_text_view);
+		paramValueTextView.setText(String.format("%5.1f", value));
+
+		SeekBar seekBar = (SeekBar) promptsView.findViewById(R.id.parameter_seekbar);
+		seekBar.setMax(100);
+		
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {}
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+				double newParamValue = (rubikMenuParam.max - rubikMenuParam.min) * ((double)progress) / 100.0 + rubikMenuParam.min;
+				paramValueTextView.setText(String.format("%5.1f", newParamValue));
+				
+				rubikMenuParam.value = newParamValue;
+			}
+		});
+		seekBar.setProgress( (int) (100.0 * (value - rubikMenuParam.min) / (rubikMenuParam.max - rubikMenuParam.min)) );
+	}
+}

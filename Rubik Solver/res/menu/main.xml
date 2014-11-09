@@ -58,7 +58,7 @@
                     android:title="Canny Edge Process" />
                 <item 
                     android:id="@+id/boxBlurImageProcessMenuItem" 
-                    android:title="Blur Filter Process" />
+                    android:title="Gaussian Blur Filter Process" />
                 <item 
                     android:id="@+id/directImageProcessMenuItem" 
                     android:title="Direct Image Process" />
@@ -99,7 +99,7 @@
                     android:title="Manual Luminous Offset" />
                 <item 
                     android:id="@+id/boxBlurKernelSizeMenuItem" 
-                    android:title="Box Blur Kernel Size" />
+                    android:title="Gaussian Blur Kernel Size" />
                 <item 
                     android:id="@+id/cannyLowerThresholdMenuItem" 
                     android:title="Canny Lower Threshold" />
@@ -136,7 +136,7 @@
         			android:title="Save Image"/>  
     			<item
         			android:id="@+id/useSavedImageMenuItem"
-        			android:title="Use Saved Image"/>  
+        			android:title="Recall Image"/>  
     			<item
         			android:id="@+id/saveCubeMenuItem"
         			android:title="Save Cube"/>

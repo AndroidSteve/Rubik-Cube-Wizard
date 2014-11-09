@@ -95,24 +95,16 @@ public class ProcessImage {
 		final Size imageSize = original_image.size();
 		RubikCube.active = null;
 		
-		startTimeStamp = System.currentTimeMillis();
-		greyscaleProcessTimeStamp = startTimeStamp;
-		boxBlurProcessTimeStamp = startTimeStamp;
+		startTimeStamp                     = System.currentTimeMillis();
+		greyscaleProcessTimeStamp          = startTimeStamp;
+		boxBlurProcessTimeStamp            = startTimeStamp;
 		cannyEdgeDetectionProcessTimeStamp = startTimeStamp;
-		dialationProcessTimeStamp = startTimeStamp;
-		contourGenerationTimeStamp = startTimeStamp;
-		polygonDetectionTimeStamp = startTimeStamp;
-		rhombusTileRecognitionTimeStamp = startTimeStamp;
-		rubikFaceRecognitionTimeStamp = startTimeStamp;
+		dialationProcessTimeStamp          = startTimeStamp;
+		contourGenerationTimeStamp         = startTimeStamp;
+		polygonDetectionTimeStamp          = startTimeStamp;
+		rhombusTileRecognitionTimeStamp    = startTimeStamp;
+		rubikFaceRecognitionTimeStamp      = startTimeStamp;
 		Log.i(Constants.TAG, "============================================================================");
-
-
-
-		//		/* **********************************************************************
-		//		 * Diagnostic Case: Generate Gray Scale Histogram
-		//		 */
-		//		if(imageProcessMode == ImageProcessModeEnum.GRAY_HISTOGRAM)
-		//			return renderGrayScaleHistogram(gray_image);
 
 
 		/* **********************************************************************
@@ -132,16 +124,16 @@ public class ProcessImage {
 		
 
 		/* **********************************************************************
-		 * Box Filter Blur prevents getting a lot of false hits 
+		 * Gaussian Filter Blur prevents getting a lot of false hits 
 		 */
 		Mat blur_image = new Mat(); 
-//		int blurKernelSize = (int)MainActivity.boxBlurKernelSizeParam;
-//		Imgproc.blur(greyscale_image, blur_image, new Size(7, 7));
 		
-	    Imgproc.GaussianBlur(
+	    int kernelSize = (int) RubikMenuAndParameters.gaussianBlurKernelSizeParam.value;
+	    kernelSize = kernelSize % 2 == 0 ? kernelSize + 1 : kernelSize;  // make odd
+		Imgproc.GaussianBlur(
 	    		greyscale_image, 
 	    		blur_image, 
-	    		new Size(7, 7), -1, -1);
+	    		new Size(kernelSize, kernelSize), -1, -1);
 		
 		boxBlurProcessTimeStamp = System.currentTimeMillis();
 
@@ -157,11 +149,12 @@ public class ProcessImage {
 		Imgproc.Canny(
 				blur_image, 
 				canny_image, 
-				MainActivity.cannyLowerThresholdParam, 
-				MainActivity.cannyUpperThresholdParam,
+				RubikMenuAndParameters.cannyLowerThresholdParam.value, 
+				RubikMenuAndParameters.cannyUpperThresholdParam.value,
 				3,
 				false);
 		cannyEdgeDetectionProcessTimeStamp = System.currentTimeMillis();
+		
 
 		if(imageProcessMode == ImageProcessModeEnum.CANNY)
 			return canny_image;
@@ -177,12 +170,10 @@ public class ProcessImage {
 				Imgproc.getStructuringElement(
 						Imgproc.MORPH_RECT, 
 						new Size(
-								MainActivity.dilationKernelSize, 
-								MainActivity.dilationKernelSize)));
+								RubikMenuAndParameters.dilationKernelSizeParam.value, 
+								RubikMenuAndParameters.dilationKernelSizeParam.value)));
 
 		dialationProcessTimeStamp = System.currentTimeMillis();
-		
-//		Imgproc.erode(mInput, mInput, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2,2)));
 
 		if(imageProcessMode == ImageProcessModeEnum.DILATION)
 			return dilate_image;
@@ -221,7 +212,7 @@ public class ProcessImage {
 		 * Polygon Detection
 		 */	 
 		polygonList = new LinkedList<Rhombus>();
-		final double epsilon = MainActivity.polygonEpsilonParam;
+		final double epsilon = RubikMenuAndParameters.polygonEpsilonParam.value;
 
 		Iterator<MatOfPoint> contourItr = contours.iterator(); 
 		while(contourItr.hasNext()) {
@@ -315,7 +306,7 @@ public class ProcessImage {
 		RubikFace.drawFlatFaceRepresentation(image, RubikCube.active, 50, 50, 50);
 
 		Core.putText(image, "Greyscale: " + (greyscaleProcessTimeStamp - startTimeStamp) + "mS", new Point(50, 300), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Box Blur: " + (boxBlurProcessTimeStamp - greyscaleProcessTimeStamp) + "mS", new Point(50, 350), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, "Gaussian Blur: " + (boxBlurProcessTimeStamp - greyscaleProcessTimeStamp) + "mS", new Point(50, 350), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		Core.putText(image, "Canny Edge: " + (cannyEdgeDetectionProcessTimeStamp - boxBlurProcessTimeStamp) + "mS", new Point(50, 400), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		Core.putText(image, "Dialation: " + (dialationProcessTimeStamp - cannyEdgeDetectionProcessTimeStamp) + "mS", new Point(50, 450), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		Core.putText(image, "Contour Gen: " + (contourGenerationTimeStamp - dialationProcessTimeStamp) + "mS", new Point(50, 500), Constants.FontFace, 2, Constants.ColorWhite, 2);

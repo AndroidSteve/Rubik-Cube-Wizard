@@ -16,5 +16,5 @@ Notice:
   o  User gesture style.
   
 To Do:
-  o  Refactor out parameter subsystem.
+  o  Move control mode variables out of MainActivity.
   
