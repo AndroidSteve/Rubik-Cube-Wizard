@@ -43,7 +43,12 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.CvException;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Size;
 
 import android.app.Activity;
 import android.graphics.PixelFormat;
@@ -71,25 +76,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 	
 	// Top Level Controller of this application
     public Controller controller;
-
-
-
-//	// Toggles User Text Interface
-//	public static boolean userTextDisplay = true;
-//	
-//	// Toggle Cube Overlay Display
-//	public static boolean cubeOverlayDisplay = false;
-//        
-//    // Specifies where image comes from
-//    public ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
-//
-//	// Specifies what to do with image
-//    public ImageProcessModeEnum imageProcessMode = ImageProcessModeEnum.FACE_DETECT;
-//    
-//    // Specified what annotation to add
-//    public AnnotationModeEnum annotationMode = AnnotationModeEnum.NORMAL;
     
-
+    // Once an exception or error is encountered, display message from thence forth.
+	Mat errorImage = null;
+    
     
     static {
         System.loadLibrary("step");
@@ -257,22 +247,29 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
      * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraFrame(org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame)
      */
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+    	
+    	Size imageSize = inputFrame.rgba().size();
+   	
+    	if(errorImage != null)
+    		return errorImage;
     	  	
     	Mat resultImage = null;
     	// =+= problem: can't make toast in frame thread.
-//        try {
+        try {
 	        resultImage = controller.onCameraFrame(
 	        		inputFrame, 
 	        		RubikMenuAndParameters.imageSourceMode, 
 	        		RubikMenuAndParameters.imageProcessMode, 
 	        		RubikMenuAndParameters.annotationMode);
-//        } catch (CvException e) {
-//        	Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-//	        e.printStackTrace();
-//        } catch (Exception e) {
-//        	Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-//	        e.printStackTrace();
-//        }
+        } catch (CvException e) {
+        	e.printStackTrace();        	
+			errorImage = new Mat(imageSize, CvType.CV_8UC4);
+			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+        } catch (Exception e) {
+        	e.printStackTrace();        	
+			errorImage = new Mat(imageSize, CvType.CV_8UC4);
+			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+        }
     	
     	return resultImage;
     }
