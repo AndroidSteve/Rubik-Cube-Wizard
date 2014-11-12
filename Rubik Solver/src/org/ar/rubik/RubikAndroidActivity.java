@@ -9,6 +9,9 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
+ *   This is the primary Android Activity class for this application.  Intentionally,
+ *   as little is done as possible in this class.  Work is partitioned and 
+ *   handled in other classes.
  * 
  * License:
  * 
@@ -75,7 +78,10 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
 	private GLSurfaceView annotationGLSurfaceView;
 	
 	// Top Level Controller of this application
-    public Controller controller;
+    public Controller controller;  // =+= some menu actions need this.
+    
+    // Primary Image Processor
+    public RubikImageFrameListener frameProcessor = new RubikImageFrameListener();
     
     // Once an exception or error is encountered, display message from thence forth.
 	Mat errorImage = null;
@@ -133,6 +139,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view); 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+//        mOpenCvCameraView.setCvCameraViewListener(frameProcessor);
         
         // Setup and Add Pilot GL Surface View and Pilot GL Renderer
         pilotGLSurfaceView = new GLSurfaceView(this);
@@ -248,7 +255,8 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
      */
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
     	
-    	Size imageSize = inputFrame.rgba().size();
+    	Mat rgba = inputFrame.rgba();
+		Size imageSize = rgba.size();
    	
     	if(errorImage != null)
     		return errorImage;
@@ -261,6 +269,8 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
 	        		RubikMenuAndParameters.imageSourceMode, 
 	        		RubikMenuAndParameters.imageProcessMode, 
 	        		RubikMenuAndParameters.annotationMode);
+	        
+//	        resultImage = frameProcessor.onCameraFrame(inputFrame);
         } catch (CvException e) {
         	e.printStackTrace();        	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
