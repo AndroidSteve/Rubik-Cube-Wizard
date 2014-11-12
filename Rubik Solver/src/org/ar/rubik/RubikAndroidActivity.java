@@ -63,7 +63,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 
-public class MainActivity extends Activity implements CvCameraViewListener2 {
+public class RubikAndroidActivity extends Activity implements CvCameraViewListener2 {
 
 	// Camera Object
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -108,7 +108,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     /**
      * Constructor
      */
-    public MainActivity() {
+    public RubikAndroidActivity() {
         Log.i(Constants.TAG, "Instantiated new " + this.getClass());
     }
 

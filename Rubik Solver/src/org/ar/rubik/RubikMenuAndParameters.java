@@ -141,7 +141,7 @@ public class RubikMenuAndParameters {
 	 * @param ma
 	 * @return
 	 */
-	public static boolean onOptionsItemSelected(MenuItem item, MainActivity ma) {
+	public static boolean onOptionsItemSelected(MenuItem item, RubikAndroidActivity ma) {
 
 		Log.i(Constants.TAG, "called onOptionsItemSelected; selected item: " + item);
 
