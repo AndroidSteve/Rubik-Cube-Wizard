@@ -37,7 +37,7 @@ import java.util.List;
  * @author android.steve@testlens.com
  *
  */
-public class NewRubikFace {
+public class RubikFace2 {
 	
 	public enum FaceRecognitionStatusEnum {
 		UNKNOWN,

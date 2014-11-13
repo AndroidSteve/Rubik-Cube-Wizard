@@ -35,12 +35,12 @@ package org.ar.rubik;
  * @author android.steve@testlens.com
  *
  */
-public class NewController {
+public class Controller2 {
 
 	/**
-	 * @param newRubikFace
+	 * @param rubikFace2
 	 */
-    public void processFace(NewRubikFace newRubikFace) {
+    public void processFace(RubikFace2 rubikFace2) {
 	    // TODO Auto-generated method stub
 	    
     }

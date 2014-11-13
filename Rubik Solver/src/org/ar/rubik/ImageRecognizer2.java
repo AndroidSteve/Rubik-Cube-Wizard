@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.ar.rubik.Constants.ImageProcessModeEnum;
+import org.ar.rubik.Constants.ImageSourceModeEnum;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Core;
@@ -54,9 +55,9 @@ import android.util.Log;
  * @author android.steve@testlens.com
  *
  */
-public class RubikImageFrameListener implements CvCameraViewListener2 {
+public class ImageRecognizer2 implements CvCameraViewListener2 {
 
-	private NewController newController = new NewController();
+	private Controller2 newController = new Controller2();
 
 	// Once an exception or error is encountered, display message from thence forth.
 	Mat errorImage = null;
@@ -106,7 +107,26 @@ public class RubikImageFrameListener implements CvCameraViewListener2 {
 
 		Mat original_image = inputFrame.rgba();
 		Size imageSize = original_image.size();
+		
+		// Save or Recall image as requested
+		switch( RubikMenuAndParameters.imageSourceMode) {
 
+		case NORMAL:
+			break;
+
+		case SAVE_NEXT:
+			Util.saveImage(original_image);
+			RubikMenuAndParameters.imageSourceMode = ImageSourceModeEnum.NORMAL;
+			break;
+
+		case PLAYBACK:
+			original_image = Util.recallImage();
+
+		default:
+			break;
+		}
+
+		
 		try {
 
 
@@ -337,7 +357,7 @@ public class RubikImageFrameListener implements CvCameraViewListener2 {
 			 * 
 			 * 
 			 */	 
-			NewRubikFace newRubikFace = new NewRubikFace();
+			RubikFace2 newRubikFace = new RubikFace2();
 			newRubikFace.processRhombuses(rhombusList);
 
 

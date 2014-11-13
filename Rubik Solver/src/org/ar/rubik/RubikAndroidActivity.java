@@ -81,7 +81,9 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
     public Controller controller;  // =+= some menu actions need this.
     
     // Primary Image Processor
-    public RubikImageFrameListener frameProcessor = new RubikImageFrameListener();
+//    public ImageRecognizer2 imageRecognizer2;
+//    public Controller2 Controller2;
+//    public StateModel2 stateModel2l;
     
     // Once an exception or error is encountered, display message from thence forth.
 	Mat errorImage = null;
@@ -113,9 +115,16 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
 
     /**
      * Constructor
+     * 
+     * Instantiate primary components of application.
      */
     public RubikAndroidActivity() {
         Log.i(Constants.TAG, "Instantiated new " + this.getClass());
+        
+        // Construct Primary Components (i.e. "Objects") for this application.
+//        stateModel2 = new StateModel2();
+//        controller2 = new Controller2(stateModel2l);
+//        imageRecognizer2 = new ImageRecognizer2(controller2, stateModel2l);
     }
 
     
@@ -139,7 +148,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view); 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
-//        mOpenCvCameraView.setCvCameraViewListener(frameProcessor);
+//        mOpenCvCameraView.setCvCameraViewListener(imageRecognition);
         
         // Setup and Add Pilot GL Surface View and Pilot GL Renderer
         pilotGLSurfaceView = new GLSurfaceView(this);
@@ -270,7 +279,6 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
 	        		RubikMenuAndParameters.imageProcessMode, 
 	        		RubikMenuAndParameters.annotationMode);
 	        
-//	        resultImage = frameProcessor.onCameraFrame(inputFrame);
         } catch (CvException e) {
         	e.printStackTrace();        	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
