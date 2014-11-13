@@ -81,9 +81,9 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
     public Controller controller;  // =+= some menu actions need this.
     
     // Primary Image Processor
-//    public ImageRecognizer2 imageRecognizer2;
-//    public Controller2 Controller2;
-//    public StateModel2 stateModel2l;
+    public ImageRecognizer2 imageRecognizer2;
+    public Controller2 controller2;
+    public StateModel2 stateModel2;
     
     // Once an exception or error is encountered, display message from thence forth.
 	Mat errorImage = null;
@@ -122,9 +122,9 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         Log.i(Constants.TAG, "Instantiated new " + this.getClass());
         
         // Construct Primary Components (i.e. "Objects") for this application.
-//        stateModel2 = new StateModel2();
-//        controller2 = new Controller2(stateModel2l);
-//        imageRecognizer2 = new ImageRecognizer2(controller2, stateModel2l);
+        stateModel2 = new StateModel2();
+        controller2 = new Controller2(stateModel2);
+        imageRecognizer2 = new ImageRecognizer2(controller2, stateModel2);
     }
 
     

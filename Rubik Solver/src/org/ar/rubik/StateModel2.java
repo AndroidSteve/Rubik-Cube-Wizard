@@ -9,8 +9,7 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
- *   This class interprets the recognized Rubik Faces and determines how primary
- *   application state should change.
+ *   Represents state of Rubik Cube.
  * 
  * License:
  * 
@@ -35,23 +34,19 @@ package org.ar.rubik;
  * @author android.steve@testlens.com
  *
  */
-public class Controller2 {
+public class StateModel2 {
 	
-	private StateModel2 stateModel2;
-
-	/**
-	 * @param stateModel2
+	// Rubik Face of latest processed frame: may or may not be any of the six state objects.
+	public RubikFace2 activeRubikFace;
+	
+	/*
+	 * This is "Rubik Cube State" or "Rubik Cube Model" in model-veiw-controller vernacular.
 	 */
-    public Controller2(StateModel2 stateModel2) {
-    	this.stateModel2 = stateModel2;
-    }
-
-	/**
-	 * @param rubikFace2
-	 */
-    public void processFace(RubikFace2 rubikFace2) {
-    	
-    		this.stateModel2.activeRubikFace = rubikFace2;
-    }
+	public RubikFace2 upRubikFace;
+	public RubikFace2 downRubikFace;
+	public RubikFace2 leftRubikFace;
+	public RubikFace2 rightRubikFace;
+	public RubikFace2 frontRubikFace;
+	public RubikFace2 backRubikFace;
 
 }

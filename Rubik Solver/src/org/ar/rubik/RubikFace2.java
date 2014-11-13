@@ -31,7 +31,11 @@
  */
 package org.ar.rubik;
 
+import java.util.LinkedList;
 import java.util.List;
+
+import org.ar.rubik.Constants.LogicalTile;
+import org.ar.rubik.Profiler.Event;
 
 /**
  * @author android.steve@testlens.com
@@ -39,6 +43,7 @@ import java.util.List;
  */
 public class RubikFace2 {
 	
+	// A Rubik Face can exist in the following states:
 	public enum FaceRecognitionStatusEnum {
 		UNKNOWN,
 		INSUFFICIENT,            // Insufficient Provided Rhombi to attempt solution
@@ -49,8 +54,26 @@ public class RubikFace2 {
 		INVALID_MATH,            // LMS algorithm result in invalid math.
 		UNSTABLE,                // Last Tile move resulted in a increase in the overall error (LMS).
 		SOLVED }                 // Full and proper solution obtained.
-	
 	public FaceRecognitionStatusEnum faceRecognitionStatus = FaceRecognitionStatusEnum.UNKNOWN;
+	
+	private transient List<Rhombus> rhombusList = new LinkedList<Rhombus>();
+
+	// A 3x3 matrix of Rhombus elements.  This array will be sorted to achieve
+	// final correct position arrangement of available Rhombus objects.  Some elements can be null.
+	private transient Rhombus [][] faceRhombusArray = new Rhombus[3][3];
+	
+	// A 3x3 matrix of Logical Tiles.  All elements must be non-null for an appropriate Face solution.
+	// =+= Ideally, in new architecture, this is not filled in until all cube is seen.
+	// =+= However, some/all may be needed for Pilot Cube.
+	// =+= Perhaps best is two-pass and simply overwrite whatever is here after cube is fully seen.
+	private LogicalTile [][] logicalTileArray = new LogicalTile[3][3];
+	
+	// Record actual RGB colors measured at the center of each tile.
+	private double[][][] measuredColorArray = new double[3][3][4];
+
+	private Profiler profiler = new Profiler();
+	
+	
 
 	/**
 	 * Process Rhombuses
@@ -64,6 +87,17 @@ public class RubikFace2 {
 		
     	
     	return false;
+    }
+
+
+
+	/**
+	 * Record Time Stamp
+	 * 
+	 * @param event
+	 */
+    public void markTime(Event event) {
+    	profiler.markTime(event);
     }
 
 }

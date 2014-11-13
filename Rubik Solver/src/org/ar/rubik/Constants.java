@@ -91,9 +91,12 @@ public class Constants {
 		}
 	}
 	
+	// Six Logical Tile types: =+= not yet filled out.
+	public final static LogicalTile redLogicalTile = new LogicalTile(LogicalTileColorEnum.RED,     RubikRed,    'R');
+
 	// Array of possible Rubik Tile Colors.
 	public final static LogicalTile [] logicalTileColorArray = {
-			new LogicalTile(LogicalTileColorEnum.RED,     RubikRed,    'R'),
+		redLogicalTile,
 			new LogicalTile(LogicalTileColorEnum.ORANGE,  RubikOrange, 'O'),
 			new LogicalTile(LogicalTileColorEnum.YELLOW,  RubikYellow, 'Y'),
 			new LogicalTile(LogicalTileColorEnum.GREEN,   RubikGreen,  'G'),

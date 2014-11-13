@@ -56,23 +56,25 @@ import android.util.Log;
  *
  */
 public class ImageRecognizer2 implements CvCameraViewListener2 {
-
-	private Controller2 newController = new Controller2();
+	
+	private Controller2 controller2;
+	private StateModel2 stateModel2;
 
 	// Once an exception or error is encountered, display message from thence forth.
-	Mat errorImage = null;
-
-	private long startTimeStamp;
-	private long greyscaleProcessTimeStamp;
-	private long boxBlurProcessTimeStamp;
-	private long cannyEdgeDetectionProcessTimeStamp;
-	private long dialationProcessTimeStamp;
-	private long contourGenerationTimeStamp;
-	private long polygonDetectionTimeStamp;
-	private long rhombusTileRecognitionTimeStamp;
-	private long rubikFaceRecognitionTimeStamp;
+	// We cannot use Toast; it must be used on the UI thread and we are executing on the Frame thread.
+	private Mat errorImage = null;
 
 	
+	/**
+	 * @param controller2
+	 * @param stateModel2
+	 */
+    public ImageRecognizer2(Controller2 controller2, StateModel2 stateModel2) {
+    	this.controller2 = controller2;
+    	this.stateModel2 = stateModel2;
+    }
+
+
 	/**
 	 * 
 	 *  (non-Javadoc)
@@ -102,6 +104,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 	@Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 
+		// Just display error message if it is non-null.
 		if(errorImage != null)
 			return errorImage;
 
@@ -129,6 +132,11 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 		
 		try {
 
+			// Initialize
+			RubikFace2 rubikFace2 = new RubikFace2();
+			rubikFace2.markTime(Profiler.Event.START);
+			Log.i(Constants.TAG, "============================================================================");
+
 
 			/* **********************************************************************
 			 * **********************************************************************
@@ -137,17 +145,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.DIRECT)
 				return addAnnotation(original_image);
 
-
-			startTimeStamp                     = System.currentTimeMillis();
-			greyscaleProcessTimeStamp          = startTimeStamp;
-			boxBlurProcessTimeStamp            = startTimeStamp;
-			cannyEdgeDetectionProcessTimeStamp = startTimeStamp;
-			dialationProcessTimeStamp          = startTimeStamp;
-			contourGenerationTimeStamp         = startTimeStamp;
-			polygonDetectionTimeStamp          = startTimeStamp;
-			rhombusTileRecognitionTimeStamp    = startTimeStamp;
-			rubikFaceRecognitionTimeStamp      = startTimeStamp;
-			Log.i(Constants.TAG, "============================================================================");
+			
 
 
 			
@@ -160,9 +158,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			 */
 			Mat greyscale_image = new Mat();
 			Imgproc.cvtColor(original_image, greyscale_image, Imgproc.COLOR_BGR2GRAY);
-
-			greyscaleProcessTimeStamp = System.currentTimeMillis();
-
+			rubikFace2.markTime(Profiler.Event.GREYSCALE);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.GREYSCALE)
 				return addAnnotation(greyscale_image);
 
@@ -180,9 +176,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					greyscale_image, 
 					blur_image, 
 					new Size(kernelSize, kernelSize), -1, -1);
-
-			boxBlurProcessTimeStamp = System.currentTimeMillis();
-
+			rubikFace2.markTime(Profiler.Event.GAUSSIAN);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.BOXBLUR)
 				return addAnnotation(blur_image);
 
@@ -200,9 +194,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					RubikMenuAndParameters.cannyUpperThresholdParam.value,
 					3,
 					false);
-			cannyEdgeDetectionProcessTimeStamp = System.currentTimeMillis();
-
-
+			rubikFace2.markTime(Profiler.Event.EDGE);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CANNY)
 				return addAnnotation(canny_image);
 
@@ -221,9 +213,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 							new Size(
 									RubikMenuAndParameters.dilationKernelSizeParam.value, 
 									RubikMenuAndParameters.dilationKernelSizeParam.value)));
-
-			dialationProcessTimeStamp = System.currentTimeMillis();
-
+			rubikFace2.markTime(Profiler.Event.DILATION);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.DILATION)
 				return addAnnotation(dilate_image);
 
@@ -241,11 +231,9 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					heirarchy,
 					Imgproc.RETR_LIST,
 					Imgproc.CHAIN_APPROX_SIMPLE);
-
-			contourGenerationTimeStamp = System.currentTimeMillis();
-
+			rubikFace2.markTime(Profiler.Event.CONTOUR);
+			
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CONTOUR) {
-
 				// Create gray scale image but in RGB format for later annotation.
 				Mat gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
@@ -253,7 +241,6 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 4);
 				Imgproc.drawContours(rgba_gray_image, contours, -1, Constants.ColorYellow, 3);
 				Core.putText(rgba_gray_image, "Num Contours: " + contours.size(),  new Point(50, 150), Constants.FontFace, 3, Constants.ColorYellow, 2);
-
 				return addAnnotation(rgba_gray_image);
 			}
 
@@ -296,7 +283,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 				polygonList.add(new Rhombus(polygon, original_image));
 			}
 
-			polygonDetectionTimeStamp = System.currentTimeMillis();
+			rubikFace2.markTime(Profiler.Event.POLYGON);
 
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.POLYGON) {
 
@@ -331,8 +318,8 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			}
 
 			Rhombus.removedOutlierRhombi(rhombusList);
-
-			rhombusTileRecognitionTimeStamp = System.currentTimeMillis();
+			
+			rubikFace2.markTime(Profiler.Event.RHOMBUS);
 
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.RHOMBUS) {
 
@@ -357,8 +344,8 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			 * 
 			 * 
 			 */	 
-			RubikFace2 newRubikFace = new RubikFace2();
-			newRubikFace.processRhombuses(rhombusList);
+			rubikFace2.processRhombuses(rhombusList);
+			rubikFace2.markTime(Profiler.Event.FACE);
 
 
 			
@@ -371,10 +358,11 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			 * Will determine when we are on-new-face
 			 * Will change state 
 			 */	
-			newController.processFace(newRubikFace);
+			controller2.processFace(rubikFace2);
+			rubikFace2.markTime(Profiler.Event.CONTROLLER);
+			rubikFace2.markTime(Profiler.Event.TOTAL);
 
-
-
+			
 			return addAnnotation(original_image);
 
 
