@@ -10,7 +10,9 @@
  *   
  * File Description:
  *   This class implements the OpenCV Frame Listener.  All of image processing
- *   is performed in/from this class.
+ *   is performed in/from this class.  In addition a Rubik Face is recognized,
+ *   and also the Application Controller is called.  Effectively, these are the
+ *   top level main steps of the Frame thread loop.
  * 
  * License:
  * 
@@ -59,6 +61,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 	
 	private Controller2 controller2;
 	private StateModel2 stateModel2;
+	private Annotation2 annotation2;
 
 	// Once an exception or error is encountered, display message from thence forth.
 	// We cannot use Toast; it must be used on the UI thread and we are executing on the Frame thread.
@@ -66,12 +69,15 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 
 	
 	/**
+	 * Image Recognizer Constructor
+	 * 
 	 * @param controller2
 	 * @param stateModel2
 	 */
     public ImageRecognizer2(Controller2 controller2, StateModel2 stateModel2) {
     	this.controller2 = controller2;
     	this.stateModel2 = stateModel2;
+    	this.annotation2 = new Annotation2(stateModel2);
     }
 
 
@@ -143,11 +149,9 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			 * Return Original Image
 			 */
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.DIRECT)
-				return addAnnotation(original_image);
+				return annotation2.renderAnnotation(original_image);
 
 			
-
-
 			
 			/* **********************************************************************
 			 * **********************************************************************
@@ -160,7 +164,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			Imgproc.cvtColor(original_image, greyscale_image, Imgproc.COLOR_BGR2GRAY);
 			rubikFace2.markTime(Profiler.Event.GREYSCALE);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.GREYSCALE)
-				return addAnnotation(greyscale_image);
+				return annotation2.renderAnnotation(greyscale_image);
 
 
 
@@ -178,7 +182,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					new Size(kernelSize, kernelSize), -1, -1);
 			rubikFace2.markTime(Profiler.Event.GAUSSIAN);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.BOXBLUR)
-				return addAnnotation(blur_image);
+				return annotation2.renderAnnotation(blur_image);
 
 
 
@@ -196,7 +200,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					false);
 			rubikFace2.markTime(Profiler.Event.EDGE);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CANNY)
-				return addAnnotation(canny_image);
+				return annotation2.renderAnnotation(canny_image);
 
 			
 
@@ -215,7 +219,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 									RubikMenuAndParameters.dilationKernelSizeParam.value)));
 			rubikFace2.markTime(Profiler.Event.DILATION);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.DILATION)
-				return addAnnotation(dilate_image);
+				return annotation2.renderAnnotation(dilate_image);
 
 
 
@@ -241,7 +245,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 4);
 				Imgproc.drawContours(rgba_gray_image, contours, -1, Constants.ColorYellow, 3);
 				Core.putText(rgba_gray_image, "Num Contours: " + contours.size(),  new Point(50, 150), Constants.FontFace, 3, Constants.ColorYellow, 2);
-				return addAnnotation(rgba_gray_image);
+				return annotation2.renderAnnotation(rgba_gray_image);
 			}
 
 
@@ -298,7 +302,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 
 				Core.putText(rgba_gray_image, "Num Polygons: " + polygonList.size(),  new Point(50, 150), Constants.FontFace, 3, Constants.ColorYellow, 2);
 
-				return addAnnotation(rgba_gray_image);
+				return annotation2.renderAnnotation(rgba_gray_image);
 			}
 
 
@@ -334,7 +338,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 
 				Core.putText(rgba_gray_image, "Num Rhombus: " + rhombusList.size(),  new Point(50, 150), Constants.FontFace, 3, Constants.ColorGreen, 2);
 
-				return addAnnotation(rgba_gray_image);
+				return annotation2.renderAnnotation(rgba_gray_image);
 			}
 
 
@@ -363,7 +367,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			rubikFace2.markTime(Profiler.Event.TOTAL);
 
 			
-			return addAnnotation(original_image);
+			return annotation2.renderAnnotation(original_image);
 
 
 		} catch (CvException e) {
@@ -376,19 +380,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		}
 
-		return addAnnotation(original_image);
+		return annotation2.renderAnnotation(original_image);
 	}
-
-
-
-	/**
-	 * Add Annotation
-	 * 
-	 * @param original_image
-	 */
-	private Mat addAnnotation(Mat original_image) {
-		return original_image;
-	}
-
 
 }

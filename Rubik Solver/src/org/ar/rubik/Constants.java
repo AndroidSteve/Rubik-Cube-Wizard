@@ -104,5 +104,9 @@ public class Constants {
 			new LogicalTile(LogicalTileColorEnum.WHITE,   RubikWhite,  'W')
 	};
 
+	// Any OpenCV font
     public final static int FontFace = Core.FONT_HERSHEY_PLAIN;
+    
+    // Control if new refactored code is running.  =+= Development Only
+    public final static boolean refactor = false;
 }

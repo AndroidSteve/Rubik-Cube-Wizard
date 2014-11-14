@@ -75,7 +75,7 @@ public class Rhombus {
 	public StatusEnum status = StatusEnum.NOT_PROCESSED;
 
 	// Various forms of storing the corner points.
-	private MatOfPoint polygon;
+	private MatOfPoint polygonMatrix;
 	private List<Point> polygonPointList;  // =+= possibly eliminate
 	private Point[] polygonePointArray;    // =+= note order is adjusted
 
@@ -111,7 +111,7 @@ public class Rhombus {
 	 */
 	public Rhombus(MatOfPoint polygon, Mat original_image) {
 
-		this.polygon = polygon;
+		this.polygonMatrix = polygon;
 		polygonPointList = polygon.toList();
 		polygonePointArray = polygon.toArray();
 	}
@@ -143,7 +143,7 @@ public class Rhombus {
 		// =+= I don't believe this is working.  result should be either true or 
 		// =+= false indicating clockwise or counter-clockwise depending if image 
 		// =+= is a "hole" or a "blob".
-		if(Imgproc.isContourConvex(polygon) == false) {
+		if(Imgproc.isContourConvex(polygonMatrix) == false) {
 			status = StatusEnum.NOT_CONVEX;
 			return;
 		}
@@ -340,7 +340,7 @@ public class Rhombus {
 
 		// Draw Polygone Edges
 		final LinkedList<MatOfPoint> listOfPolygons = new LinkedList<MatOfPoint>();
-		listOfPolygons.add(polygon);
+		listOfPolygons.add(polygonMatrix);
 		Core.polylines(
 				rgba_gray_image,
 				listOfPolygons,

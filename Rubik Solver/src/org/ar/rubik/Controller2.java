@@ -47,6 +47,10 @@ public class Controller2 {
     }
 
 	/**
+	 * Process Rubik Face
+	 * 
+	 * Assuming that a Rubik Face is recognized, then update the Application State Machine.
+	 * 
 	 * @param rubikFace2
 	 */
     public void processFace(RubikFace2 rubikFace2) {

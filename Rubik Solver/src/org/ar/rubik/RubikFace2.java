@@ -56,7 +56,7 @@ public class RubikFace2 {
 		SOLVED }                 // Full and proper solution obtained.
 	public FaceRecognitionStatusEnum faceRecognitionStatus = FaceRecognitionStatusEnum.UNKNOWN;
 	
-	private transient List<Rhombus> rhombusList = new LinkedList<Rhombus>();
+	public transient List<Rhombus> rhombusList = new LinkedList<Rhombus>();
 
 	// A 3x3 matrix of Rhombus elements.  This array will be sorted to achieve
 	// final correct position arrangement of available Rhombus objects.  Some elements can be null.
@@ -66,12 +66,15 @@ public class RubikFace2 {
 	// =+= Ideally, in new architecture, this is not filled in until all cube is seen.
 	// =+= However, some/all may be needed for Pilot Cube.
 	// =+= Perhaps best is two-pass and simply overwrite whatever is here after cube is fully seen.
-	private LogicalTile [][] logicalTileArray = new LogicalTile[3][3];
+	public LogicalTile [][] logicalTileArray = new LogicalTile[3][3];
 	
 	// Record actual RGB colors measured at the center of each tile.
 	private double[][][] measuredColorArray = new double[3][3][4];
 
-	private Profiler profiler = new Profiler();
+	
+	
+	// Profiles CPU Consumption
+	public Profiler profiler = new Profiler();
 	
 	
 
