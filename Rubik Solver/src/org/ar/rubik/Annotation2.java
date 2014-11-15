@@ -10,6 +10,7 @@ import org.ar.rubik.RubikFace2.FaceRecognitionStatusEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 
 /**
  * @author android.steve@testlens.com
@@ -34,6 +35,8 @@ public class Annotation2 {
 	 */
 	public Mat renderAnnotation(Mat image) {
 		
+		renderFaceOverlayAnnotation(image, false);
+		
 		switch(RubikMenuAndParameters.annotationMode) {
 		
 //		case LAYOUT:
@@ -47,11 +50,6 @@ public class Annotation2 {
 			break;
 
 		case FACE_METRICS:
-//			annotationGlRenderer.setRenderState(false);
-//			if(RubikCube.active != null) {
-//		    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-//				RubikCube.active.renderFaceRecognitionMetrics(image);
-//			}
 			renderRubikFaceMetrics(image, stateModel2.activeRubikFace);
 			break;
 			
@@ -84,6 +82,104 @@ public class Annotation2 {
 	}
 
     
+	/**
+	 * @param image
+	 */
+    private void renderFaceOverlayAnnotation(Mat img, boolean accepted) {
+    	
+    	RubikFace2 face = stateModel2.activeRubikFace;
+    	
+		Scalar color = Constants.ColorBlack;
+		switch(face.faceRecognitionStatus) {
+		case UNKNOWN:
+		case INSUFFICIENT:
+		case INVALID_MATH:
+			color = Constants.ColorRed;
+			break;
+		case BAD_METRICS:
+		case INCOMPLETE:
+		case INADEQUATE:
+		case BLOCKED:
+		case UNSTABLE:
+			color = Constants.ColorOrange;
+			break;
+		case SOLVED:
+			color = accepted ? Constants.ColorGreen : Constants.ColorYellow;
+			break;
+		}
+		
+		// Adjust drawing grid to start at edge of cube and not center of a tile.
+		double x = face.lmsResult.origin.x - (face.alphaLatticLength * Math.cos(face.alphaAngle) + face.betaLatticLength * Math.cos(face.betaAngle) ) / 2;
+		double y = face.lmsResult.origin.y - (face.alphaLatticLength * Math.sin(face.alphaAngle) + face.betaLatticLength * Math.sin(face.betaAngle) ) / 2;
+
+		for(int n=0; n<4; n++) {
+			Core.line(
+					img,
+					new Point(
+							x + n * face.alphaLatticLength * Math.cos(face.alphaAngle),
+							y + n * face.alphaLatticLength * Math.sin(face.alphaAngle) ), 
+					new Point(
+							x + (face.betaLatticLength * 3 * Math.cos(face.betaAngle)) + (n * face.alphaLatticLength * Math.cos(face.alphaAngle) ),
+							y + (face.betaLatticLength * 3 * Math.sin(face.betaAngle)) + (n * face.alphaLatticLength * Math.sin(face.alphaAngle) ) ), 
+					color, 
+					3);
+		}
+		
+		for(int m=0; m<4; m++) {
+			Core.line(
+					img,
+					new Point(
+							x + m * face.betaLatticLength * Math.cos(face.betaAngle),
+							y + m * face.betaLatticLength * Math.sin(face.betaAngle) ), 
+					new Point(
+							x + (face.alphaLatticLength * 3 * Math.cos(face.alphaAngle)) + (m * face.betaLatticLength * Math.cos(face.betaAngle) ),
+							y + (face.alphaLatticLength * 3 * Math.sin(face.alphaAngle)) + (m * face.betaLatticLength * Math.sin(face.betaAngle) ) ), 
+					color, 
+					3);
+		}
+		
+//		// Draw a circule at the Rhombus reported center of each tile.
+//		for(int n=0; n<3; n++) {
+//			for(int m=0; m<3; m++) {
+//				Rhombus rhombus = faceRhombusArray[n][m];
+//				if(rhombus != null)
+//					Core.circle(img, rhombus.center, 5, Constants.ColorBlue, 3);
+//			}
+//		}
+//		
+//		// Draw the error vector from center of tile to actual location of Rhombus.
+//		for(int n=0; n<3; n++) {
+//			for(int m=0; m<3; m++) {
+//				Rhombus rhombus = faceRhombusArray[n][m];
+//				if(rhombus != null) {
+//					
+//					Point tileCenter = getTileCenterInPixels(n, m);				
+//					Core.line(img, tileCenter, rhombus.center, Constants.ColorRed, 3);
+//					Core.circle(img, tileCenter, 5, Constants.ColorBlue, 1);
+//				}
+//			}
+//		}
+		
+		// Draw reported Logical Tile Color Characters in center of each tile.
+		if(face.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED)
+			for(int n=0; n<3; n++) {
+				for(int m=0; m<3; m++) {
+
+					// Draw tile character in UV plane
+					Point tileCenterInPixels = face.getTileCenterInPixels(n, m);
+					tileCenterInPixels.x -= 10.0;
+					tileCenterInPixels.y += 10.0;
+					String text = Character.toString(face.logicalTileArray[n][m].character);
+					Core.putText(img, text, tileCenterInPixels, Constants.FontFace, 3, Constants.ColorBlack, 3);
+				}
+			}
+		
+		// Also draw recognized Rhombi for clarity.
+		if(face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
+			for(Rhombus rhombus : face.rhombusList)
+				rhombus.draw(img, Constants.ColorGreen);
+	}
+
 	/**
 	 * Draw Flat Face Representation
 	 * 

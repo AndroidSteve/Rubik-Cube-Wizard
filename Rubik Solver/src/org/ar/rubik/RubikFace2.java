@@ -542,7 +542,7 @@ public class RubikFace2 {
 	 * @param m
 	 * @return
 	 */
-	private Point getTileCenterInPixels(int n, int m) {
+	public Point getTileCenterInPixels(int n, int m) {
 		return new Point(
 				lmsResult.origin.x + n * alphaLatticLength * Math.cos(alphaAngle) + m * betaLatticLength * Math.cos(betaAngle),
 				lmsResult.origin.y + n * alphaLatticLength * Math.sin(alphaAngle) + m * betaLatticLength * Math.sin(betaAngle)	);
