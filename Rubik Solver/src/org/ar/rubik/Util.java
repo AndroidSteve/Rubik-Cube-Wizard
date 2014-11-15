@@ -35,6 +35,7 @@ import java.io.File;
 
 import org.ar.rubik.Constants.LogicalTile;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.highgui.Highgui;
 
 import android.os.Environment;
@@ -56,12 +57,23 @@ public class Util {
 		double color[] = logicalTile.color.val;
 		return String.format("r=%3.0f g=%3.0f b=%3.0f     t=%c", color[0], color[1], color[2], logicalTile.character);
 	}
-
-
 	public static String dumpYUV(double[] color) {
 		color = getYUVfromRGB(color);
 		return String.format("y=%3.0f u=%3.0f v=%3.0f        ", color[0], color[1], color[2]);
 	}
+	public static String dumpLoc(Rhombus rhombus) {
+		if(rhombus == null)
+			return "           ";
+		else
+			return String.format(" %4.0f,%4.0f ", rhombus.center.x, rhombus.center.y);
+	}
+	public static String dumpPoint(Point point) {
+		if(point == null)
+			return "           ";
+		else
+			return String.format(" %4.0f,%4.0f ", point.x, point.y);
+	}
+
 
 	
 	/**
