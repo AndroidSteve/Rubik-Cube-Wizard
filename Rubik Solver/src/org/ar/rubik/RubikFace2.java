@@ -77,7 +77,7 @@ public class RubikFace2 {
 	public LogicalTile [][] logicalTileArray = new LogicalTile[3][3];
 	
 	// Record actual RGB colors measured at the center of each tile.
-	private double[][][] measuredColorArray = new double[3][3][4];
+	public double[][][] measuredColorArray = new double[3][3][4];
 
 	// Angle of Alpha-Axis (N) stored in radians.
 	public double alphaAngle        = 0.0;
@@ -95,7 +95,7 @@ public class RubikFace2 {
 	public double gammaRatio        = 0.0;
 	
 	// Luminous Offset: Added to luminous of tiles for better accuracy
-	private double luminousOffset = 0.0;
+	public double luminousOffset = 0.0;
 	
 	// Least Means Square Result
 	public transient Lms lmsResult =
@@ -119,10 +119,10 @@ public class RubikFace2 {
 	public int hashCode = 0;
 
 	// Sum of Color Error before Luminous correction
-	private double colorErrorBeforeCorrection;
+	public double colorErrorBeforeCorrection;
 
 	// Sum of Color Error after Luminous correction
-	private double colorErrorAfterCorrection;
+	public double colorErrorAfterCorrection;
 	
 	// Profiles CPU Consumption
 	public Profiler profiler = new Profiler();

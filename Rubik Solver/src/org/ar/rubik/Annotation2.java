@@ -6,6 +6,7 @@ package org.ar.rubik;
 import java.util.List;
 
 import org.ar.rubik.Constants.LogicalTile;
+import org.ar.rubik.Constants.LogicalTileColorEnum;
 import org.ar.rubik.RubikFace2.FaceRecognitionStatusEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -63,13 +64,9 @@ public class Annotation2 {
 			stateModel2.activeRubikFace.profiler.renderTimeConsumptionMetrics(image, stateModel2);
 			break;
 			
-//		case COLOR:
-////			annotationGlRenderer.setRenderState(false);
-//			if(RubikCube.active != null) {
-//		    	Core.rectangle(image, new Point(0, 0), new Point(570, 720), Constants.ColorBlack, -1);
-//				RubikCube.active.renderColorMetrics(image);
-//			}
-//			break;
+		case COLOR:
+			renderFaceColorMetrics(image, stateModel2.activeRubikFace);
+			break;
 			
 		case NORMAL:
 			Core.rectangle(image, new Point(0, 0), new Point(350, 720), Constants.ColorBlack, -1);
@@ -81,7 +78,8 @@ public class Annotation2 {
 		return image;
 	}
 
-    
+   
+
 	/**
 	 * @param image
 	 */
@@ -304,6 +302,81 @@ public class Annotation2 {
 		Core.putText(image, String.format("Moves  = %d",    face.numRhombusMoves),                 new Point(50, 650), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		Core.putText(image, String.format("#Rohmbi= %d",    face.rhombusList.size()),              new Point(50, 700), Constants.FontFace, 2, Constants.ColorWhite, 2);
 
+    }
+    
+    
+    
+	/**
+	 * @param image
+	 * @param face
+	 */
+    private void renderFaceColorMetrics(Mat image, RubikFace2 face) {
+    	
+    	Core.rectangle(image, new Point(0, 0), new Point(570, 720), Constants.ColorBlack, -1);
+    	
+		if(face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
+			return;
+
+		// Draw simple grid
+		Core.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), Constants.ColorWhite);
+		Core.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), Constants.ColorWhite);		
+		Core.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), Constants.ColorWhite);
+		Core.putText(image, String.format("Luminosity Offset = %4.0f", face.luminousOffset), new Point(0, -256 + 400 - 60), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Color Error Before Corr = %4.0f", face.colorErrorBeforeCorrection), new Point(0, -256 + 400 - 30), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Color Error After Corr = %4.0f", face.colorErrorAfterCorrection), new Point(0, -256 + 400), Constants.FontFace, 2, Constants.ColorWhite, 2);
+
+		for(int n=0; n<3; n++) {
+			for(int m=0; m<3; m++) {
+
+				double [] measuredTileColor = face.measuredColorArray[n][m];
+//				Log.e(Constants.TAG, "RGB: " + logicalTileArray[n][m].character + "=" + actualTileColor[0] + "," + actualTileColor[1] + "," + actualTileColor[2] + " x=" + x + " y=" + y );
+				double[] measuredTileColorYUV   = Util.getYUVfromRGB(measuredTileColor);
+
+//				if(measuredTileColor == null)
+//					return;
+
+//				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + acutalTileYUV[0]);
+
+				
+				double luminousScaled     = measuredTileColorYUV[0] * 2 - 256;
+				double uChromananceScaled = measuredTileColorYUV[1] * 2;
+				double vChromananceScaled = measuredTileColorYUV[2] * 2;
+
+				String text = Character.toString(face.logicalTileArray[n][m].character);
+				
+				// Draw tile character in UV plane
+				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.logicalTileArray[n][m].color, 3);
+				
+				// Draw tile characters on right side for Y axis
+				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset  + RubikMenuAndParameters.luminousOffsetParam.value), Constants.FontFace, 3, face.logicalTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.logicalTileArray[n][m].color, 3);
+//				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
+			}
+		}
+
+		Scalar rubikRed    = Constants.logicalTileColorArray[LogicalTileColorEnum.RED.ordinal()].color;
+		Scalar rubikOrange = Constants.logicalTileColorArray[LogicalTileColorEnum.ORANGE.ordinal()].color;
+		Scalar rubikYellow = Constants.logicalTileColorArray[LogicalTileColorEnum.YELLOW.ordinal()].color;
+		Scalar rubikGreen  = Constants.logicalTileColorArray[LogicalTileColorEnum.GREEN.ordinal()].color;
+		Scalar rubikBlue   = Constants.logicalTileColorArray[LogicalTileColorEnum.BLUE.ordinal()].color;
+		Scalar rubikWhite  = Constants.logicalTileColorArray[LogicalTileColorEnum.WHITE.ordinal()].color;
+
+		
+		// Render Color Calibration in UV plane as dots
+		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikRed.val)[1] +    256, 2*Util.getYUVfromRGB(rubikRed.val)[2] + 400), 10, rubikRed, -1);
+		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikOrange.val)[1] + 256, 2*Util.getYUVfromRGB(rubikOrange.val)[2] + 400), 10, rubikOrange, -1);
+		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikYellow.val)[1] + 256, 2*Util.getYUVfromRGB(rubikYellow.val)[2] + 400), 10, rubikYellow, -1);
+		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikGreen.val)[1] +  256, 2*Util.getYUVfromRGB(rubikGreen.val)[2] + 400), 10, rubikGreen, -1);
+		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikBlue.val)[1] +   256, 2*Util.getYUVfromRGB(rubikBlue.val)[2] + 400), 10, rubikBlue, -1);
+		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikWhite.val)[1] +  256, 2*Util.getYUVfromRGB(rubikWhite.val)[2] + 400), 10, rubikWhite, -1);
+
+		// Render Color Calibration on right side Y axis as dots
+		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikRed.val)[0] + 400),    new Point(522, -256 + 2*Util.getYUVfromRGB(rubikRed.val)[0] + 400), rubikRed, 3);
+		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikOrange.val)[0] + 400), new Point(522, -256 + 2*Util.getYUVfromRGB(rubikOrange.val)[0] + 400), rubikOrange, 3);
+		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikGreen.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikGreen.val)[0] + 400), rubikGreen, 3);
+		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikYellow.val)[0] + 400), new Point(522, -256 + 2*Util.getYUVfromRGB(rubikYellow.val)[0] + 400), rubikYellow, 3);
+		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400),   new Point(522, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400), rubikBlue, 3);
+		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400), rubikWhite, 3); 
     }
 
 }
