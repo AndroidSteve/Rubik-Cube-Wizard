@@ -39,8 +39,11 @@
                 android:id="@+id/imageProcessMenuGroup" 
                 android:checkableBehavior="single">
                 <item 
-                    android:id="@+id/faceDetectionMenuItem" 
+                    android:id="@+id/normalProcessMenuItem" 
                     android:title="Normal Rubik Solve" />
+                <item 
+                    android:id="@+id/faceRecognitionMenuItem" 
+                    android:title="Face Recognition" />
                 <item 
                     android:id="@+id/rhombusProcessMenuItem" 
                     android:title="Rhombus Recognition" />

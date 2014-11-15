@@ -45,7 +45,7 @@ public class Constants {
 	public enum ImageSourceModeEnum { NORMAL, SAVE_NEXT, PLAYBACK}
 	
 	// Specifies what to do with image
-	public enum ImageProcessModeEnum { DIRECT, MONOCHROMATIC, GREYSCALE, BOXBLUR, CANNY, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE_DETECT}
+	public enum ImageProcessModeEnum { DIRECT, MONOCHROMATIC, GREYSCALE, BOXBLUR, CANNY, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE_DETECT, NORMAL}
 	
 	// Specifies what annotation to add
 	public enum AnnotationModeEnum { LAYOUT, RHOMBUS, FACE_METRICS, TIME, COLOR, CUBE_METRICS, NORMAL }

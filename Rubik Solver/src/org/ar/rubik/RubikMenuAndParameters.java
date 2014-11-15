@@ -70,7 +70,7 @@ public class RubikMenuAndParameters {
     public static ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
 
 	// Specifies what to do with image
-    public static ImageProcessModeEnum imageProcessMode = ImageProcessModeEnum.FACE_DETECT;
+    public static ImageProcessModeEnum imageProcessMode = ImageProcessModeEnum.NORMAL;
     
     // Specified what annotation to add
     public static AnnotationModeEnum annotationMode = AnnotationModeEnum.NORMAL;
@@ -189,42 +189,46 @@ public class RubikMenuAndParameters {
 			imageProcessMode = ImageProcessModeEnum.RHOMBUS; 
 			return true;
 
-		case R.id.faceDetectionMenuItem:
+		case R.id.faceRecognitionMenuItem:
 			imageProcessMode = ImageProcessModeEnum.FACE_DETECT; 
 			return true;
 
-			
+		case R.id.normalProcessMenuItem:
+			imageProcessMode = ImageProcessModeEnum.NORMAL; 
+			return true;
+
+
 			// Annotation Mode
-			case R.id.normalAnnotationMenuItem:
-				annotationMode = AnnotationModeEnum.NORMAL;
-				break;
+		case R.id.normalAnnotationMenuItem:
+			annotationMode = AnnotationModeEnum.NORMAL;
+			break;
 
-			case R.id.layoutAnnotationMenuItem:
-				annotationMode = AnnotationModeEnum.LAYOUT;
-				break;
+		case R.id.layoutAnnotationMenuItem:
+			annotationMode = AnnotationModeEnum.LAYOUT;
+			break;
 
-			case R.id.rhombusAnnotationMenuItem:
-				annotationMode = AnnotationModeEnum.RHOMBUS;
-				break;
+		case R.id.rhombusAnnotationMenuItem:
+			annotationMode = AnnotationModeEnum.RHOMBUS;
+			break;
 
-			case R.id.faceMetricsAnnotationMenuItem:
-				annotationMode = AnnotationModeEnum.FACE_METRICS;
-				break;
+		case R.id.faceMetricsAnnotationMenuItem:
+			annotationMode = AnnotationModeEnum.FACE_METRICS;
+			break;
 
-			case R.id.cubeMetricsAnnotationMenuItem:
-				annotationMode = AnnotationModeEnum.CUBE_METRICS;
-				break;
+		case R.id.cubeMetricsAnnotationMenuItem:
+			annotationMode = AnnotationModeEnum.CUBE_METRICS;
+			break;
 
-			case R.id.timeAnnotationMenuItem:
-				annotationMode = AnnotationModeEnum.TIME;
-				break;
+		case R.id.timeAnnotationMenuItem:
+			annotationMode = AnnotationModeEnum.TIME;
+			break;
 
-			case R.id.colorAnnotationMenuItem:
-				annotationMode = AnnotationModeEnum.COLOR;
-				break;
+		case R.id.colorAnnotationMenuItem:
+			annotationMode = AnnotationModeEnum.COLOR;
+			break;
 
-				
-		// Adjustable Parameters
+
+			// Adjustable Parameters
 		case R.id.luminousOffsetMenuItem:
 			seekerDialogNew(luminousOffsetParam, ma);
 			return true;
@@ -250,7 +254,7 @@ public class RubikMenuAndParameters {
 			break;
 
 
-		// Miscellaneous
+			// Miscellaneous
 		case R.id.saveCubeMenuItem:
 			ma.controller.saveCube();
 			break;

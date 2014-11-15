@@ -204,7 +204,7 @@ public class RubikFace implements Serializable {
 			rhombusList,
 			this);
 		
-		if(imageProcessMode != ImageProcessModeEnum.FACE_DETECT)
+		if(imageProcessMode != ImageProcessModeEnum.NORMAL)
 			return processImage;
 		
 		

@@ -89,10 +89,15 @@ public class Profiler {
 	 * @param greyscale
 	 */
     private void renderAndIndex(Event endEvent, Event startEvent, Mat image, int index) {
-    	long endTimeStamp = eventSet.get(endEvent);
-    	long startTimeStamp = eventSet.get(startEvent);
-    	String string = String.format("%10s: %3d mS", endEvent.toString(), endTimeStamp - startTimeStamp);
-    	Core.putText(image, string, new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    	if(eventSet.containsKey(endEvent) == false) {
+    		Core.putText(image, endEvent.toString() + ": NA", new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    	}
+    	else {
+    		long endTimeStamp = eventSet.get(endEvent);
+    		long startTimeStamp = eventSet.get(startEvent);
+    		String string = String.format("%10s: %3d mS", endEvent.toString(), endTimeStamp - startTimeStamp);
+    		Core.putText(image, string, new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    	}
     }
 
 }
