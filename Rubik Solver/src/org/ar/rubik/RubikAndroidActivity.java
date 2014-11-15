@@ -138,6 +138,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
      * (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
+    @SuppressWarnings("unused")
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	
@@ -152,39 +153,43 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view); 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
-//        mOpenCvCameraView.setCvCameraViewListener(imageRecognition);
-        
-        // Setup and Add Pilot GL Surface View and Pilot GL Renderer
-        pilotGLSurfaceView = new GLSurfaceView(this);
-        pilotGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-        pilotGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-        pilotGLSurfaceView.setZOrderOnTop(true);
-        pilotGLSurfaceView.setLayoutParams(
-        		new FrameLayout.LayoutParams(
-        				FrameLayout.LayoutParams.MATCH_PARENT,
-        				FrameLayout.LayoutParams.MATCH_PARENT));
-        layout.addView(pilotGLSurfaceView);
-        PilotGLRenderer pilotGlRenderer = new PilotGLRenderer(this);
-        pilotGLSurfaceView.setRenderer(pilotGlRenderer);
-        
-        
-        // Setup and add Annotation GL Surface View and Annotation GL Renderer
-        annotationGLSurfaceView = new GLSurfaceView(this);
-        annotationGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-        annotationGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-        annotationGLSurfaceView.setZOrderOnTop(true);
-        annotationGLSurfaceView.setLayoutParams(
-        		new FrameLayout.LayoutParams(
-        				FrameLayout.LayoutParams.MATCH_PARENT,
-        				FrameLayout.LayoutParams.MATCH_PARENT));
-        layout.addView(annotationGLSurfaceView);
-        AnnotationGLRenderer annotationGlRenderer = new AnnotationGLRenderer(this);
-        annotationGLSurfaceView.setRenderer(annotationGlRenderer);
-        
-        
-        // Instantiate Controller Objet
-        controller = new Controller(pilotGlRenderer, annotationGlRenderer);
-        
+        if(Constants.refactor == true) {
+        	mOpenCvCameraView.setCvCameraViewListener(imageRecognizer2);
+        }
+
+        else {
+        	// Setup and Add Pilot GL Surface View and Pilot GL Renderer
+        	pilotGLSurfaceView = new GLSurfaceView(this);
+        	pilotGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+        	pilotGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+        	pilotGLSurfaceView.setZOrderOnTop(true);
+        	pilotGLSurfaceView.setLayoutParams(
+        			new FrameLayout.LayoutParams(
+        					FrameLayout.LayoutParams.MATCH_PARENT,
+        					FrameLayout.LayoutParams.MATCH_PARENT));
+        	layout.addView(pilotGLSurfaceView);
+        	PilotGLRenderer pilotGlRenderer = new PilotGLRenderer(this);
+        	pilotGLSurfaceView.setRenderer(pilotGlRenderer);
+
+
+        	// Setup and add Annotation GL Surface View and Annotation GL Renderer
+        	annotationGLSurfaceView = new GLSurfaceView(this);
+        	annotationGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+        	annotationGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+        	annotationGLSurfaceView.setZOrderOnTop(true);
+        	annotationGLSurfaceView.setLayoutParams(
+        			new FrameLayout.LayoutParams(
+        					FrameLayout.LayoutParams.MATCH_PARENT,
+        					FrameLayout.LayoutParams.MATCH_PARENT));
+        	layout.addView(annotationGLSurfaceView);
+        	AnnotationGLRenderer annotationGlRenderer = new AnnotationGLRenderer(this);
+        	annotationGLSurfaceView.setRenderer(annotationGlRenderer);
+
+
+        	// Instantiate Controller Objet
+        	controller = new Controller(pilotGlRenderer, annotationGlRenderer);
+        }
+
         // =+= Currently obsolete, but is used to support OpenCL
         MonoChromatic.initOpenCL(getOpenCLProgram());
 

@@ -10,7 +10,7 @@
  *   
  * File Description:
  *   This class implements the OpenCV Frame Listener.  All of image processing
- *   is performed in/from this class.  In addition a Rubik Face is recognized,
+ *   is performed in/from this class.  In addition a Rubik Face recognizer is called,
  *   and also the Application Controller is called.  Effectively, these are the
  *   top level main steps of the Frame thread loop.
  * 

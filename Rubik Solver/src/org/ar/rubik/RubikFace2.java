@@ -88,6 +88,7 @@ public class RubikFace2 {
 	 */
     public boolean processRhombuses(List<Rhombus> rhombusList) {
 		
+    	this.rhombusList = rhombusList;
     	
     	return false;
     }

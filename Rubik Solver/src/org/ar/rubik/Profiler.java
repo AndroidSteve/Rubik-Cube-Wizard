@@ -61,8 +61,8 @@ public class Profiler {
 	 * @return
 	 */
 	public Mat renderTimeConsumptionMetrics(Mat image, StateModel2 stateModel2) {
-		
-		RubikFace.drawFlatFaceRepresentation(image, RubikCube.active, 50, 50, 50);
+
+    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
 		int index = 0;
 				
 		renderAndIndex(Event.GREYSCALE,  Event.START,     image, index++);
@@ -91,8 +91,8 @@ public class Profiler {
     private void renderAndIndex(Event endEvent, Event startEvent, Mat image, int index) {
     	long endTimeStamp = eventSet.get(endEvent);
     	long startTimeStamp = eventSet.get(startEvent);
-    	String string = String.format("%s %d mS", endEvent.toString(), endTimeStamp - startTimeStamp);
-    	Core.putText(image, string, new Point(50, 300 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    	String string = String.format("%10s: %3d mS", endEvent.toString(), endTimeStamp - startTimeStamp);
+    	Core.putText(image, string, new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
     }
 
 }

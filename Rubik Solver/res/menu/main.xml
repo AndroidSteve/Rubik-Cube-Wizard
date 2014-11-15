@@ -60,11 +60,11 @@
                     android:id="@+id/boxBlurImageProcessMenuItem" 
                     android:title="Gaussian Blur Filter Process" />
                 <item 
-                    android:id="@+id/directImageProcessMenuItem" 
-                    android:title="Direct Image Process" />
-                <item 
                     android:id="@+id/greyscaleImageProcessMenuItem" 
                     android:title="Grey-Scale Image Process" />
+                <item 
+                    android:id="@+id/directImageProcessMenuItem" 
+                    android:title="Direct Image Process" />
             </group>   
         </menu>
     </item>
