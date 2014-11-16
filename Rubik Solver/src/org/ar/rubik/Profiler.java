@@ -47,6 +47,7 @@ public class Profiler {
 	public enum Event { START, GREYSCALE, GAUSSIAN, EDGE, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE, CONTROLLER, TOTAL };
 	
 	private Map<Event,Long> eventSet = new HashMap<Event,Long>(32);
+//	private Map<Event,Long> minEventSet = new HashMap<Event, Long>(32);
 	
 	public void markTime(Event event) {
 		long time = System.currentTimeMillis();

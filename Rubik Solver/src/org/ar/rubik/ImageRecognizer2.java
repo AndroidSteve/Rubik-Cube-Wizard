@@ -9,10 +9,11 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
- *   This class implements the OpenCV Frame Listener.  All of image processing
- *   is performed in/from this class.  In addition a Rubik Face recognizer is called,
- *   and also the Application Controller is called.  Effectively, these are the
- *   top level main steps of the Frame thread loop.
+ *   Function onFrameListener() really comprises the heart of the application "Controller".
+ *   That is, every Camera Frame is like a event possibly resulting in a change in the
+ *   application "State" ( or "Model" in the MVC vernacular).
+ *   
+ *   This class implements the OpenCV Frame Listener. 
  * 
  * License:
  * 
@@ -33,7 +34,6 @@
  */
 package org.ar.rubik;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,7 +59,7 @@ import android.util.Log;
  */
 public class ImageRecognizer2 implements CvCameraViewListener2 {
 	
-	private Controller2 controller2;
+	private StateMachine2 stateMachine2;
 	private StateModel2 stateModel2;
 	private Annotation2 annotation2;
 
@@ -74,14 +74,15 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 	 * @param controller2
 	 * @param stateModel2
 	 */
-    public ImageRecognizer2(Controller2 controller2, StateModel2 stateModel2) {
-    	this.controller2 = controller2;
+    public ImageRecognizer2(StateMachine2 controller2, StateModel2 stateModel2) {
+    	this.stateMachine2 = controller2;
     	this.stateModel2 = stateModel2;
     	this.annotation2 = new Annotation2(this.stateModel2);
     }
 
 
 	/**
+	 * On Camer View Started
 	 * 
 	 *  (non-Javadoc)
 	 * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraViewStarted(int, int)
@@ -92,6 +93,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 
 	
 	/**
+	 * On Camera View Stopped
 	 * 
 	 *  (non-Javadoc)
 	 * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraViewStopped()
@@ -103,6 +105,8 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 	
 	/**
 	 * On Camera Frame
+	 * 
+	 * Process frame image through Rubik Face recognition possibly resulting in a state change.
 	 * 
 	 *  (non-Javadoc)
 	 * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraFrame(org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame)
@@ -203,8 +207,8 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					canny_image, 
 					RubikMenuAndParameters.cannyLowerThresholdParam.value, 
 					RubikMenuAndParameters.cannyUpperThresholdParam.value,
-					3,
-					false);
+					3,         // aperture size
+					false);    // use cheap gradient calculation: norm =|dI/dx|+|dI/dy|
 			rubikFace2.profiler.markTime(Profiler.Event.EDGE);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CANNY) {
 				rubikFace2.profiler.markTime(Profiler.Event.TOTAL);
@@ -245,12 +249,12 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					contours, 
 					heirarchy,
 					Imgproc.RETR_LIST,
-					Imgproc.CHAIN_APPROX_SIMPLE);
+					Imgproc.CHAIN_APPROX_SIMPLE); // Note: tried other TC89 options, but no significant change or improvement on cpu time.
 			rubikFace2.profiler.markTime(Profiler.Event.CONTOUR);
-			
+
+			// Create gray scale image but in RGB format, and then added yellow colored contours on top.
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CONTOUR) {
 				rubikFace2.profiler.markTime(Profiler.Event.TOTAL);
-				// Create gray scale image but in RGB format for later annotation.
 				Mat gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Imgproc.cvtColor( image, gray_image, Imgproc.COLOR_RGB2GRAY);
@@ -259,6 +263,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 				Core.putText(rgba_gray_image, "Num Contours: " + contours.size(),  new Point(500, 50), Constants.FontFace, 4, Constants.ColorRed, 4);
 				return annotation2.renderAnnotation(rgba_gray_image);
 			}
+			
 
 
 			/* **********************************************************************
@@ -266,14 +271,9 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			 * Polygon Detection
 			 */	 
 			List<Rhombus> polygonList = new LinkedList<Rhombus>();
-			final double epsilon = RubikMenuAndParameters.polygonEpsilonParam.value;
+			for(MatOfPoint contour : contours) {
 
-			Iterator<MatOfPoint> contourItr = contours.iterator(); 
-			while(contourItr.hasNext()) {
-
-				MatOfPoint contour = contourItr.next();
-
-				// Keep only counter clockwise contours.
+				// Keep only counter clockwise contours.  A clockwise contour is reported as a negative number.
 				double contourArea = Imgproc.contourArea(contour, true);
 				if(contourArea < 0.0)
 					continue;
@@ -282,18 +282,19 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 				if(contourArea < 100.0)
 					continue;
 
+				// Floating, instead of Double, for some reason required for approximate polygon detection algorithm.
 				MatOfPoint2f contour2f = new MatOfPoint2f();
-				contour.convertTo(contour2f, CvType.CV_32FC2);
-
 				MatOfPoint2f polygone2f = new MatOfPoint2f();
+				MatOfPoint polygon = new MatOfPoint();
 
+				// Make a Polygon out of a contour with provide Epsilon accuracy parameter.
+				// It uses the Douglas-Peucker algorithm http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm
+				contour.convertTo(contour2f, CvType.CV_32FC2);
 				Imgproc.approxPolyDP(
 						contour2f, 
 						polygone2f,
-						epsilon,
-						true);
-
-				MatOfPoint polygon = new MatOfPoint();
+						RubikMenuAndParameters.polygonEpsilonParam.value,  // The maximum distance between the original curve and its approximation.
+						true);                                             // Resulting polygon representation is "closed:" its first and last vertices are connected.
 				polygone2f.convertTo(polygon, CvType.CV_32S);
 
 				polygonList.add(new Rhombus(polygon, image));
@@ -301,19 +302,16 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 
 			rubikFace2.profiler.markTime(Profiler.Event.POLYGON);
 
+			// Create gray scale image but in RGB format, and then add yellow colored polygons on top.
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.POLYGON) {
 				rubikFace2.profiler.markTime(Profiler.Event.TOTAL);
-				// Create gray scale image but in RGB format for later annotation.
 				Mat gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Imgproc.cvtColor( image, gray_image, Imgproc.COLOR_RGB2GRAY);
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 4);
-
 				for(Rhombus polygon : polygonList)
 					polygon.draw(rgba_gray_image, Constants.ColorYellow);
-
 				Core.putText(rgba_gray_image, "Num Polygons: " + polygonList.size(),  new Point(500, 50), Constants.FontFace, 3, Constants.ColorRed, 4);
-
 				return annotation2.renderAnnotation(rgba_gray_image);
 			}
 
@@ -333,23 +331,21 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					rhombusList.add(rhombus);
 			}
 
+			// Filtering w.r.t. Rhmobus set characteristics
 			Rhombus.removedOutlierRhombi(rhombusList);
 			
 			rubikFace2.profiler.markTime(Profiler.Event.RHOMBUS);
 
+			// Create gray scale image but in RGB format, and then add yellow colored Rhombi (parallelograms) on top.
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.RHOMBUS) {
 				rubikFace2.profiler.markTime(Profiler.Event.TOTAL);
-				// Create gray scale image but in RGB format for later annotation.
 				Mat gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Imgproc.cvtColor( image, gray_image, Imgproc.COLOR_RGB2GRAY);
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 4);
-
 				for(Rhombus rhombus : rhombusList)
 					rhombus.draw(rgba_gray_image, Constants.ColorYellow);
-
 				Core.putText(rgba_gray_image, "Num Rhombus: " + rhombusList.size(),  new Point(500, 50), Constants.FontFace, 4, Constants.ColorRed, 4);
-
 				return annotation2.renderAnnotation(rgba_gray_image);
 			}
 
@@ -377,19 +373,22 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			 * Will determine when we are on-new-face
 			 * Will change state 
 			 */	
-			controller2.processFace(rubikFace2);
+			stateMachine2.processFace(rubikFace2);
 			rubikFace2.profiler.markTime(Profiler.Event.CONTROLLER);
 			rubikFace2.profiler.markTime(Profiler.Event.TOTAL);
 
-			
+			// Normal return point.
 			return annotation2.renderAnnotation(image);
-
 
 		} catch (CvException e) {
 			e.printStackTrace();        	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
 			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		} catch (Exception e) {
+			e.printStackTrace();        	
+			errorImage = new Mat(imageSize, CvType.CV_8UC4);
+			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		} catch (Error e) {
 			e.printStackTrace();        	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
 			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);

@@ -31,18 +31,38 @@
  */
 package org.ar.rubik;
 
+
+
 /**
  * @author android.steve@testlens.com
  *
  */
-public class Controller2 {
+public class StateMachine2 {
+	
+	public enum ControllerStateEnum { 
+		START,     // Ready
+		GOT_IT,    // A Cube Face has been recognized and captured.
+		ROTATE,    // Request user to rotate Cube.
+		SEARCHING, // Attempting to lock onto new Cube Face.
+		COMPLETE,  // All six faces have been captured, and we seem to have valid color.
+		BAD_COLORS,// All six faces have been captured, but we do not have properly nine tiles of each color.
+		VERIFIED,  // Two Phase solution has verified that the cube tile/colors/positions are a valid cube.
+		WAITING,   // Waiting for TwoPhase Prune Tree generation to complete.
+		INCORRECT, // Two Phase solution has analyzed the cube and found it to be invalid.
+		SOLVED,    // Two Phase solution has analyzed the cube and found a solution.
+		DO_MOVE,   // Inform user to perform a face rotation
+		WAITING_FOR_MOVE_COMPLETE, // Wait for face rotation to complete
+		DONE       // Cube should be completely physically solved.
+		};
+	
+	private ControllerStateEnum controllerState = ControllerStateEnum.START;
 	
 	private StateModel2 stateModel2;
 
 	/**
 	 * @param stateModel2
 	 */
-    public Controller2(StateModel2 stateModel2) {
+    public StateMachine2(StateModel2 stateModel2) {
     	this.stateModel2 = stateModel2;
     }
 

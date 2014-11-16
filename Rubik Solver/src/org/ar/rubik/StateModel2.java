@@ -48,5 +48,7 @@ public class StateModel2 {
 	public RubikFace2 rightRubikFace;
 	public RubikFace2 frontRubikFace;
 	public RubikFace2 backRubikFace;
+	
+	// Rubik Solution 
 
 }

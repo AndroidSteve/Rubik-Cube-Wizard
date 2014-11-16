@@ -84,7 +84,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
     public ImageRecognizer2 imageRecognizer2;
     
     // Primary Application Controller
-    public Controller2 controller2;
+    public StateMachine2 stateMachine2;
     
     // Primary Application State
     public StateModel2 stateModel2;
@@ -127,8 +127,8 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         
         // Construct and associate Primary Components (i.e., "Objects") for this application.
         stateModel2 = new StateModel2();
-        controller2 = new Controller2(stateModel2);
-        imageRecognizer2 = new ImageRecognizer2(controller2, stateModel2);
+        stateMachine2 = new StateMachine2(stateModel2);
+        imageRecognizer2 = new ImageRecognizer2(stateMachine2, stateModel2);
     }
 
     
