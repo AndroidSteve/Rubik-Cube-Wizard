@@ -111,9 +111,6 @@ public class RubikFace2 {
 	// Number of rhombus that were moved in order to obtain better LMS fit.
 	public int numRhombusMoves = 0;
 
-	// Original RGB image
-//	private transient Mat original_image;
-
 	// Exclusive-Or of logical tile hash codes.  This is (intended) to be unique of a given 
 	// set of tiles (possible in their unique locations)
 	public int hashCode = 0;
@@ -126,6 +123,7 @@ public class RubikFace2 {
 	
 	// Profiles CPU Consumption
 	public Profiler profiler = new Profiler();
+	
 	
 	/**
 	 * Rubik Face Constructor
@@ -156,8 +154,6 @@ public class RubikFace2 {
     public void processRhombuses(List<Rhombus> rhombusList, Mat image) {
     	
     	this.rhombusList = rhombusList;
-		
-		final double sigmaRmsFaceThreasholdParam = 35; // 35 pixels RMS.
 		
 		// Don't even attempt if less than three rhombus are identified.
 		if(rhombusList.size() < 3) {
@@ -190,7 +186,7 @@ public class RubikFace2 {
 		double lastSigma = lmsResult.sigma;
 		
 		// Loop until some resolution
-		while(lmsResult.sigma > sigmaRmsFaceThreasholdParam) {
+		while(lmsResult.sigma > RubikMenuAndParameters.faceLmsThresholdParam.value) {
 			
 			if(numRhombusMoves > 5) {
 				faceRecognitionStatus =  FaceRecognitionStatusEnum.INCOMPLETE;

@@ -85,22 +85,37 @@ public class RubikMenuAndParameters {
 	
 	// Gaussian Blur Kernal Size
 	public static RubikMenuParam gaussianBlurKernelSizeParam = new RubikMenuParam("Gaussian Blur Kernel Size",  +3.0,  +20.0,   +7.0);
-	
-	// Manual Luminous Offset
-	public static RubikMenuParam luminousOffsetParam         = new RubikMenuParam("Luminous Offset",           -50.0,  +50.0,    0.0);
-	
+		
 	// Canny Edge Detector Upper Threshold Parameter
 	public static RubikMenuParam cannyUpperThresholdParam    = new RubikMenuParam("Canny Upper Threshold",     +50.0, +200.0, +100.0);
 	
-	// Canny Edge Detector Lower Threshold Paramter
+	// Canny Edge Detector Lower Threshold Parameter
 	public static RubikMenuParam cannyLowerThresholdParam    = new RubikMenuParam("Canny Lower Threshold",     +20.0, +100.0,  +50.0);
 	
 	// Dilation Kernel Size Parameter
 	public static RubikMenuParam dilationKernelSizeParam     = new RubikMenuParam("Dilation Kernel Size",       +2.0,  +20.0,  +10.0);
 	
+	// Minimum contour area size to be considered a tile candidate.
+	public static RubikMenuParam minimumContourAreaParam     = new RubikMenuParam("Minimum Contour Area Size", +10.0, +500.0, +100.0);
+	
 	// Polygon Epsilon Parameter
 	public static RubikMenuParam polygonEpsilonParam         = new RubikMenuParam("Polygon Epsilon Threshold", +10.0, +100.0,  +30.0);
 	
+	// Minimum contour area size to be considered a tile candidate.
+	public static RubikMenuParam minimumRhombusAreaParam     = new RubikMenuParam("Minimum Parallelogram Area Size", +0.0, +2000.0, +1000.0);
+	
+	// Minimum contour area size to be considered a tile candidate.
+	public static RubikMenuParam maximumRhombusAreaParam     = new RubikMenuParam("Maximum Parallelogram Area Size", +0.0, +20000.0, +10000.0);
+	
+	// Parallelogram Angle Outlier Threshold
+	public static RubikMenuParam angleOutlierThresholdPaaram = new RubikMenuParam("Angle Outlier Threshold",         +1.0,     +20.0, +10.0);
+	
+	// Face Least Means Square Threshold
+	public static RubikMenuParam faceLmsThresholdParam       = new RubikMenuParam("Face LMS Threshold",              +5.0,    +150.0, +35.0);
+	
+	// Manual Luminous Offset
+	public static RubikMenuParam luminousOffsetParam         = new RubikMenuParam("Luminous Offset",                -50.0,     +50.0,   0.0);
+
 
 	/**
 	 * Rubik Menu Parameters
@@ -248,9 +263,29 @@ public class RubikMenuAndParameters {
 		case R.id.dilationKernelMenuItem:
 			seekerDialogNew(dilationKernelSizeParam, ma);
 			break;
+			
+		case R.id.minimumContourAreaSizelMenuItem:
+			seekerDialogNew(minimumContourAreaParam, ma);
+			break;
 
 		case R.id.polygonEpsilonMenuItem:
 			seekerDialogNew(polygonEpsilonParam, ma);
+			break;
+			
+		case R.id.minimumRhombusAreaSizelMenuItem:
+			seekerDialogNew(minimumRhombusAreaParam, ma);
+			break;
+			
+		case R.id.maximumRhombusAreaSizelMenuItem:
+			seekerDialogNew(maximumRhombusAreaParam, ma);
+			break;
+			
+		case R.id.angleOutlierThresholdMenuItem:
+			seekerDialogNew(angleOutlierThresholdPaaram, ma);
+			break;
+			
+		case R.id.faceLmsThresholdMenuItem:
+			seekerDialogNew(faceLmsThresholdParam, ma);
 			break;
 
 

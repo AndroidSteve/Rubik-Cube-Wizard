@@ -123,18 +123,14 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 		
 		// Save or Recall image as requested
 		switch( RubikMenuAndParameters.imageSourceMode) {
-
 		case NORMAL:
 			break;
-
 		case SAVE_NEXT:
 			Util.saveImage(image);
 			RubikMenuAndParameters.imageSourceMode = ImageSourceModeEnum.NORMAL;
 			break;
-
 		case PLAYBACK:
 			image = Util.recallImage();
-
 		default:
 			break;
 		}
@@ -207,7 +203,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					canny_image, 
 					RubikMenuAndParameters.cannyLowerThresholdParam.value, 
 					RubikMenuAndParameters.cannyUpperThresholdParam.value,
-					3,         // aperture size
+					3,         // Sobel Aperture size.  This seems to be typically value used in the literature: i.e., a 3x3 Sobel Matrix.
 					false);    // use cheap gradient calculation: norm =|dI/dx|+|dI/dy|
 			rubikFace2.profiler.markTime(Profiler.Event.EDGE);
 			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CANNY) {
@@ -279,7 +275,7 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 					continue;
 
 				// Keep only reasonable area contours
-				if(contourArea < 100.0)
+				if(contourArea < RubikMenuAndParameters.minimumContourAreaParam.value)
 					continue;
 
 				// Floating, instead of Double, for some reason required for approximate polygon detection algorithm.

@@ -74,24 +74,6 @@
 
 
 
-     <!-- 
-    <item android:id="@+id/colorMenuGroupItem"
-        android:title="Lighting Calibration">
-        <menu>
-            <group 
-                android:id="@+id/colorMenuGroup">
-                <item 
-                    android:id="@+id/morningColorMenuItem" 
-                    android:title="Morning Lighting Conditions" />
-                <item 
-                    android:id="@+id/eveningColorMenuItem" 
-                    android:title="Evening Lighting Conditions" />
-            </group>   
-        </menu>
-    </item>
-     -->
-     
-     
     <item android:id="@+id/paramMenuGroupItem"
         android:title="Parameters">
         <menu>
@@ -113,8 +95,23 @@
                     android:id="@+id/dilationKernelMenuItem" 
                     android:title="Dilation Kernel Size" />
                 <item 
+                    android:id="@+id/minimumContourAreaSizelMenuItem" 
+                    android:title="Minimum Contour Area Size" />
+                <item 
                     android:id="@+id/polygonEpsilonMenuItem" 
                     android:title="Polygon Epsilon Threshold" />
+                <item 
+                    android:id="@+id/minimumRhombusAreaSizelMenuItem" 
+                    android:title="Minimum Parallelogram Area" />
+                <item 
+                    android:id="@+id/maximumRhombusAreaSizelMenuItem" 
+                    android:title="Maximum Parallelogram Area" />
+                <item 
+                    android:id="@+id/angleOutlierThresholdMenuItem" 
+                    android:title="Prlllgrm Angle Outlier Thrshld" />
+                <item 
+                    android:id="@+id/faceLmsThresholdMenuItem" 
+                    android:title="Face LMS Threshold" />
             </group>   
         </menu>
     </item>

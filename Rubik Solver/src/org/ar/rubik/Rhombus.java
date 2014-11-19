@@ -150,7 +150,7 @@ public class Rhombus {
 
 		// Compute area; check if it is reasonable.
 		area = areaOfConvexQuadrilateral(polygonePointArray);
-		if( (area < 1000) || (area > 10000) ) {
+		if( (area < RubikMenuAndParameters.minimumRhombusAreaParam.value) || (area > RubikMenuAndParameters.maximumRhombusAreaParam.value) ) {
 			status = StatusEnum.AREA;
 			return;
 		}
@@ -421,7 +421,7 @@ public class Rhombus {
 	 */
 	public static void removedOutlierRhombi(List<Rhombus> rhombusList) {
 		
-		final int angleOutlierTolerance = 10;
+		final double angleOutlierTolerance = RubikMenuAndParameters.angleOutlierThresholdPaaram.value;
 		
 		if(rhombusList.size() < 3)
 			return;
