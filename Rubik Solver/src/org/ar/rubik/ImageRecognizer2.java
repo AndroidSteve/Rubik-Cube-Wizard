@@ -372,6 +372,9 @@ public class ImageRecognizer2 implements CvCameraViewListener2 {
 			stateMachine2.processFace(rubikFace2);
 			rubikFace2.profiler.markTime(Profiler.Event.CONTROLLER);
 			rubikFace2.profiler.markTime(Profiler.Event.TOTAL);
+			
+			// Hack only for call to user instructions
+			stateMachine2.renderUserInstructions(image, rubikFace2);
 
 			// Normal return point.
 			return annotation2.renderAnnotation(image);

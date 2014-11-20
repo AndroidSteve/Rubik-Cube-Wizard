@@ -69,7 +69,11 @@ public class Annotation2 {
 			break;
 			
 		case NORMAL:
-			Core.rectangle(image, new Point(0, 0), new Point(350, 720), Constants.ColorBlack, -1);
+			
+			// hack so that user instructions are all visible
+			Core.rectangle(image, new Point(0, 60), new Point(350, 720), Constants.ColorBlack, -1);
+
+//			Core.rectangle(image, new Point(0, 0), new Point(350, 720), Constants.ColorBlack, -1);
 //			annotationGlRenderer.setRenderState(true);
 //			annotationGlRenderer.setCubeOrienation(RubikCube.active);
 			break;
