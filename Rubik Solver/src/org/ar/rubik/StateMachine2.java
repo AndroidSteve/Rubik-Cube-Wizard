@@ -283,12 +283,12 @@ public class StateMachine2 {
         	switch(controllerState) {
 
         	case START:
-//        		RubikCube.adopt(candidateRubikFace2);
+        		stateModel2.adopt(candidateRubikFace2);
         		controllerState = ControllerStateEnum.GOT_IT;
         		break;
         		
         	case SEARCHING:
-//        		RubikCube.adopt(candidateRubikFace2);
+        		stateModel2.adopt(candidateRubikFace2);
 
         		// Have not yet seen all six sides.
         		if(RubikCube.isThereAfullSetOfFaces() == false) {

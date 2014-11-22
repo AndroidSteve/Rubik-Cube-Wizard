@@ -33,7 +33,7 @@ package org.ar.rubik;
 
 import java.io.File;
 
-import org.ar.rubik.Constants.LogicalTile;
+import org.ar.rubik.Constants.ConstantTile;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.highgui.Highgui;
@@ -53,7 +53,7 @@ public class Util {
 		return String.format("r=%3.0f g=%3.0f b=%3.0f e=%5.0f", color[0], color[1], color[2], colorError);
 	}
 
-	public static String dumpRGB(LogicalTile logicalTile) {
+	public static String dumpRGB(ConstantTile logicalTile) {
 		double color[] = logicalTile.color.val;
 		return String.format("r=%3.0f g=%3.0f b=%3.0f     t=%c", color[0], color[1], color[2], logicalTile.character);
 	}

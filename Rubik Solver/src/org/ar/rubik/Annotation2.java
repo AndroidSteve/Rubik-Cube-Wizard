@@ -5,8 +5,8 @@ package org.ar.rubik;
 
 import java.util.List;
 
-import org.ar.rubik.Constants.LogicalTile;
-import org.ar.rubik.Constants.LogicalTileColorEnum;
+import org.ar.rubik.Constants.ConstantTile;
+import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.ar.rubik.RubikFace2.FaceRecognitionStatusEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -28,9 +28,10 @@ public class Annotation2 {
 	    this.stateModel2 = stateModel2;
     }
     
+    
 	/**
 	 * Add Annotation
-	 * 
+	 * This typically will consume the right third of the landscape orientation image.
 	 * @param image
 	 * @return
 	 */
@@ -40,11 +41,9 @@ public class Annotation2 {
 		
 		switch(RubikMenuAndParameters.annotationMode) {
 		
-//		case LAYOUT:
-////			annotationGlRenderer.setRenderState(false);
-//	    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-//			RubikCube.renderFlatLayoutRepresentation(image);
-//			break;
+		case LAYOUT:
+			renderFlatCubeLayoutRepresentations(image);
+			break;
 			
 		case RHOMBUS:
 	    	renderRhombusRecognitionMetrics(image, stateModel2.activeRubikFace.rhombusList);
@@ -54,11 +53,9 @@ public class Annotation2 {
 			renderRubikFaceMetrics(image, stateModel2.activeRubikFace);
 			break;
 			
-//		case CUBE_METRICS:
-////			annotationGlRenderer.setRenderState(false);
-//		    Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-//			RubikCube.renderCubeMetrics(image);
-//			break;
+		case CUBE_METRICS:
+			renderCubeMetrics(image);
+			break;
 
 		case TIME:
 			stateModel2.activeRubikFace.profiler.renderTimeConsumptionMetrics(image, stateModel2);
@@ -85,6 +82,88 @@ public class Annotation2 {
    
 
 	/**
+	 * Render Unfolded Cube Layout Representations
+	 * 
+	 * Render both the non-transformed unfolded Rubik Cube layout (this is as observed
+	 * from Face Recognizer directly), and the transformed unfolded Rubik Cube layout
+	 * (this is rotationally correct with respect unfolded layout definition, and is what the 
+	 * cube logical and what the cube logic solver is expecting.
+	 * 
+	 * 
+	 * @param image
+	 */
+    private void renderFlatCubeLayoutRepresentations(Mat image) {
+    	
+    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
+	    
+		final int tSize = 35;  // Tile Size in pixels
+		
+		// Faces are orientated as per Face Observation (and N, M axis)
+		renderFlatFaceRepresentation(image, stateModel2.upRubikFace,     3 * tSize, 0 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel2.leftRubikFace,   0 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel2.frontRubikFace,  3 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel2.rightRubikFace,  6 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel2.backRubikFace,   9 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel2.downRubikFace,   3 * tSize, 6 * tSize + 70, tSize, true);
+		
+		// Faces are transformed (rotate) as per Unfolded Layout representation convention.
+		// Faces are orientated as per Face Observation (and N, M axis)
+		renderFlatFaceRepresentation(image, stateModel2.upRubikFace,     3 * tSize, 0 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel2.leftRubikFace,   0 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel2.frontRubikFace,  3 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel2.rightRubikFace,  6 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel2.backRubikFace,   9 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel2.downRubikFace,   3 * tSize, 6 * tSize + 70 + 350, tSize, false);
+    }
+
+    
+	/**
+	 * Render Logical Face Cube Layout Representations
+	 * 
+	 * Render the Rubik Face at the specified location.  
+	 * 
+     * @param image
+     * @param rubikFace
+     * @param x
+     * @param y
+     * @param tSize
+     * @param observed  If true, use observed tile array, otherwise use transformed tile array.
+     */
+    private void renderFlatFaceRepresentation(Mat image, RubikFace2 rubikFace, int x, int y, int tSize, boolean observed) {
+		
+		if(rubikFace == null) {
+			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), Constants.ColorGrey, -1);
+		}
+
+		else if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED) {
+			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), Constants.ColorGrey, -1);
+		}
+		else
+
+			for(int n=0; n<3; n++) {
+				for(int m=0; m<3; m++) {
+					
+					// Choose observed rotation or transformed rotation.
+					ConstantTile tile = observed == true ?
+							                  rubikFace.observedTileArray[n][m] :
+							                  rubikFace.transformedTileArray[n][m];
+
+			        // Render tile
+					if(tile != null)
+						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), tile.color, -1);
+					else
+						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), Constants.ColorGrey, -1);
+				}
+			}
+    }
+    
+    
+    
+
+	/**
+	 * Render Face Overlay Annotation
+	 * 
+	 * 
 	 * @param image
 	 */
     private void renderFaceOverlayAnnotation(Mat img, boolean accepted) {
@@ -171,7 +250,7 @@ public class Annotation2 {
 					Point tileCenterInPixels = face.getTileCenterInPixels(n, m);
 					tileCenterInPixels.x -= 10.0;
 					tileCenterInPixels.y += 10.0;
-					String text = Character.toString(face.logicalTileArray[n][m].character);
+					String text = Character.toString(face.observedTileArray[n][m].character);
 					Core.putText(img, text, tileCenterInPixels, Constants.FontFace, 3, Constants.ColorBlack, 3);
 				}
 			}
@@ -182,38 +261,6 @@ public class Annotation2 {
 				rhombus.draw(img, Constants.ColorGreen);
 	}
 
-	/**
-	 * Draw Flat Face Representation
-	 * 
-	 * This depicts the faces as recognized, but without any rotation.
-	 * That is, rendering orientates faces with respect to N and M axis.
-	 * 
-	 * @param image
-	 * @param rubikFace
-	 * @param x
-	 * @param y
-	 * @param tileSize Size of tiles in pixels
-	 */
-	private static void drawFlatFaceRepresentation(Mat image, RubikFace2 rubikFace, double x, double y, int tileSize) {
-		
-		if(rubikFace == null) {
-			Core.rectangle(image, new Point( x, y), new Point( x + 3*tileSize, y + 3*tileSize), Constants.ColorGrey, -1);
-		}
-
-		else if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED) {
-			Core.rectangle(image, new Point( x, y), new Point( x + 3*tileSize, y + 3*tileSize), Constants.ColorGrey, -1);
-		}
-		else
-
-			for(int n=0; n<3; n++) {
-				for(int m=0; m<3; m++) {
-					LogicalTile logicalTile = rubikFace.logicalTileArray[n][m];
-					if(logicalTile != null)
-						Core.rectangle(image, new Point( x + tileSize * n, y + tileSize * m), new Point( x + tileSize * (n + 1), y + tileSize * (m + 1)), logicalTile.color, -1);//Core.CV_FILLED);
-				}
-			}
-	}
-	
 	
 
 	/**
@@ -294,7 +341,7 @@ public class Annotation2 {
     		return;
 		
     	RubikFace2 face = activeRubikFace;
-		drawFlatFaceRepresentation(image, face, 50, 50, 50);
+    	renderFlatFaceRepresentation(image, face, 50, 50, 50, true);
 
 		Core.putText(image, "Status = " + face.faceRecognitionStatus,                              new Point(50, 300), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		Core.putText(image, String.format("AlphaA = %4.1f", face.alphaAngle * 180.0 / Math.PI),    new Point(50, 350), Constants.FontFace, 2, Constants.ColorWhite, 2);
@@ -311,6 +358,12 @@ public class Annotation2 {
     
     
 	/**
+	 * Render Face Color Metrics
+	 * 
+	 * Render a 2D representation of observed tile colors vs.  pre-defined constant rubik tile colors. 
+	 * Also, right side 1D representation of measured and adjusted luminous.  See ...... for 
+	 * existing luminous correction.
+	 * 
 	 * @param image
 	 * @param face
 	 */
@@ -346,24 +399,24 @@ public class Annotation2 {
 				double uChromananceScaled = measuredTileColorYUV[1] * 2;
 				double vChromananceScaled = measuredTileColorYUV[2] * 2;
 
-				String text = Character.toString(face.logicalTileArray[n][m].character);
+				String text = Character.toString(face.observedTileArray[n][m].character);
 				
 				// Draw tile character in UV plane
-				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.logicalTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
 				
 				// Draw tile characters on right side for Y axis
-				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset  + RubikMenuAndParameters.luminousOffsetParam.value), Constants.FontFace, 3, face.logicalTileArray[n][m].color, 3);
-				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.logicalTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset  + RubikMenuAndParameters.luminousOffsetParam.value), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
 //				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
 			}
 		}
 
-		Scalar rubikRed    = Constants.logicalTileColorArray[LogicalTileColorEnum.RED.ordinal()].color;
-		Scalar rubikOrange = Constants.logicalTileColorArray[LogicalTileColorEnum.ORANGE.ordinal()].color;
-		Scalar rubikYellow = Constants.logicalTileColorArray[LogicalTileColorEnum.YELLOW.ordinal()].color;
-		Scalar rubikGreen  = Constants.logicalTileColorArray[LogicalTileColorEnum.GREEN.ordinal()].color;
-		Scalar rubikBlue   = Constants.logicalTileColorArray[LogicalTileColorEnum.BLUE.ordinal()].color;
-		Scalar rubikWhite  = Constants.logicalTileColorArray[LogicalTileColorEnum.WHITE.ordinal()].color;
+		Scalar rubikRed    = Constants.constantTileColorArray[ConstantTileColorEnum.RED.ordinal()].color;
+		Scalar rubikOrange = Constants.constantTileColorArray[ConstantTileColorEnum.ORANGE.ordinal()].color;
+		Scalar rubikYellow = Constants.constantTileColorArray[ConstantTileColorEnum.YELLOW.ordinal()].color;
+		Scalar rubikGreen  = Constants.constantTileColorArray[ConstantTileColorEnum.GREEN.ordinal()].color;
+		Scalar rubikBlue   = Constants.constantTileColorArray[ConstantTileColorEnum.BLUE.ordinal()].color;
+		Scalar rubikWhite  = Constants.constantTileColorArray[ConstantTileColorEnum.WHITE.ordinal()].color;
 
 		
 		// Render Color Calibration in UV plane as dots
@@ -382,5 +435,32 @@ public class Annotation2 {
 		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400),   new Point(522, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400), rubikBlue, 3);
 		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400), rubikWhite, 3); 
     }
+    
+    
+	/**
+	 * Render Cube Diagnostic Metrics
+	 * 
+	 * Count and display how many colors of each tile were found over the entire cube.
+	 * 
+	 * @param image
+	 */
+	public void renderCubeMetrics(Mat image) {
+		
+		Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
+		
+		int pos = 1;
+		Core.putText(image, String.format("Up:    %s", stateModel2.upRubikFace == null ?    "na" : stateModel2.upRubikFace.observedTileArray[1][1].constantTileColor),    new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Right: %s", stateModel2.rightRubikFace == null ? "na" : stateModel2.rightRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Front: %s", stateModel2.frontRubikFace == null ? "na" : stateModel2.frontRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Down:  %s", stateModel2.downRubikFace == null ?  "na" : stateModel2.downRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Left:  %s", stateModel2.leftRubikFace == null ?  "na" : stateModel2.leftRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Back:  %s", stateModel2.backRubikFace == null ?  "na" : stateModel2.backRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+
+		
+//		for(LogicalTileColorEnum constantTileColor : Constants.LogicalTileColorEnum.values()) {
+//			int ordinal = constantTileColor.ordinal();
+//			Core.putText(image, String.format("Num %s = %2d", constantTileColor, numColorTilesArray[ordinal]), new Point(50, 200 + 50*ordinal), Constants.FontFace, 2, Constants.ColorWhite, 2);
+//		}
+	}
 
 }

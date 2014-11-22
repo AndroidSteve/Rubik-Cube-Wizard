@@ -35,8 +35,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.ar.rubik.Constants.LogicalTile;
-import org.ar.rubik.Constants.LogicalTileColorEnum;
+import org.ar.rubik.Constants.ConstantTile;
+import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -57,12 +57,12 @@ public class RubikCube {
 
 	
 	// We define this relationship: White on Top and Red on Front.
-	public static RubikFace getUpFace()    {return rubikFaceArray[LogicalTileColorEnum.WHITE.ordinal()];}
-	public static RubikFace getDownFace()  {return rubikFaceArray[LogicalTileColorEnum.YELLOW.ordinal()];}
-	public static RubikFace getRightFace() {return rubikFaceArray[LogicalTileColorEnum.BLUE.ordinal()];}
-	public static RubikFace getLeftFace()  {return rubikFaceArray[LogicalTileColorEnum.GREEN.ordinal()];}
-	public static RubikFace getFrontFace() {return rubikFaceArray[LogicalTileColorEnum.RED.ordinal()];}
-	public static RubikFace getBackFace()  {return rubikFaceArray[LogicalTileColorEnum.ORANGE.ordinal()];}
+	public static RubikFace getUpFace()    {return rubikFaceArray[ConstantTileColorEnum.WHITE.ordinal()];}
+	public static RubikFace getDownFace()  {return rubikFaceArray[ConstantTileColorEnum.YELLOW.ordinal()];}
+	public static RubikFace getRightFace() {return rubikFaceArray[ConstantTileColorEnum.BLUE.ordinal()];}
+	public static RubikFace getLeftFace()  {return rubikFaceArray[ConstantTileColorEnum.GREEN.ordinal()];}
+	public static RubikFace getFrontFace() {return rubikFaceArray[ConstantTileColorEnum.RED.ordinal()];}
+	public static RubikFace getBackFace()  {return rubikFaceArray[ConstantTileColorEnum.ORANGE.ordinal()];}
 		
 	
 	
@@ -106,7 +106,7 @@ public class RubikCube {
 	 * @param rubikFace
 	 * @return
 	 */
-	private static LogicalTile[][] getVirtualLogicalTileArray( RubikFace rubikFace) {
+	private static ConstantTile[][] getVirtualLogicalTileArray( RubikFace rubikFace) {
 
 		if(rubikFace == null)
 			return null;
@@ -114,7 +114,7 @@ public class RubikCube {
 		if(rubikFace.logicalTileArray[1][1] == null)
 			return null;
 
-		switch(rubikFace.logicalTileArray[1][1].logicalTileColor) {
+		switch(rubikFace.logicalTileArray[1][1].constantTileColor) {
 
 		case RED:
 			return getVirtualTileArrayRotatedClockwise(rubikFace.logicalTileArray);
@@ -136,12 +136,12 @@ public class RubikCube {
 
 	
 
-	public static LogicalTile[][] getVirtualTileArrayRotatedClockwise(LogicalTile[][] arg) {	
+	public static ConstantTile[][] getVirtualTileArrayRotatedClockwise(ConstantTile[][] arg) {	
 		//         n -------------->
 		//   m     0-0    1-0    2-0
 		//   |     0-1    1-1    2-1
 		//   v     0-2    1-2    2-2
-		LogicalTile [][] result = new LogicalTile[3][3];
+		ConstantTile [][] result = new ConstantTile[3][3];
 		result[1][1] = arg[1][1];
 		result[2][0] = arg[0][0];
 		result[2][1] = arg[1][0];
@@ -154,10 +154,10 @@ public class RubikCube {
 		
 		return result;
 	}
-	public static LogicalTile [][] getVirtualTileArrayRotatedCounterClockwise(LogicalTile[][] arg) {
+	public static ConstantTile [][] getVirtualTileArrayRotatedCounterClockwise(ConstantTile[][] arg) {
 		return getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( arg)));
 	}
-	public static LogicalTile [][] getVirtualTileArrayRotated180(LogicalTile[][] arg) {
+	public static ConstantTile [][] getVirtualTileArrayRotated180(ConstantTile[][] arg) {
 		return getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( arg));
 	}
 
@@ -171,7 +171,7 @@ public class RubikCube {
 		// This is becoming archaic
 		active = rubikFace;
 		
-		LogicalTileColorEnum tileColor = rubikFace.logicalTileArray[1][1].logicalTileColor;
+		ConstantTileColorEnum tileColor = rubikFace.logicalTileArray[1][1].constantTileColor;
 		int ordinal = tileColor.ordinal();
 		rubikFaceArray[ordinal] = rubikFace;
 	}
@@ -183,8 +183,8 @@ public class RubikCube {
 	 * @return
 	 */
 	public static boolean isThereAfullSetOfFaces() {
-		for(LogicalTileColorEnum logicalTileColor : Constants.LogicalTileColorEnum.values()) {
-			if( rubikFaceArray[logicalTileColor.ordinal()] == null)
+		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
+			if( rubikFaceArray[constantTileColor.ordinal()] == null)
 				return false;
 		}
 		return true;
@@ -196,7 +196,7 @@ public class RubikCube {
 	 */
 	public static int getNumValidFaces() {
 		int faceCount = 0;
-		for(LogicalTileColorEnum colorEnum : LogicalTileColorEnum.values()) {
+		for(ConstantTileColorEnum colorEnum : ConstantTileColorEnum.values()) {
 			if( rubikFaceArray[colorEnum.ordinal()] != null)
 				faceCount++;
 		}
@@ -212,23 +212,23 @@ public class RubikCube {
 	public static boolean isTileColorsValid() {
 		
 		// Reset tile color count
-		for(LogicalTileColorEnum logicalTileColor : Constants.LogicalTileColorEnum.values()) {
-			numColorTilesArray[logicalTileColor.ordinal()] = 0;
+		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
+			numColorTilesArray[constantTileColor.ordinal()] = 0;
 		}
 
 		// Count up
-		for(LogicalTileColorEnum logicalTileColor : Constants.LogicalTileColorEnum.values()) {
-			RubikFace rubikFace = rubikFaceArray[logicalTileColor.ordinal()];
+		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
+			RubikFace rubikFace = rubikFaceArray[constantTileColor.ordinal()];
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
-					numColorTilesArray[ rubikFace.logicalTileArray[n][m].logicalTileColor.ordinal() ]++;
+					numColorTilesArray[ rubikFace.logicalTileArray[n][m].constantTileColor.ordinal() ]++;
 				}
 			}
 		}
 		
 		// Check that we have nine of each tile color over entire cube.
-		for(LogicalTileColorEnum logicalTileColor : Constants.LogicalTileColorEnum.values()) {
-			if( numColorTilesArray[logicalTileColor.ordinal()] != 9)
+		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
+			if( numColorTilesArray[constantTileColor.ordinal()] != 9)
 				return false;
 		}
 		return true;
@@ -264,10 +264,10 @@ public class RubikCube {
 	 */
 	private static StringBuffer getStringRepresentationOfFace(RubikFace rubikFace) {
 		StringBuffer sb = new StringBuffer();
-		LogicalTile[][] virtualLogicalTileArray = getVirtualLogicalTileArray(rubikFace);
+		ConstantTile[][] virtualLogicalTileArray = getVirtualLogicalTileArray(rubikFace);
 		for(int m=0; m<3; m++)
 			for(int n=0; n<3; n++)
-				sb.append(getCharacterRepresentingColor(virtualLogicalTileArray[n][m].logicalTileColor));
+				sb.append(getCharacterRepresentingColor(virtualLogicalTileArray[n][m].constantTileColor));
 		return sb;
 	}
 	
@@ -277,12 +277,12 @@ public class RubikCube {
 	 * 
 	 * =+= Note, this is in according to definition mapping at top of file, and that in file Facelet.java
 	 * 
-	 * @param logicalTileColor
+	 * @param constantTileColor
 	 * @return
 	 */
-	private static char getCharacterRepresentingColor(LogicalTileColorEnum logicalTileColor) {
+	private static char getCharacterRepresentingColor(ConstantTileColorEnum constantTileColor) {
 		
-		switch(logicalTileColor) {
+		switch(constantTileColor) {
 		case RED:     return 'F';
 		case ORANGE:  return 'B';
 		case YELLOW:  return 'D';
@@ -300,8 +300,8 @@ public class RubikCube {
 	 * Forget all previous face information.
 	 */
 	public static void reset() {
-		for(LogicalTileColorEnum logicalTileColor : Constants.LogicalTileColorEnum.values()) {
-			rubikFaceArray[logicalTileColor.ordinal()] = null;
+		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
+			rubikFaceArray[constantTileColor.ordinal()] = null;
 		}
 	}
 	
@@ -313,9 +313,9 @@ public class RubikCube {
 	 * @param image
 	 */
 	public static void renderCubeMetrics(Mat image) {
-		for(LogicalTileColorEnum logicalTileColor : Constants.LogicalTileColorEnum.values()) {
-			int ordinal = logicalTileColor.ordinal();
-			Core.putText(image, String.format("Num %s = %2d", logicalTileColor, numColorTilesArray[ordinal]), new Point(50, 200 + 50*ordinal), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
+			int ordinal = constantTileColor.ordinal();
+			Core.putText(image, String.format("Num %s = %2d", constantTileColor, numColorTilesArray[ordinal]), new Point(50, 200 + 50*ordinal), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		}
 	}
 	

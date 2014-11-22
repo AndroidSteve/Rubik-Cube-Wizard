@@ -89,6 +89,9 @@ public class Profiler {
 	/**
 	 * Render one line of time consumption
 	 * 
+	 * =+= Correction Needed: Min Total time need to be the sum of the individuals
+	 * =+= for each frame.  This makes for a faster converging solution.
+	 * 
      * @param endEvent
      * @param startEvent
      * @param image

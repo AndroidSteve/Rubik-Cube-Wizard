@@ -35,8 +35,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.ar.rubik.Constants.ImageProcessModeEnum;
-import org.ar.rubik.Constants.LogicalTile;
-import org.ar.rubik.Constants.LogicalTileColorEnum;
+import org.ar.rubik.Constants.ConstantTile;
+import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.CvType;
@@ -110,7 +110,7 @@ public class RubikFace implements Serializable {
 	private transient Rhombus [][] faceRhombusArray = new Rhombus[3][3];
 	
 	// A 3x3 matrix of Logical Tiles.  All elements must be non-null for an appropriate Face solution.
-	public LogicalTile [][] logicalTileArray = new LogicalTile[3][3];
+	public ConstantTile [][] logicalTileArray = new ConstantTile[3][3];
 	
 	private double[][][] measuredColorArray = new double[3][3][4];
 
@@ -481,9 +481,9 @@ public class RubikFace implements Serializable {
 				double [] measuredColorYUV   = Util.getYUVfromRGB(measuredColor);
 
 				double smallestError = Double.MAX_VALUE;
-				LogicalTile bestCandidate = null;
+				ConstantTile bestCandidate = null;
 				for(int i=0; i<6; i++) {
-					LogicalTile candidateTile = Constants.logicalTileColorArray[i];
+					ConstantTile candidateTile = Constants.constantTileColorArray[i];
 					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.color.val);
 
 					// Only examine U and V axis, and not luminous.
@@ -542,8 +542,8 @@ public class RubikFace implements Serializable {
 		int count = 0;
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
-				LogicalTile logicalTile = logicalTileArray[n][m];
-				if(logicalTile.logicalTileColor == LogicalTileColorEnum.RED || logicalTile.logicalTileColor == LogicalTileColorEnum.ORANGE)
+				ConstantTile logicalTile = logicalTileArray[n][m];
+				if(logicalTile.constantTileColor == ConstantTileColorEnum.RED || logicalTile.constantTileColor == ConstantTileColorEnum.ORANGE)
 					continue;
 				double measuredLuminousity = Util.getYUVfromRGB(measuredColorArray[n][m])[0];
 				double expectedLuminousity = Util.getYUVfromRGB(logicalTile.color.val)[0];
@@ -562,9 +562,9 @@ public class RubikFace implements Serializable {
 				double [] measuredColorYUV   = Util.getYUVfromRGB(measuredColor);
 
 				double smallestError = Double.MAX_VALUE;
-				LogicalTile bestCandidate = null;
+				ConstantTile bestCandidate = null;
 				for(int i=0; i<6; i++) {
-					LogicalTile candidateTile = Constants.logicalTileColorArray[i];
+					ConstantTile candidateTile = Constants.constantTileColorArray[i];
 					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.color.val);
 
 					// Only examine U and V axis, and not luminous.
@@ -955,7 +955,7 @@ public class RubikFace implements Serializable {
 
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
-					LogicalTile logicalTile = rubikFace.logicalTileArray[n][m];
+					ConstantTile logicalTile = rubikFace.logicalTileArray[n][m];
 					if(logicalTile != null)
 						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), logicalTile.color, -1);//Core.CV_FILLED);
 				}
@@ -972,7 +972,7 @@ public class RubikFace implements Serializable {
 	 * @param image
 	 * @param tSize 
 	 */
-	public static void drawLogicalFlatFaceRepresentation(Mat image, RubikFace rubikFace, LogicalTile[][] array, double x, double y, int tSize) {
+	public static void drawLogicalFlatFaceRepresentation(Mat image, RubikFace rubikFace, ConstantTile[][] array, double x, double y, int tSize) {
 		
 		if(rubikFace == null) {
 			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), Constants.ColorGrey, -1);
@@ -985,7 +985,7 @@ public class RubikFace implements Serializable {
 
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
-					LogicalTile logicalTile = array[n][m];
+					ConstantTile logicalTile = array[n][m];
 					if(logicalTile != null)
 						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), logicalTile.color, -1);//Core.CV_FILLED);
 				}
@@ -1072,12 +1072,12 @@ public class RubikFace implements Serializable {
 			}
 		}
 
-		Scalar rubikRed    = Constants.logicalTileColorArray[LogicalTileColorEnum.RED.ordinal()].color;
-		Scalar rubikOrange = Constants.logicalTileColorArray[LogicalTileColorEnum.ORANGE.ordinal()].color;
-		Scalar rubikYellow = Constants.logicalTileColorArray[LogicalTileColorEnum.YELLOW.ordinal()].color;
-		Scalar rubikGreen  = Constants.logicalTileColorArray[LogicalTileColorEnum.GREEN.ordinal()].color;
-		Scalar rubikBlue   = Constants.logicalTileColorArray[LogicalTileColorEnum.BLUE.ordinal()].color;
-		Scalar rubikWhite  = Constants.logicalTileColorArray[LogicalTileColorEnum.WHITE.ordinal()].color;
+		Scalar rubikRed    = Constants.constantTileColorArray[ConstantTileColorEnum.RED.ordinal()].color;
+		Scalar rubikOrange = Constants.constantTileColorArray[ConstantTileColorEnum.ORANGE.ordinal()].color;
+		Scalar rubikYellow = Constants.constantTileColorArray[ConstantTileColorEnum.YELLOW.ordinal()].color;
+		Scalar rubikGreen  = Constants.constantTileColorArray[ConstantTileColorEnum.GREEN.ordinal()].color;
+		Scalar rubikBlue   = Constants.constantTileColorArray[ConstantTileColorEnum.BLUE.ordinal()].color;
+		Scalar rubikWhite  = Constants.constantTileColorArray[ConstantTileColorEnum.WHITE.ordinal()].color;
 
 		
 		// Render Color Calibration in UV plane as dots

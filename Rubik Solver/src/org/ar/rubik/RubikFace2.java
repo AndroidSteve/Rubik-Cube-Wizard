@@ -34,8 +34,8 @@ package org.ar.rubik;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.ar.rubik.Constants.LogicalTile;
-import org.ar.rubik.Constants.LogicalTileColorEnum;
+import org.ar.rubik.Constants.ConstantTile;
+import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.CvType;
@@ -71,10 +71,14 @@ public class RubikFace2 {
 	private transient Rhombus [][] faceRhombusArray = new Rhombus[3][3];
 	
 	// A 3x3 matrix of Logical Tiles.  All elements must be non-null for an appropriate Face solution.
-	// =+= Ideally, in new architecture, this is not filled in until all cube is seen.
-	// =+= However, some/all may be needed for Pilot Cube.
-	// =+= Perhaps best is two-pass and simply overwrite whatever is here after cube is fully seen.
-	public LogicalTile [][] logicalTileArray = new LogicalTile[3][3];
+	// The rotation of this array is the output of the Face Recognizer as per the current spacial
+	// rotation of the cube.
+	public ConstantTile [][] observedTileArray = new ConstantTile[3][3];
+	
+	// A 3x3 matrix of Logical Tiles.  All elements must be non-null for an appropriate Face solution.
+	// The rotation of this array has been adjusted so that, in the final cube state, the faces are read
+	// and rendered correctly with respect to the "unfolded cube layout convention."
+	public ConstantTile [][] transformedTileArray = new ConstantTile[3][3];
 	
 	// Record actual RGB colors measured at the center of each tile.
 	public double[][][] measuredColorArray = new double[3][3][4];
@@ -224,7 +228,7 @@ public class RubikFace2 {
 		hashCode = 0;
 		for(int n=0; n<3; n++)
 			for(int m=0; m<3; m++)
-				hashCode = logicalTileArray[n][m].hashCode() ^ Integer.rotateRight(hashCode, 1);
+				hashCode = observedTileArray[n][m].hashCode() ^ Integer.rotateRight(hashCode, 1);
 		
 		faceRecognitionStatus =  FaceRecognitionStatusEnum.SOLVED;
     }
@@ -591,9 +595,9 @@ public class RubikFace2 {
 				double [] measuredColorYUV   = Util.getYUVfromRGB(measuredColor);
 
 				double smallestError = Double.MAX_VALUE;
-				LogicalTile bestCandidate = null;
+				ConstantTile bestCandidate = null;
 				for(int i=0; i<6; i++) {
-					LogicalTile candidateTile = Constants.logicalTileColorArray[i];
+					ConstantTile candidateTile = Constants.constantTileColorArray[i];
 					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.color.val);
 
 					// Only examine U and V axis, and not luminous.
@@ -611,14 +615,14 @@ public class RubikFace2 {
 
 //				Log.d(Constants.TAG, String.format( "Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.character, smallestError));
 
-				logicalTileArray[n][m] = bestCandidate;
+				observedTileArray[n][m] = bestCandidate;
 			}
 		}
 		
 		// Calculate and record LMS error (including luminous).
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
-				double[] selectedColor = logicalTileArray[n][m].color.val;
+				double[] selectedColor = observedTileArray[n][m].color.val;
 				double[] measuredColor = measuredColorArray[n][m];
 				colorErrorBeforeCorrection += calculateColorError(selectedColor, measuredColor, true, 0.0);
 			}
@@ -629,18 +633,18 @@ public class RubikFace2 {
 		Log.d(Constants.TAG, String.format( " m:n|----------0--------------|-----------1-------------|---------2---------------|") );
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][0], colorError[0][0]), Util.dumpRGB(measuredColorArray[1][0], colorError[1][0]), Util.dumpRGB(measuredColorArray[2][0], colorError[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][0]), Util.dumpYUV(measuredColorArray[1][0]), Util.dumpYUV(measuredColorArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(logicalTileArray[0][0]), Util.dumpRGB(logicalTileArray[1][0]), Util.dumpRGB(logicalTileArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(logicalTileArray[0][0].color.val), Util.dumpYUV(logicalTileArray[1][0].color.val), Util.dumpYUV(logicalTileArray[2][0].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][0]), Util.dumpRGB(observedTileArray[1][0]), Util.dumpRGB(observedTileArray[2][0]) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].color.val), Util.dumpYUV(observedTileArray[1][0].color.val), Util.dumpYUV(observedTileArray[2][0].color.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][1], colorError[0][1]), Util.dumpRGB(measuredColorArray[1][1], colorError[1][1]), Util.dumpRGB(measuredColorArray[2][1], colorError[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][1]), Util.dumpYUV(measuredColorArray[1][1]), Util.dumpYUV(measuredColorArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(logicalTileArray[0][1]), Util.dumpRGB(logicalTileArray[1][1]), Util.dumpRGB(logicalTileArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(logicalTileArray[0][1].color.val), Util.dumpYUV(logicalTileArray[1][1].color.val), Util.dumpYUV(logicalTileArray[2][1].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][1]), Util.dumpRGB(observedTileArray[1][1]), Util.dumpRGB(observedTileArray[2][1]) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].color.val), Util.dumpYUV(observedTileArray[1][1].color.val), Util.dumpYUV(observedTileArray[2][1].color.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][2], colorError[0][2]), Util.dumpRGB(measuredColorArray[1][2], colorError[1][2]), Util.dumpRGB(measuredColorArray[2][2], colorError[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][2]), Util.dumpYUV(measuredColorArray[1][2]), Util.dumpYUV(measuredColorArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(logicalTileArray[0][2]), Util.dumpRGB(logicalTileArray[1][2]), Util.dumpRGB(logicalTileArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(logicalTileArray[0][2].color.val), Util.dumpYUV(logicalTileArray[1][2].color.val), Util.dumpYUV(logicalTileArray[2][2].color.val) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][2]), Util.dumpRGB(observedTileArray[1][2]), Util.dumpRGB(observedTileArray[2][2]) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].color.val), Util.dumpYUV(observedTileArray[1][2].color.val), Util.dumpYUV(observedTileArray[2][2].color.val) ));
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, "Total Color Error Before Correction: " + colorErrorBeforeCorrection);
 		
@@ -652,8 +656,8 @@ public class RubikFace2 {
 		int count = 0;
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
-				LogicalTile logicalTile = logicalTileArray[n][m];
-				if(logicalTile.logicalTileColor == LogicalTileColorEnum.RED || logicalTile.logicalTileColor == LogicalTileColorEnum.ORANGE)
+				ConstantTile logicalTile = observedTileArray[n][m];
+				if(logicalTile.constantTileColor == ConstantTileColorEnum.RED || logicalTile.constantTileColor == ConstantTileColorEnum.ORANGE)
 					continue;
 				double measuredLuminousity = Util.getYUVfromRGB(measuredColorArray[n][m])[0];
 				double expectedLuminousity = Util.getYUVfromRGB(logicalTile.color.val)[0];
@@ -672,9 +676,9 @@ public class RubikFace2 {
 				double [] measuredColorYUV   = Util.getYUVfromRGB(measuredColor);
 
 				double smallestError = Double.MAX_VALUE;
-				LogicalTile bestCandidate = null;
+				ConstantTile bestCandidate = null;
 				for(int i=0; i<6; i++) {
-					LogicalTile candidateTile = Constants.logicalTileColorArray[i];
+					ConstantTile candidateTile = Constants.constantTileColorArray[i];
 					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.color.val);
 
 					// Only examine U and V axis, and not luminous.
@@ -693,9 +697,9 @@ public class RubikFace2 {
 
 //				Log.d(Constants.TAG, String.format( "Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.character, smallestError));
 
-				if(bestCandidate != logicalTileArray[n][m]) {
-					Log.i(Constants.TAG, String.format("Reclassiffying tile [%d][%d] from %c to %c", n, m, logicalTileArray[n][m].character, bestCandidate.character));
-					logicalTileArray[n][m] = bestCandidate;
+				if(bestCandidate != observedTileArray[n][m]) {
+					Log.i(Constants.TAG, String.format("Reclassiffying tile [%d][%d] from %c to %c", n, m, observedTileArray[n][m].character, bestCandidate.character));
+					observedTileArray[n][m] = bestCandidate;
 				}
 			}
 		}
@@ -703,7 +707,7 @@ public class RubikFace2 {
 		// Calculate and record LMS error (includeing LMS).
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
-				double[] selectedColor = logicalTileArray[n][m].color.val;
+				double[] selectedColor = observedTileArray[n][m].color.val;
 				double[] measuredColor = measuredColorArray[n][m];
 				colorErrorAfterCorrection += calculateColorError(selectedColor, measuredColor, true, luminousOffset);
 			}
@@ -713,18 +717,18 @@ public class RubikFace2 {
 		Log.d(Constants.TAG, String.format( " m:n|----------0--------------|-----------1-------------|---------2---------------|") );
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][0], colorError[0][0]), Util.dumpRGB(measuredColorArray[1][0], colorError[1][0]), Util.dumpRGB(measuredColorArray[2][0], colorError[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][0]), Util.dumpYUV(measuredColorArray[1][0]), Util.dumpYUV(measuredColorArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(logicalTileArray[0][0]), Util.dumpRGB(logicalTileArray[1][0]), Util.dumpRGB(logicalTileArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(logicalTileArray[0][0].color.val), Util.dumpYUV(logicalTileArray[1][0].color.val), Util.dumpYUV(logicalTileArray[2][0].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][0]), Util.dumpRGB(observedTileArray[1][0]), Util.dumpRGB(observedTileArray[2][0]) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].color.val), Util.dumpYUV(observedTileArray[1][0].color.val), Util.dumpYUV(observedTileArray[2][0].color.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][1], colorError[0][1]), Util.dumpRGB(measuredColorArray[1][1], colorError[1][1]), Util.dumpRGB(measuredColorArray[2][1], colorError[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][1]), Util.dumpYUV(measuredColorArray[1][1]), Util.dumpYUV(measuredColorArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(logicalTileArray[0][1]), Util.dumpRGB(logicalTileArray[1][1]), Util.dumpRGB(logicalTileArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(logicalTileArray[0][1].color.val), Util.dumpYUV(logicalTileArray[1][1].color.val), Util.dumpYUV(logicalTileArray[2][1].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][1]), Util.dumpRGB(observedTileArray[1][1]), Util.dumpRGB(observedTileArray[2][1]) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].color.val), Util.dumpYUV(observedTileArray[1][1].color.val), Util.dumpYUV(observedTileArray[2][1].color.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][2], colorError[0][2]), Util.dumpRGB(measuredColorArray[1][2], colorError[1][2]), Util.dumpRGB(measuredColorArray[2][2], colorError[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][2]), Util.dumpYUV(measuredColorArray[1][2]), Util.dumpYUV(measuredColorArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(logicalTileArray[0][2]), Util.dumpRGB(logicalTileArray[1][2]), Util.dumpRGB(logicalTileArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(logicalTileArray[0][2].color.val), Util.dumpYUV(logicalTileArray[1][2].color.val), Util.dumpYUV(logicalTileArray[2][2].color.val) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][2]), Util.dumpRGB(observedTileArray[1][2]), Util.dumpRGB(observedTileArray[2][2]) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].color.val), Util.dumpYUV(observedTileArray[1][2].color.val), Util.dumpYUV(observedTileArray[2][2].color.val) ));
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 
 		Log.d(Constants.TAG, "Color Error After Correction: " + colorErrorAfterCorrection);

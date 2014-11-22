@@ -49,6 +49,48 @@ public class StateModel2 {
 	public RubikFace2 frontRubikFace;
 	public RubikFace2 backRubikFace;
 	
+	
+	// We assume that faces will be explored in a particular sequence.
+	private int adoptFaceCount = 0;
+	
+	/**
+	 * Adopt Face
+	 * 
+	 * Adopt faces in a particular sequence dictated by the user directed instruction on
+	 * how to rotate the code during the exploration phase.
+	 * 
+	 * @param candidateRubikFace2
+	 */
+    public void adopt(RubikFace2 candidateRubikFace2) {
+	    
+    	switch(adoptFaceCount) {
+    	
+    	case 0:
+    		upRubikFace = candidateRubikFace2;
+    		break;
+    	case 1:
+    		rightRubikFace = candidateRubikFace2;
+    		break;
+    	case 2:
+    		frontRubikFace = candidateRubikFace2;
+    		break;
+    	case 3:
+    		downRubikFace = candidateRubikFace2;
+    		break;
+    	case 4:
+    		leftRubikFace = candidateRubikFace2;
+    		break;
+    	case 5:
+    		backRubikFace = candidateRubikFace2;
+    		break;
+    		
+    		default:
+    	}
+    	
+    	adoptFaceCount++;
+    	
+    }
+	
 	// Rubik Solution 
 
 }

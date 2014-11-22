@@ -69,14 +69,14 @@ public class Constants {
 	public final static Scalar RubikBlue   = new Scalar(  0.0,  60.0, 220.0);
 	public final static Scalar RubikWhite  = new Scalar(225.0, 255.0, 255.0);
 	
-	public enum LogicalTileColorEnum { RED, ORANGE, YELLOW, GREEN, BLUE, WHITE };
+	public enum ConstantTileColorEnum { RED, ORANGE, YELLOW, GREEN, BLUE, WHITE };
 	
 	// Group together enum, color and character annotation.
-	public static final class LogicalTile implements Serializable {
+	public static final class ConstantTile implements Serializable {
 		private static final long serialVersionUID = 4739751093453679173L;
 		
 		// Color values selected to be close to that of cube.
-		public LogicalTileColorEnum logicalTileColor;
+		public ConstantTileColorEnum constantTileColor;
 		
 		// Color values selected for display purposes.
 		public Scalar color;
@@ -84,24 +84,24 @@ public class Constants {
 		// Character symbol of color
 		public char character;
 		
-		public LogicalTile(LogicalTileColorEnum logicalTileColor, Scalar color, char character) {
-			this.logicalTileColor = logicalTileColor;
+		public ConstantTile(ConstantTileColorEnum constantTileColor, Scalar color, char character) {
+			this.constantTileColor = constantTileColor;
 			this.color = color;
 			this.character = character;
 		}
 	}
 	
 	// Six Logical Tile types: =+= not yet filled out.
-	public final static LogicalTile redLogicalTile = new LogicalTile(LogicalTileColorEnum.RED,     RubikRed,    'R');
+	public final static ConstantTile redLogicalTile = new ConstantTile(ConstantTileColorEnum.RED,     RubikRed,    'R');
 
 	// Array of possible Rubik Tile Colors.
-	public final static LogicalTile [] logicalTileColorArray = {
+	public final static ConstantTile [] constantTileColorArray = {
 		redLogicalTile,
-			new LogicalTile(LogicalTileColorEnum.ORANGE,  RubikOrange, 'O'),
-			new LogicalTile(LogicalTileColorEnum.YELLOW,  RubikYellow, 'Y'),
-			new LogicalTile(LogicalTileColorEnum.GREEN,   RubikGreen,  'G'),
-			new LogicalTile(LogicalTileColorEnum.BLUE,    RubikBlue,   'B'),
-			new LogicalTile(LogicalTileColorEnum.WHITE,   RubikWhite,  'W')
+			new ConstantTile(ConstantTileColorEnum.ORANGE,  RubikOrange, 'O'),
+			new ConstantTile(ConstantTileColorEnum.YELLOW,  RubikYellow, 'Y'),
+			new ConstantTile(ConstantTileColorEnum.GREEN,   RubikGreen,  'G'),
+			new ConstantTile(ConstantTileColorEnum.BLUE,    RubikBlue,   'B'),
+			new ConstantTile(ConstantTileColorEnum.WHITE,   RubikWhite,  'W')
 	};
 
 	// Any OpenCV font
