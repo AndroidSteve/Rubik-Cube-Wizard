@@ -34,7 +34,7 @@ import java.util.HashMap;
 
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
-import org.ar.rubik.Constants.FaceTypeEnum;
+import org.ar.rubik.Constants.FaceNameEnum;
 
 /**
  * @author android.steve@testlens.com
@@ -56,11 +56,14 @@ public class StateModel2 {
 	public RubikFace2 frontRubikFace;
 	public RubikFace2 backRubikFace;
 	
+	// Set of above rubik faces for easy access
+//	public HashSet<RubikFace2> rubikFaceSet = new HashSet<RubikFace2>();
+	
 	// Array of above rubik face objects index by TileColorEnum.
 	public HashMap<ConstantTileColorEnum, RubikFace2> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace2>(6);
 	
-//	// Array of above rubik face objects index by FaceTypeEnum
-//	private HashMap<FaceTypeEnum, RubikFace2> typeRubikFaceMap = new HashMap<Constants.FaceTypeEnum, RubikFace2>(6);
+	// Array of above rubik face objects index by FaceNameEnum
+	public HashMap<FaceNameEnum, RubikFace2> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace2>(6);
 	
 	
     // Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
@@ -87,31 +90,35 @@ public class StateModel2 {
 	 * @param rubikFace2
 	 */
     public void adopt(RubikFace2 rubikFace2) {
+    	
+    	// Close observed tile array.  The new copy (transformed) will be 
+    	// face rotated so that is matches the rubik cube layout definition.
+    	rubikFace2.transformedTileArray = rubikFace2.observedTileArray.clone();
 	    
     	switch(adoptFaceCount) {
     	
     	case 0:
-    		rubikFace2.faceTypeEnum = FaceTypeEnum.UP;
+    		rubikFace2.faceNameEnum = FaceNameEnum.UP;
     		upRubikFace = rubikFace2;
     		break;
     	case 1:
-    		rubikFace2.faceTypeEnum = FaceTypeEnum.RIGHT;
+    		rubikFace2.faceNameEnum = FaceNameEnum.RIGHT;
     		rightRubikFace = rubikFace2;
     		break;
     	case 2:
-    		rubikFace2.faceTypeEnum = FaceTypeEnum.FRONT;
+    		rubikFace2.faceNameEnum = FaceNameEnum.FRONT;
     		frontRubikFace = rubikFace2;
     		break;
     	case 3:
-    		rubikFace2.faceTypeEnum = FaceTypeEnum.DOWN;
+    		rubikFace2.faceNameEnum = FaceNameEnum.DOWN;
     		downRubikFace = rubikFace2;
     		break;
     	case 4:
-    		rubikFace2.faceTypeEnum = FaceTypeEnum.LEFT;
+    		rubikFace2.faceNameEnum = FaceNameEnum.LEFT;
     		leftRubikFace = rubikFace2;
     		break;
     	case 5:
-    		rubikFace2.faceTypeEnum = FaceTypeEnum.BACK;
+    		rubikFace2.faceNameEnum = FaceNameEnum.BACK;
     		backRubikFace = rubikFace2;
     		break;
     		
@@ -119,8 +126,10 @@ public class StateModel2 {
     			// =+= log error
     	}
     	
-    	if(adoptFaceCount < 6)
-    		colorRubikFaceMap.put(rubikFace2.observedTileArray[1][1].constantTileColor, rubikFace2);
+    	if(adoptFaceCount < 6) {
+    		colorRubikFaceMap.put(rubikFace2.observedTileArray[1][1].constantTileColor, rubikFace2); // =+= can be inaccurate!
+    		nameRubikFaceMap.put(rubikFace2.faceNameEnum, rubikFace2);
+    	}
     	
     	adoptFaceCount++;
     }
@@ -132,7 +141,7 @@ public class StateModel2 {
      * @return
      */
     public int getNumObservedFaces() {    	
-    	return colorRubikFaceMap.size();
+    	return nameRubikFaceMap.size();
     }
 
 
@@ -158,7 +167,7 @@ public class StateModel2 {
     	
     	// Count how many tile colors entire cube has as a first check.
     	int [] numColorTilesArray = new int[] {0, 0, 0, 0, 0, 0};
-		for(RubikFace2 rubikFace2 : colorRubikFaceMap.values() ) {
+		for(RubikFace2 rubikFace2 : nameRubikFaceMap.values() ) {
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
 					numColorTilesArray[ rubikFace2.observedTileArray[n][m].constantTileColor.ordinal() ]++;
@@ -224,7 +233,7 @@ public class StateModel2 {
 	private char getCharacterRepresentingColor(ConstantTileColorEnum colorEnum) {
 
 
-		switch(colorRubikFaceMap.get(colorEnum).faceTypeEnum) {
+		switch(colorRubikFaceMap.get(colorEnum).faceNameEnum) {
 		case FRONT: return 'F';
 		case BACK:  return 'B';
 		case DOWN:  return 'D';
@@ -234,5 +243,15 @@ public class StateModel2 {
 		default:    return 0;   // Odd error message without this, but cannot get here by definition.  Hmm.
 		}
 	}
+
+
+	/**
+	 * Re-Evaluate Tile Colors
+	 * 
+	 * Re-examine tile colors across entire cube.  Adjust selection so that there are nine tiles
+	 * of each color.  This provides much more robustness with respect to lighting conditions.
+	 */
+    public void reevauateSelectTileColors() {
+    }
 
 }

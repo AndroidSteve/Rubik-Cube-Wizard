@@ -458,13 +458,13 @@ public class Annotation2 {
 		
 		// Render Face Types and their center tile color
 		int pos = 1;
-		for(RubikFace2 rubikFace2 : stateModel2.colorRubikFaceMap.values()) {
-			Core.putText(image, String.format("%s:    %s", rubikFace2.faceTypeEnum, rubikFace2.observedTileArray[1][1].constantTileColor),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		for(RubikFace2 rubikFace2 : stateModel2.nameRubikFaceMap.values()) {
+			Core.putText(image, String.format("%s:    %s", rubikFace2.faceNameEnum, rubikFace2.observedTileArray[1][1].constantTileColor),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		}
 		
     	// Count how many tile colors entire cube has as a first check.
     	int [] numColorTilesArray = new int[] {0, 0, 0, 0, 0, 0};
-		for(RubikFace2 rubikFace2 : stateModel2.colorRubikFaceMap.values() ) {
+		for(RubikFace2 rubikFace2 : stateModel2.nameRubikFaceMap.values() ) {
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
 					numColorTilesArray[ rubikFace2.observedTileArray[n][m].constantTileColor.ordinal() ]++;
