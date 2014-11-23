@@ -70,12 +70,6 @@ public class StateMachine2 {
 	
 	private StateModel2 stateModel2;
 	
-	// String notation on how to solve cube.
-	private String solutionResults;
-	
-	// Above, but broken into individual moves.
-	private String [] solutionResultsArray;
-	
 	// Index to above array as to which move we are on.
 	private int solutionResultIndex;
 	
@@ -84,9 +78,7 @@ public class StateMachine2 {
 	
 	// Allows for more pleasing user interface
 	private int gotItCount = 0;
-	
-    // Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
-	private int verificationResults;
+
 	
 
 	/**
@@ -239,7 +231,7 @@ public class StateMachine2 {
         	case WAITING_FOR_MOVE_COMPLETE:
         		controllerState = ControllerStateEnum.DO_MOVE;
         		solutionResultIndex++;
-        		if(solutionResultIndex == solutionResultsArray.length)
+        		if(solutionResultIndex == stateModel2.solutionResultsArray.length)
         			controllerState = ControllerStateEnum.DONE;
     		break;
 
@@ -291,7 +283,7 @@ public class StateMachine2 {
         		stateModel2.adopt(candidateRubikFace2);
 
         		// Have not yet seen all six sides.
-        		if(RubikCube.isThereAfullSetOfFaces() == false) {
+        		if(stateModel2.isThereAfullSetOfFaces() == false) {
         			controllerState = ControllerStateEnum.GOT_IT;
         			allowOneMoreRotation = true;
         		}
@@ -304,7 +296,7 @@ public class StateMachine2 {
         		
         		// Begin processing of cube: first check that there are exactly 9 tiles of each color.
         		else
-        			if(RubikCube.isTileColorsValid() == true)
+        			if(stateModel2.isTileColorsValid() == true)
         				controllerState = ControllerStateEnum.COMPLETE;
         			else
         				controllerState = ControllerStateEnum.BAD_COLORS;
@@ -359,33 +351,33 @@ public class StateMachine2 {
 
     		   
     	   case COMPLETE:
-    		   String cubeString = RubikCube.getStringRepresentationOfCube();
+    		   String cubeString = stateModel2.getStringRepresentationOfCube();
 
     		   // Returns 0 if cube is solvable.
-    		   verificationResults = Tools.verify(cubeString);
+    		   stateModel2.verificationResults = Tools.verify(cubeString);
 
-    		   if(verificationResults == 0) {
+    		   if(stateModel2.verificationResults == 0) {
     			   controllerState = ControllerStateEnum.WAITING;
     		   }
     		   else
     			   controllerState = ControllerStateEnum.INCORRECT;
 
-    		   String stringErrorMessage = Util.getTwoPhaseErrorString((char)(verificationResults * -1 + '0'));
+    		   String stringErrorMessage = Util.getTwoPhaseErrorString((char)(stateModel2.verificationResults * -1 + '0'));
 
     		   Log.i(Constants.TAG_CNTRL, "Cube String Rep: " + cubeString);
-    		   Log.i(Constants.TAG_CNTRL, "Verification Results: (" + verificationResults + ") " + stringErrorMessage);
+    		   Log.i(Constants.TAG_CNTRL, "Verification Results: (" + stateModel2.verificationResults + ") " + stringErrorMessage);
     		   break;
 
     		   
     	   case VERIFIED:
-    		   String cubeString2 = RubikCube.getStringRepresentationOfCube();
+    		   String cubeString2 = stateModel2.getStringRepresentationOfCube();
 
     		   // Returns 0 if solution computed
-    		   solutionResults = Search.solution(cubeString2, 25, 2, false);
-    		   Log.i(Constants.TAG_CNTRL, "Solution Results: " + solutionResults);
-    		   if (solutionResults.contains("Error")) {
-    			   char solutionCode = solutionResults.charAt(solutionResults.length() - 1);
-    			   verificationResults = solutionCode - '0';
+    		   stateModel2.solutionResults = Search.solution(cubeString2, 25, 2, false);
+    		   Log.i(Constants.TAG_CNTRL, "Solution Results: " + stateModel2.solutionResults);
+    		   if (stateModel2.solutionResults.contains("Error")) {
+    			   char solutionCode = stateModel2.solutionResults.charAt(stateModel2.solutionResults.length() - 1);
+    			   stateModel2.verificationResults = solutionCode - '0';
     			   Log.i(Constants.TAG_CNTRL, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
     			   controllerState = ControllerStateEnum.INCORRECT;
     		   }
@@ -396,8 +388,8 @@ public class StateMachine2 {
 
     		   
     	   case SOLVED:
-    		   solutionResultsArray = solutionResults.split(" ");
-    		   Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + solutionResultsArray);
+    		   stateModel2.solutionResultsArray = stateModel2.solutionResults.split(" ");
+    		   Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + stateModel2.solutionResultsArray);
     		   solutionResultIndex = 0;
     		   controllerState = ControllerStateEnum.DO_MOVE;
     		   break;
@@ -440,8 +432,8 @@ public class StateMachine2 {
 
    		case ROTATE:
    			if(RubikMenuAndParameters.userTextDisplay == true)
-   				Core.putText(image, "Please Rotate: " + RubikCube.getNumValidFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-//   			if(  RubikCube.getNumValidFaces() % 2 == 0)
+   				Core.putText(image, "Please Rotate: " + stateModel2.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+//   			if(  stateModel2.getNumValidFaces() % 2 == 0)
 //   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
 //   			else
 //   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
@@ -475,19 +467,19 @@ public class StateMachine2 {
 
    		case INCORRECT:
 //   			if(RubikMenuAndParameters.userTextDisplay == true)
-   				Core.putText(image, "Cube is Complete but Incorrect: " + verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel2.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
    		case SOLVED:
    			if(RubikMenuAndParameters.userTextDisplay == true) {
    				Core.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    				Core.rectangle(image, new Point(0, 60), new Point(1270, 120), Constants.ColorBlack, -1);
-   				Core.putText(image, "" + solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
+   				Core.putText(image, "" + stateModel2.solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
    			}
    			break;
 
    		case DO_MOVE:
-   			String moveNumonic = solutionResultsArray[solutionResultIndex];
+   			String moveNumonic = stateModel2.solutionResultsArray[solutionResultIndex];
    			Log.d(Constants.TAG, "Move:" + moveNumonic + ":");
    			StringBuffer moveDescription = new StringBuffer("Rotate ");
    			switch(moveNumonic.charAt(0)) {

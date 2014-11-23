@@ -20,12 +20,15 @@ import org.opencv.core.Scalar;
 public class Annotation2 {
 
 	private StateModel2 stateModel2;
+	private StateMachine2 stateMachine2;
 	
 	/**
 	 * @param stateModel2
+	 * @param stateMachine2 
 	 */
-    public Annotation2(StateModel2 stateModel2) {
+    public Annotation2(StateModel2 stateModel2, StateMachine2 stateMachine2) {
 	    this.stateModel2 = stateModel2;
+	    this.stateMachine2 = stateMachine2;
     }
     
     
@@ -75,6 +78,10 @@ public class Annotation2 {
 //			annotationGlRenderer.setCubeOrienation(RubikCube.active);
 			break;
 		}
+		
+		
+		// Hack only for call to user instructions
+		stateMachine2.renderUserInstructions(image, stateModel2.activeRubikFace);
 		
 		return image;
 	}
@@ -449,12 +456,12 @@ public class Annotation2 {
 		Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
 		
 		int pos = 1;
-		Core.putText(image, String.format("Up:    %s", stateModel2.upRubikFace == null ?    "na" : stateModel2.upRubikFace.observedTileArray[1][1].constantTileColor),    new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Right: %s", stateModel2.rightRubikFace == null ? "na" : stateModel2.rightRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Front: %s", stateModel2.frontRubikFace == null ? "na" : stateModel2.frontRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Down:  %s", stateModel2.downRubikFace == null ?  "na" : stateModel2.downRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Left:  %s", stateModel2.leftRubikFace == null ?  "na" : stateModel2.leftRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Back:  %s", stateModel2.backRubikFace == null ?  "na" : stateModel2.backRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Up:    %s", stateModel2.upRubikFace == null ?    "na" : stateModel2.upRubikFace.observedTileArray[1][1].constantTileColor),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Right: %s", stateModel2.rightRubikFace == null ? "na" : stateModel2.rightRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Front: %s", stateModel2.frontRubikFace == null ? "na" : stateModel2.frontRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Down:  %s", stateModel2.downRubikFace == null ?  "na" : stateModel2.downRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Left:  %s", stateModel2.leftRubikFace == null ?  "na" : stateModel2.leftRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, String.format("Back:  %s", stateModel2.backRubikFace == null ?  "na" : stateModel2.backRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 
 		
 //		for(LogicalTileColorEnum constantTileColor : Constants.LogicalTileColorEnum.values()) {

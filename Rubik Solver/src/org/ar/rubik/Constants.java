@@ -50,6 +50,9 @@ public class Constants {
 	// Specifies what annotation to add
 	public enum AnnotationModeEnum { LAYOUT, RHOMBUS, FACE_METRICS, TIME, COLOR, CUBE_METRICS, NORMAL }
 	
+	// Conventional Rubik Face nomenclature
+	public enum FaceTypeEnum { UP, DOWN, LEFT, RIGHT, FRONT, BACK};
+	
 	// Constant Colors as Scalar objects for purpose of various text, line and annotation rendering.
 	public final static Scalar ColorRed    = new Scalar(255.0, 0.0, 0.0);
 	public final static Scalar ColorOrange = new Scalar(240.0, 120.0, 100.0);

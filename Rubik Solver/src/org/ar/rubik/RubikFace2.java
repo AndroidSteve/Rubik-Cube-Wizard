@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
+import org.ar.rubik.Constants.FaceTypeEnum;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.CvType;
@@ -127,6 +128,9 @@ public class RubikFace2 {
 	
 	// Profiles CPU Consumption
 	public Profiler profiler = new Profiler();
+	
+	// Face Designation
+	public FaceTypeEnum faceTypeEnum;
 	
 	
 	/**
