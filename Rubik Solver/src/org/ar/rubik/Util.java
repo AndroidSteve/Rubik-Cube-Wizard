@@ -125,7 +125,7 @@ public class Util {
 	 * @param arg
 	 * @return
 	 */
-	public static ConstantTile[][] getVirtualTileArrayRotatedClockwise(ConstantTile[][] arg) {	
+	public static ConstantTile[][] getTileArrayRotatedClockwise(ConstantTile[][] arg) {	
 		//         n -------------->
 		//   m     0-0    1-0    2-0
 		//   |     0-1    1-1    2-1
@@ -143,11 +143,11 @@ public class Util {
 		
 		return result;
 	}
-	public static ConstantTile [][] getVirtualTileArrayRotatedCounterClockwise(ConstantTile[][] arg) {
-		return getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( arg)));
+	public static ConstantTile [][] getTileArrayRotatedCounterClockwise(ConstantTile[][] arg) {
+		return getTileArrayRotatedClockwise( getTileArrayRotatedClockwise( getTileArrayRotatedClockwise( arg)));
 	}
-	public static ConstantTile [][] getVirtualTileArrayRotated180(ConstantTile[][] arg) {
-		return getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( arg));
+	public static ConstantTile [][] getTileArrayRotated180(ConstantTile[][] arg) {
+		return getTileArrayRotatedClockwise( getTileArrayRotatedClockwise( arg));
 	}
 
 	

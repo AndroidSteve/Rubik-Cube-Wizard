@@ -99,33 +99,33 @@ public class StateModel2 {
     	case 0:
     		rubikFace2.faceNameEnum = FaceNameEnum.UP;
     		upRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray =  Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace2.transformedTileArray =  Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
     		rubikFace2.transformedTileArray = rubikFace2.observedTileArray.clone();
     		break;
     	case 1:
     		rubikFace2.faceNameEnum = FaceNameEnum.RIGHT;
     		rightRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace2.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
     		break;
     	case 2:
     		rubikFace2.faceNameEnum = FaceNameEnum.FRONT;
     		frontRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace2.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
     		break;
     	case 3:
     		rubikFace2.faceNameEnum = FaceNameEnum.DOWN;
     		downRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace2.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
     		break;
     	case 4:
     		rubikFace2.faceNameEnum = FaceNameEnum.LEFT;
     		leftRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotated180(rubikFace2.observedTileArray);
+    		rubikFace2.transformedTileArray = Util.getTileArrayRotated180(rubikFace2.observedTileArray);
     		break;
     	case 5:
     		rubikFace2.faceNameEnum = FaceNameEnum.BACK;
     		backRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotated180(rubikFace2.observedTileArray);
+    		rubikFace2.transformedTileArray = Util.getTileArrayRotated180(rubikFace2.observedTileArray);
     		break;
     		
     		default:
