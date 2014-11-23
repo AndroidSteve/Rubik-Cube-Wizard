@@ -57,7 +57,7 @@ public class StateModel2 {
 	public RubikFace2 backRubikFace;
 	
 	// Array of above rubik face objects index by TileColorEnum.
-	private HashMap<ConstantTileColorEnum, RubikFace2> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace2>(6);
+	public HashMap<ConstantTileColorEnum, RubikFace2> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace2>(6);
 	
 //	// Array of above rubik face objects index by FaceTypeEnum
 //	private HashMap<FaceTypeEnum, RubikFace2> typeRubikFaceMap = new HashMap<Constants.FaceTypeEnum, RubikFace2>(6);
@@ -157,14 +157,7 @@ public class StateModel2 {
     public boolean isTileColorsValid() {
     	
     	// Count how many tile colors entire cube has as a first check.
-    	int [] numColorTilesArray = new int[6];
-		
-		// Reset tile color count
-		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
-			numColorTilesArray[constantTileColor.ordinal()] = 0;
-		}
-
-		// Count up
+    	int [] numColorTilesArray = new int[] {0, 0, 0, 0, 0, 0};
 		for(RubikFace2 rubikFace2 : colorRubikFaceMap.values() ) {
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {

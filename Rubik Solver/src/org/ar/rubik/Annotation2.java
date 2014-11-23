@@ -448,6 +448,7 @@ public class Annotation2 {
 	 * Render Cube Diagnostic Metrics
 	 * 
 	 * Count and display how many colors of each tile were found over the entire cube.
+	 * Also output the total tile count of each color.
 	 * 
 	 * @param image
 	 */
@@ -455,19 +456,27 @@ public class Annotation2 {
 		
 		Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
 		
+		// Render Face Types and their center tile color
 		int pos = 1;
-		Core.putText(image, String.format("Up:    %s", stateModel2.upRubikFace == null ?    "na" : stateModel2.upRubikFace.observedTileArray[1][1].constantTileColor),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Right: %s", stateModel2.rightRubikFace == null ? "na" : stateModel2.rightRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Front: %s", stateModel2.frontRubikFace == null ? "na" : stateModel2.frontRubikFace.observedTileArray[1][1].constantTileColor), new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Down:  %s", stateModel2.downRubikFace == null ?  "na" : stateModel2.downRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Left:  %s", stateModel2.leftRubikFace == null ?  "na" : stateModel2.leftRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, String.format("Back:  %s", stateModel2.backRubikFace == null ?  "na" : stateModel2.backRubikFace.observedTileArray[1][1].constantTileColor),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
-
+		for(RubikFace2 rubikFace2 : stateModel2.colorRubikFaceMap.values()) {
+			Core.putText(image, String.format("%s:    %s", rubikFace2.faceTypeEnum, rubikFace2.observedTileArray[1][1].constantTileColor),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		}
 		
-//		for(LogicalTileColorEnum constantTileColor : Constants.LogicalTileColorEnum.values()) {
-//			int ordinal = constantTileColor.ordinal();
-//			Core.putText(image, String.format("Num %s = %2d", constantTileColor, numColorTilesArray[ordinal]), new Point(50, 200 + 50*ordinal), Constants.FontFace, 2, Constants.ColorWhite, 2);
-//		}
+    	// Count how many tile colors entire cube has as a first check.
+    	int [] numColorTilesArray = new int[] {0, 0, 0, 0, 0, 0};
+		for(RubikFace2 rubikFace2 : stateModel2.colorRubikFaceMap.values() ) {
+			for(int n=0; n<3; n++) {
+				for(int m=0; m<3; m++) {
+					numColorTilesArray[ rubikFace2.observedTileArray[n][m].constantTileColor.ordinal() ]++;
+				}
+			}	
+		}
+		
+		// Render total tile count of each tile color.
+		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
+			int count = numColorTilesArray[constantTileColor.ordinal()];
+			Core.putText(image, String.format("%s:  %d", constantTileColor, count ),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		}
 	}
 
 }
