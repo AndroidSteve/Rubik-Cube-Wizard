@@ -74,7 +74,8 @@ public class StateMachine2 {
 	private int solutionResultIndex;
 	
 	// 12 tables need to be generated.  When count is 12, tables are valid.
-	private int pruneTableLoaderCount = 0;
+	// =+= used by prune table loader.  
+	public int pruneTableLoaderCount = 0;
 	
 	// Allows for more pleasing user interface
 	private int gotItCount = 0;

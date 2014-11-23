@@ -123,12 +123,24 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
      * Instantiate primary components of application.
      */
     public RubikAndroidActivity() {
+    	
         Log.i(Constants.TAG, "Instantiated new " + this.getClass());
         
         // Construct and associate Primary Components (i.e., "Objects") for this application.
         stateModel2 = new StateModel2();
         stateMachine2 = new StateMachine2(stateModel2);
         imageRecognizer2 = new ImageRecognizer2(stateMachine2, stateModel2);
+        
+    	/*
+    	 * Launch thread to asynchronous, and probably in a different CPU, calculate
+    	 * Two Phase Prune Tables.  These tables require 150 Mbytes of RAM and take
+    	 * about 15 seconds to compute.  They are required by the Two Phase algorithm
+    	 * to compute a solution for a valid Rubik Cube.
+    	 * 
+    	 * =+= Normally, AsyncTask should be instantiated only on the UI thread.  
+    	 * =+= Which thread are we on?
+    	 */
+    	new Util.LoadPruningTablesTask().execute(stateMachine2);
     }
 
     

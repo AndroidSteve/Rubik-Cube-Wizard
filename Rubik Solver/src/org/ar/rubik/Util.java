@@ -34,10 +34,12 @@ package org.ar.rubik;
 import java.io.File;
 
 import org.ar.rubik.Constants.ConstantTile;
+import org.kociemba.twophase.PruneTableLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.highgui.Highgui;
 
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -104,20 +106,30 @@ public class Util {
 	 * 
 	 * @param stateModel2 
 	 */
-    public static void reevauateSelectTileColors(StateModel2 stateModel2) {
-    	
-    	// Populate a 3D space with 54 measure tile colors.
-    	
-    	// Set initial color points as per those values found in constant color
-    	
-    	// Calculate 
-    	
-    	// For populations != 9, migrate mean from lower to higher counts.
-    	
-    	
-    }
+	public static void reevauateSelectTileColors(StateModel2 stateModel2) {
 
-    
+		/*
+		 * Populate a 3D space with 54 measure tile colors.
+		 *  	
+		 * Set initial color points as per those values found in constant color
+		 *  
+		 * WHILE
+		 * 
+		 *   Assign points to color enum per nearest neighbor algorithm.
+		 * 
+		 *   Calculate total error
+		 *   
+		 *   IF( < threshold) break
+		 *   
+		 *   IF too many iterations break
+		 *   
+		 *   Calculate new color points as average of closest 5 points per region
+		 *   
+		 */    	
+
+	}
+
+
 	/**
 	 * Create a new array instance object, populate it with tiles rotated clockwise
 	 * with respect to the pass in arg, and then return the new object.
@@ -238,5 +250,35 @@ public class Util {
 	}
 
 
+	/**
+	 * Load Rubik Logic Algorithm Pruning Tables is a separate thread.
+	 * 
+	 * @author stevep
+	 *
+	 */
+	public static class LoadPruningTablesTask extends AsyncTask<StateMachine2, Void, Void> {
+		
+	    private PruneTableLoader tableLoader = new PruneTableLoader();
+	    private StateMachine2 stateMachine2;
+
+	    @Override
+	    protected Void doInBackground(StateMachine2... params) {
+	    	
+	    	stateMachine2 = params[0];
+	    	
+	        /* load all tables if they are not already in RAM */
+	        while (!tableLoader.loadingFinished()) { // while tables are left to load
+	            tableLoader.loadNext(); // load next pruning table
+	            stateMachine2.pruneTableLoaderCount++;
+	            Log.i(Constants.TAG_CNTRL, "Created a prune table.");
+	        }
+	        Log.i(Constants.TAG_CNTRL, "Completed all prune table.");
+	        return null;
+	    }
+
+	    @Override
+	    protected void onProgressUpdate(Void... values) {
+	    }
+	}
 	
 }
