@@ -28,7 +28,7 @@
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
         android:largeHeap="true" 
         android:allowBackup="false"> 
-        <activity android:name="RubikAndroidActivity"
+        <activity android:name="AndroidActivity"
                   android:label="Rubik Solver"
                   android:screenOrientation="landscape"
                   android:configChanges="keyboardHidden|orientation"

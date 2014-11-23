@@ -66,7 +66,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 
-public class RubikAndroidActivity extends Activity implements CvCameraViewListener2 {
+public class AndroidActivity extends Activity implements CvCameraViewListener2 {
 
 	// Camera Object
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -122,7 +122,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
      * 
      * Instantiate primary components of application.
      */
-    public RubikAndroidActivity() {
+    public AndroidActivity() {
     	
         Log.i(Constants.TAG, "Instantiated new " + this.getClass());
         
@@ -254,7 +254,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	return RubikMenuAndParameters.onOptionsItemSelected(item, this);
+    	return MenuAndParams.onOptionsItemSelected(item, this);
     }
 
 
@@ -296,9 +296,9 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         try {
 	        resultImage = controller.onCameraFrame(
 	        		inputFrame, 
-	        		RubikMenuAndParameters.imageSourceMode, 
-	        		RubikMenuAndParameters.imageProcessMode, 
-	        		RubikMenuAndParameters.annotationMode);
+	        		MenuAndParams.imageSourceMode, 
+	        		MenuAndParams.imageProcessMode, 
+	        		MenuAndParams.annotationMode);
 	        
         } catch (CvException e) {
         	e.printStackTrace();        	

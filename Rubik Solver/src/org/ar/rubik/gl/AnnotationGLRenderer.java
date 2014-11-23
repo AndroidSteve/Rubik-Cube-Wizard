@@ -32,7 +32,7 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.ar.rubik.Lms;
+import org.ar.rubik.LeastMeansSquare;
 import org.ar.rubik.DeprecatedRubikFace;
 import org.ar.rubik.DeprecatedRubikFace.FaceRecognitionStatusEnum;
 
@@ -148,7 +148,7 @@ public class AnnotationGLRenderer implements GLSurfaceView.Renderer {
 		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
 			return;
 		
-		Lms lmsResult = rubikFace.lmsResult;
+		LeastMeansSquare lmsResult = rubikFace.lmsResult;
 		
 		if(lmsResult == null)
 			return;

@@ -52,7 +52,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
  * @author stevep
  *
  */
-public class RubikMenuAndParameters {
+public class MenuAndParams {
 
 	/**
 	 * Application Mode Control
@@ -156,7 +156,7 @@ public class RubikMenuAndParameters {
 	 * @param ma
 	 * @return
 	 */
-	public static boolean onOptionsItemSelected(MenuItem item, RubikAndroidActivity ma) {
+	public static boolean onOptionsItemSelected(MenuItem item, AndroidActivity ma) {
 
 		Log.i(Constants.TAG, "called onOptionsItemSelected; selected item: " + item);
 

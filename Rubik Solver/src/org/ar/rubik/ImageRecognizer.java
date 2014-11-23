@@ -122,12 +122,12 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 		Size imageSize = image.size();
 		
 		// Save or Recall image as requested
-		switch( RubikMenuAndParameters.imageSourceMode) {
+		switch( MenuAndParams.imageSourceMode) {
 		case NORMAL:
 			break;
 		case SAVE_NEXT:
 			Util.saveImage(image);
-			RubikMenuAndParameters.imageSourceMode = ImageSourceModeEnum.NORMAL;
+			MenuAndParams.imageSourceMode = ImageSourceModeEnum.NORMAL;
 			break;
 		case PLAYBACK:
 			image = Util.recallImage();
@@ -149,7 +149,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 * **********************************************************************
 			 * Return Original Image
 			 */
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.DIRECT) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.DIRECT) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(image);
 			}
@@ -166,7 +166,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			Mat greyscale_image = new Mat();
 			Imgproc.cvtColor(image, greyscale_image, Imgproc.COLOR_BGR2GRAY);
 			rubikFace.profiler.markTime(Profiler.Event.GREYSCALE);
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.GREYSCALE) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.GREYSCALE) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(greyscale_image);
 			}
@@ -179,14 +179,14 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 */
 			Mat blur_image = new Mat(); 
 
-			int kernelSize = (int) RubikMenuAndParameters.gaussianBlurKernelSizeParam.value;
+			int kernelSize = (int) MenuAndParams.gaussianBlurKernelSizeParam.value;
 			kernelSize = kernelSize % 2 == 0 ? kernelSize + 1 : kernelSize;  // make odd
 			Imgproc.GaussianBlur(
 					greyscale_image, 
 					blur_image, 
 					new Size(kernelSize, kernelSize), -1, -1);
 			rubikFace.profiler.markTime(Profiler.Event.GAUSSIAN);
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.BOXBLUR) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.BOXBLUR) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(blur_image);
 			}
@@ -201,12 +201,12 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			Imgproc.Canny(
 					blur_image, 
 					canny_image, 
-					RubikMenuAndParameters.cannyLowerThresholdParam.value, 
-					RubikMenuAndParameters.cannyUpperThresholdParam.value,
+					MenuAndParams.cannyLowerThresholdParam.value, 
+					MenuAndParams.cannyUpperThresholdParam.value,
 					3,         // Sobel Aperture size.  This seems to be typically value used in the literature: i.e., a 3x3 Sobel Matrix.
 					false);    // use cheap gradient calculation: norm =|dI/dx|+|dI/dy|
 			rubikFace.profiler.markTime(Profiler.Event.EDGE);
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CANNY) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.CANNY) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(canny_image);
 			}
@@ -224,10 +224,10 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 					Imgproc.getStructuringElement(
 							Imgproc.MORPH_RECT, 
 							new Size(
-									RubikMenuAndParameters.dilationKernelSizeParam.value, 
-									RubikMenuAndParameters.dilationKernelSizeParam.value)));
+									MenuAndParams.dilationKernelSizeParam.value, 
+									MenuAndParams.dilationKernelSizeParam.value)));
 			rubikFace.profiler.markTime(Profiler.Event.DILATION);
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.DILATION) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.DILATION) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(dilate_image);
 			}
@@ -249,7 +249,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			rubikFace.profiler.markTime(Profiler.Event.CONTOUR);
 
 			// Create gray scale image but in RGB format, and then added yellow colored contours on top.
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.CONTOUR) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.CONTOUR) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				Mat gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
@@ -275,7 +275,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 					continue;
 
 				// Keep only reasonable area contours
-				if(contourArea < RubikMenuAndParameters.minimumContourAreaParam.value)
+				if(contourArea < MenuAndParams.minimumContourAreaParam.value)
 					continue;
 
 				// Floating, instead of Double, for some reason required for approximate polygon detection algorithm.
@@ -289,7 +289,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Imgproc.approxPolyDP(
 						contour2f, 
 						polygone2f,
-						RubikMenuAndParameters.polygonEpsilonParam.value,  // The maximum distance between the original curve and its approximation.
+						MenuAndParams.polygonEpsilonParam.value,  // The maximum distance between the original curve and its approximation.
 						true);                                             // Resulting polygon representation is "closed:" its first and last vertices are connected.
 				polygone2f.convertTo(polygon, CvType.CV_32S);
 
@@ -299,7 +299,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			rubikFace.profiler.markTime(Profiler.Event.POLYGON);
 
 			// Create gray scale image but in RGB format, and then add yellow colored polygons on top.
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.POLYGON) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.POLYGON) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				Mat gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
@@ -333,7 +333,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			rubikFace.profiler.markTime(Profiler.Event.RHOMBUS);
 
 			// Create gray scale image but in RGB format, and then add yellow colored Rhombi (parallelograms) on top.
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.RHOMBUS) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.RHOMBUS) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				Mat gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
@@ -354,7 +354,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 */	 
 			rubikFace.processRhombuses(rhombusList, image);
 			rubikFace.profiler.markTime(Profiler.Event.FACE);
-			if(RubikMenuAndParameters.imageProcessMode == ImageProcessModeEnum.FACE_DETECT) {
+			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.FACE_DETECT) {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(image);
 			}

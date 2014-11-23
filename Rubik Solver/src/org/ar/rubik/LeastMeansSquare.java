@@ -38,7 +38,7 @@ import org.opencv.core.Point;
  * @author stevep
  *
  */
-public class Lms {
+public class LeastMeansSquare {
 
 	
 	// Actually, this will/should be center of corner tile will lowest (i.e. smallest) value of Y.
@@ -56,7 +56,7 @@ public class Lms {
 	// True if results are mathematically valid.
 	public boolean valid;
 	
-	public Lms(double x, double y, double alphaLatice, Point[][] errorVectorArray, double sigma, boolean valid) {
+	public LeastMeansSquare(double x, double y, double alphaLatice, Point[][] errorVectorArray, double sigma, boolean valid) {
 		this.origin = new Point(x, y);
 		this.alphaLattice = alphaLatice;
 		this.errorVectorArray = errorVectorArray;

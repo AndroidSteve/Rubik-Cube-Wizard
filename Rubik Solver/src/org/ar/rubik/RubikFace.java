@@ -103,9 +103,9 @@ public class RubikFace {
 	public double luminousOffset = 0.0;
 	
 	// Least Means Square Result
-	public transient Lms lmsResult =
+	public transient LeastMeansSquare lmsResult =
 			// Put some dummy data here.
-			new Lms(
+			new LeastMeansSquare(
 					800,    // X origin of Rubik Face (i.e. center of tile {0,0})
 					200,    // Y origin of Rubik Face (i.e. center of tile {0,0})
 					50,     // Length of Alpha Lattice
@@ -177,7 +177,7 @@ public class RubikFace {
 		}
 		
 		// Layout Rhombi into Face Array
-		if( InitialLayoutAlgorithm.doInitialLayout(rhombusList, faceRhombusArray, alphaAngle, betaAngle) == false) {
+		if( TileLayoutAlgorithm.doInitialLayout(rhombusList, faceRhombusArray, alphaAngle, betaAngle) == false) {
 			faceRecognitionStatus =  FaceRecognitionStatusEnum.INADEQUATE;
 			return;
 		}
@@ -194,7 +194,7 @@ public class RubikFace {
 		double lastSigma = lmsResult.sigma;
 		
 		// Loop until some resolution
-		while(lmsResult.sigma > RubikMenuAndParameters.faceLmsThresholdParam.value) {
+		while(lmsResult.sigma > MenuAndParams.faceLmsThresholdParam.value) {
 			
 			if(numRhombusMoves > 5) {
 				faceRecognitionStatus =  FaceRecognitionStatusEnum.INCOMPLETE;
@@ -292,7 +292,7 @@ public class RubikFace {
 	 *   E = Y - AX
 	 * @return
 	 */
-	private Lms findOptimumFaceFit() {
+	private LeastMeansSquare findOptimumFaceFit() {
 
 		// Count how many non-empty cell actually have a rhombus in it.
 		int k = 0;
@@ -424,7 +424,7 @@ public class RubikFace {
 				sigma,
 				solveFlag));
 		
-		return new Lms(
+		return new LeastMeansSquare(
 				x,
 				y,
 				alphaLatice,
@@ -687,7 +687,7 @@ public class RubikFace {
 
 					// Only examine U and V axis, and not luminous.
 					double error =
-							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + RubikMenuAndParameters.luminousOffsetParam.value)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + RubikMenuAndParameters.luminousOffsetParam.value)) +
+							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) +
 							(candidateColorYUV[1] -  measuredColorYUV[1]) * (candidateColorYUV[1] - measuredColorYUV[1]) +
 							(candidateColorYUV[2] -  measuredColorYUV[2]) * (candidateColorYUV[2] - measuredColorYUV[2]);
 

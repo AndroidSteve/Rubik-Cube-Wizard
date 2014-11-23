@@ -38,7 +38,7 @@ import java.util.List;
 
 import android.util.Log;
 
-public class InitialLayoutAlgorithm {
+public class TileLayoutAlgorithm {
 	
 	private static List<Rhombus> rhombusList = null;
 	

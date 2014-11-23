@@ -128,7 +128,7 @@ public class DeprecatedProcessImage {
 		 */
 		Mat blur_image = new Mat(); 
 		
-	    int kernelSize = (int) RubikMenuAndParameters.gaussianBlurKernelSizeParam.value;
+	    int kernelSize = (int) MenuAndParams.gaussianBlurKernelSizeParam.value;
 	    kernelSize = kernelSize % 2 == 0 ? kernelSize + 1 : kernelSize;  // make odd
 		Imgproc.GaussianBlur(
 	    		greyscale_image, 
@@ -149,8 +149,8 @@ public class DeprecatedProcessImage {
 		Imgproc.Canny(
 				blur_image, 
 				canny_image, 
-				RubikMenuAndParameters.cannyLowerThresholdParam.value, 
-				RubikMenuAndParameters.cannyUpperThresholdParam.value,
+				MenuAndParams.cannyLowerThresholdParam.value, 
+				MenuAndParams.cannyUpperThresholdParam.value,
 				3,
 				false);
 		cannyEdgeDetectionProcessTimeStamp = System.currentTimeMillis();
@@ -170,8 +170,8 @@ public class DeprecatedProcessImage {
 				Imgproc.getStructuringElement(
 						Imgproc.MORPH_RECT, 
 						new Size(
-								RubikMenuAndParameters.dilationKernelSizeParam.value, 
-								RubikMenuAndParameters.dilationKernelSizeParam.value)));
+								MenuAndParams.dilationKernelSizeParam.value, 
+								MenuAndParams.dilationKernelSizeParam.value)));
 
 		dialationProcessTimeStamp = System.currentTimeMillis();
 
@@ -212,7 +212,7 @@ public class DeprecatedProcessImage {
 		 * Polygon Detection
 		 */	 
 		polygonList = new LinkedList<Rhombus>();
-		final double epsilon = RubikMenuAndParameters.polygonEpsilonParam.value;
+		final double epsilon = MenuAndParams.polygonEpsilonParam.value;
 
 		Iterator<MatOfPoint> contourItr = contours.iterator(); 
 		while(contourItr.hasNext()) {

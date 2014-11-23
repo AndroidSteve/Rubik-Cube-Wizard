@@ -133,9 +133,9 @@ public class DeprecatedRubikFace implements Serializable {
 	private double luminousOffset = 0.0;
 	
 	// Least Means Square Result
-	public transient Lms lmsResult =
+	public transient LeastMeansSquare lmsResult =
 			// Put some dummy data here.
-			new Lms(
+			new LeastMeansSquare(
 					800,    // X origin of Rubik Face (i.e. center of tile {0,0})
 					200,    // Y origin of Rubik Face (i.e. center of tile {0,0})
 					50,     // Length of Alpha Lattice
@@ -244,7 +244,7 @@ public class DeprecatedRubikFace implements Serializable {
 			return FaceRecognitionStatusEnum.BAD_METRICS;
 		
 		// Layout Rhombi into Face Array
-		if( InitialLayoutAlgorithm.doInitialLayout(rhombusList, faceRhombusArray, alphaAngle, betaAngle) == false)
+		if( TileLayoutAlgorithm.doInitialLayout(rhombusList, faceRhombusArray, alphaAngle, betaAngle) == false)
 			return FaceRecognitionStatusEnum.INADEQUATE;
 		
 		// Evaluate Rhombi into Array fit RMS
@@ -569,7 +569,7 @@ public class DeprecatedRubikFace implements Serializable {
 
 					// Only examine U and V axis, and not luminous.
 					double error =
-							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + RubikMenuAndParameters.luminousOffsetParam.value)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + RubikMenuAndParameters.luminousOffsetParam.value)) +
+							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) +
 							(candidateColorYUV[1] -  measuredColorYUV[1]) * (candidateColorYUV[1] - measuredColorYUV[1]) +
 							(candidateColorYUV[2] -  measuredColorYUV[2]) * (candidateColorYUV[2] - measuredColorYUV[2]);
 
@@ -665,7 +665,7 @@ public class DeprecatedRubikFace implements Serializable {
 	 *   E = Y - AX
 	 * @return
 	 */
-	private Lms findOptimumFaceFit() {
+	private LeastMeansSquare findOptimumFaceFit() {
 
 		// Count how many non-empty cell actually have a rhombus in it.
 		int k = 0;
@@ -797,7 +797,7 @@ public class DeprecatedRubikFace implements Serializable {
 				sigma,
 				solveFlag));
 		
-		return new Lms(
+		return new LeastMeansSquare(
 				x,
 				y,
 				alphaLatice,
@@ -1066,7 +1066,7 @@ public class DeprecatedRubikFace implements Serializable {
 				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
 				
 				// Draw tile characters on right side for Y axis
-				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + luminousOffset  + RubikMenuAndParameters.luminousOffsetParam.value), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + luminousOffset  + MenuAndParams.luminousOffsetParam.value), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
 				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
 //				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
 			}

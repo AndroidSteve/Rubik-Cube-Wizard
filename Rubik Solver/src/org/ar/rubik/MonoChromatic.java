@@ -83,7 +83,7 @@ public class MonoChromatic {
 			    Imgproc.GaussianBlur(
 			    		gray_image, 
 			    		gaussian_image, 
-			    		new Size(RubikMenuAndParameters.gaussianBlurKernelSizeParam.value, RubikMenuAndParameters.gaussianBlurKernelSizeParam.value), 0, 0);
+			    		new Size(MenuAndParams.gaussianBlurKernelSizeParam.value, MenuAndParams.gaussianBlurKernelSizeParam.value), 0, 0);
 //			    		MainActivity.gaussianSigmaBlurParam, 
 //			    		MainActivity.gaussianSigmaBlurParam);
         
