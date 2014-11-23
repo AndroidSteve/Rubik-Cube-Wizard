@@ -296,7 +296,7 @@ public class StateMachine2 {
         		
         		// Begin processing of cube: first check that there are exactly 9 tiles of each color.
         		else {
-        			stateModel2.reevauateSelectTileColors();
+        			Util.reevauateSelectTileColors(stateModel2);
         			if(stateModel2.isTileColorsValid() == true)
         				controllerState = ControllerStateEnum.COMPLETE;
         			else

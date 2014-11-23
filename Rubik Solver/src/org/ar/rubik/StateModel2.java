@@ -85,45 +85,51 @@ public class StateModel2 {
 	 * Adopt Face
 	 * 
 	 * Adopt faces in a particular sequence dictated by the user directed instruction on
-	 * how to rotate the code during the exploration phase.
+	 * how to rotate the code during the exploration phase.  Also tile name is 
+	 * specified at this time, and "transformedTileArray" is created which is a 
+	 * rotated version of the observed tile array so that the face orientations
+	 * match the convention of a cut-out rubik cube layout.
 	 * 
 	 * @param rubikFace2
 	 */
     public void adopt(RubikFace2 rubikFace2) {
-    	
-    	// Close observed tile array.  The new copy (transformed) will be 
-    	// face rotated so that is matches the rubik cube layout definition.
-    	rubikFace2.transformedTileArray = rubikFace2.observedTileArray.clone();
 	    
     	switch(adoptFaceCount) {
     	
     	case 0:
     		rubikFace2.faceNameEnum = FaceNameEnum.UP;
     		upRubikFace = rubikFace2;
+    		rubikFace2.transformedTileArray =  Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace2.transformedTileArray = rubikFace2.observedTileArray.clone();
     		break;
     	case 1:
     		rubikFace2.faceNameEnum = FaceNameEnum.RIGHT;
     		rightRubikFace = rubikFace2;
+    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
     		break;
     	case 2:
     		rubikFace2.faceNameEnum = FaceNameEnum.FRONT;
     		frontRubikFace = rubikFace2;
+    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
     		break;
     	case 3:
     		rubikFace2.faceNameEnum = FaceNameEnum.DOWN;
     		downRubikFace = rubikFace2;
+    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotatedClockwise(rubikFace2.observedTileArray);
     		break;
     	case 4:
     		rubikFace2.faceNameEnum = FaceNameEnum.LEFT;
     		leftRubikFace = rubikFace2;
+    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotated180(rubikFace2.observedTileArray);
     		break;
     	case 5:
     		rubikFace2.faceNameEnum = FaceNameEnum.BACK;
     		backRubikFace = rubikFace2;
+    		rubikFace2.transformedTileArray = Util.getVirtualTileArrayRotated180(rubikFace2.observedTileArray);
     		break;
     		
     		default:
-    			// =+= log error
+    			// =+= log error ?
     	}
     	
     	if(adoptFaceCount < 6) {
@@ -184,8 +190,12 @@ public class StateModel2 {
 	}
 
 
+    
 	/**
 	 * Get String Representation of Cube
+	 * 
+	 * The "String Representation" is a per the two-phase rubik cube
+	 * logic solving algorithm requires.
 	 * 
 	 * This should only be called if cube if colors are valid.
 	 * 
@@ -212,7 +222,7 @@ public class StateModel2 {
 	 */
 	private StringBuffer getStringRepresentationOfFace(RubikFace2 rubikFace) {
 		StringBuffer sb = new StringBuffer();
-		ConstantTile[][] virtualLogicalTileArray = rubikFace.observedTileArray;   //getVirtualLogicalTileArray(rubikFace);
+		ConstantTile[][] virtualLogicalTileArray = rubikFace.transformedTileArray;
 		for(int m=0; m<3; m++)
 			for(int n=0; n<3; n++)
 				sb.append(getCharacterRepresentingColor(virtualLogicalTileArray[n][m].constantTileColor));
@@ -245,13 +255,6 @@ public class StateModel2 {
 	}
 
 
-	/**
-	 * Re-Evaluate Tile Colors
-	 * 
-	 * Re-examine tile colors across entire cube.  Adjust selection so that there are nine tiles
-	 * of each color.  This provides much more robustness with respect to lighting conditions.
-	 */
-    public void reevauateSelectTileColors() {
-    }
+
 
 }

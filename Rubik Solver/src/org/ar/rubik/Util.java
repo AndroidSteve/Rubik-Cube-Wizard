@@ -94,8 +94,64 @@ public class Util {
 		yuv[2] =  0.615 * rgb[0]  +  -0.515 * rgb[1]  + -0.100 * rgb[2];
 		return yuv;
 	}
+	
+	
+	/**
+	 * Re-Evaluate Tile Colors
+	 * 
+	 * Re-examine tile colors across entire cube.  Adjust selection so that there are nine tiles
+	 * of each color.  This provides much more robustness with respect to lighting conditions.
+	 * 
+	 * @param stateModel2 
+	 */
+    public static void reevauateSelectTileColors(StateModel2 stateModel2) {
+    	
+    	// Populate a 3D space with 54 measure tile colors.
+    	
+    	// Set initial color points as per those values found in constant color
+    	
+    	// Calculate 
+    	
+    	// For populations != 9, migrate mean from lower to higher counts.
+    	
+    	
+    }
 
+    
+	/**
+	 * Create a new array instance object, populate it with tiles rotated clockwise
+	 * with respect to the pass in arg, and then return the new object.
+	 * 
+	 * @param arg
+	 * @return
+	 */
+	public static ConstantTile[][] getVirtualTileArrayRotatedClockwise(ConstantTile[][] arg) {	
+		//         n -------------->
+		//   m     0-0    1-0    2-0
+		//   |     0-1    1-1    2-1
+		//   v     0-2    1-2    2-2
+		ConstantTile [][] result = new ConstantTile[3][3];
+		result[1][1] = arg[1][1];
+		result[2][0] = arg[0][0];
+		result[2][1] = arg[1][0];
+		result[2][2] = arg[2][0];
+		result[1][2] = arg[2][1];
+		result[0][2] = arg[2][2];
+		result[0][1] = arg[1][2];
+		result[0][0] = arg[0][2];
+		result[1][0] = arg[0][1];
+		
+		return result;
+	}
+	public static ConstantTile [][] getVirtualTileArrayRotatedCounterClockwise(ConstantTile[][] arg) {
+		return getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( arg)));
+	}
+	public static ConstantTile [][] getVirtualTileArrayRotated180(ConstantTile[][] arg) {
+		return getVirtualTileArrayRotatedClockwise( getVirtualTileArrayRotatedClockwise( arg));
+	}
 
+	
+	
 	/**
 	 * Get Two Phase Error String
 	 * 
