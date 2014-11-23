@@ -292,14 +292,17 @@ public class MenuAndParams {
 			// Miscellaneous
 		case R.id.saveCubeMenuItem:
 			ma.controller.saveCube();
+			ma.stateModel.saveState();
 			break;
 
 		case R.id.recallCubeMenuItem:
 			ma.controller.recallCube();
+			ma.stateModel.recallState();
 			break;
 
 		case R.id.resetImageMenuItem:
 			ma.controller.reset();
+			ma.stateMachine.reset();
 			break;
 
 		case R.id.exitImageMenuItem:

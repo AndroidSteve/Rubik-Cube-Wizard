@@ -30,6 +30,11 @@
  */
 package org.ar.rubik;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 import org.ar.rubik.Constants.ConstantTile;
@@ -37,13 +42,17 @@ import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.AppStateEnum;
 
+import android.os.Environment;
+import android.util.Log;
+
 /**
  * @author android.steve@testlens.com
  * 
  *
  */
 public class StateModel {
-	
+
+
 	// Rubik Face of latest processed frame: may or may not be any of the six state objects.
 	public RubikFace activeRubikFace;
 	
@@ -57,16 +66,13 @@ public class StateModel {
 	public RubikFace frontRubikFace;
 	public RubikFace backRubikFace;
 	
-	// Set of above rubik faces for easy access
-//	public HashSet<RubikFace> rubikFaceSet = new HashSet<RubikFace>();
-	
 	// Array of above rubik face objects index by TileColorEnum.
 	public HashMap<ConstantTileColorEnum, RubikFace> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);
 	
 	// Array of above rubik face objects index by FaceNameEnum
 	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
 
-	//
+	// Application State; see AppStateEnum.
 	public AppStateEnum appState = AppStateEnum.START;
 
     // Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
@@ -84,6 +90,14 @@ public class StateModel {
 	// We assume that faces will be explored in a particular sequence.
 	private int adoptFaceCount = 0;
 	
+	
+	
+	/**
+	 * Default State Model Constructor
+	 */
+	public StateModel() {
+		reset();
+    }
 	
 	
 	
@@ -261,6 +275,108 @@ public class StateModel {
 	}
 
 
+	/**
+	 * Save cube state to file.
+	 */
+	public void saveState() {
+		
+		RubikFace [] rubikFaceArray = new RubikFace[] { 
+				upRubikFace,
+				rightRubikFace,
+				frontRubikFace,
+				downRubikFace,
+				leftRubikFace,
+				backRubikFace};
+		
+		try {
+			File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+			String filename = "cube.ser";
+			File file = new File(path, filename);
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+			out.writeObject(rubikFaceArray);
+			out.flush();
+			out.close();
+			Log.i(Constants.TAG, "SUCCESS writing cube state to external storage:" + filename);
+		}
+		catch (Exception e) {
+			System.out.print(e);
+			Log.e(Constants.TAG, "Fail writing cube state to external storage: " + e);
+		}
+	}
 
 
+	/**
+	 * Recall cube state from file.
+	 */
+	public void recallState() {
+		
+		RubikFace [] rubikFaceArray = new RubikFace[6];
+		
+		try {
+			File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+			String filename = "cube.ser";
+			File file = new File(path, filename);
+	        ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+	        rubikFaceArray = (RubikFace[])in.readObject();
+	        in.close();
+			Log.i(Constants.TAG, "SUCCESS reading cube state to external storage:" + filename);
+		}
+		catch (Exception e) {
+			System.out.print(e);
+			Log.e(Constants.TAG, "Fail reading cube to external storage: " + e);
+		}
+		
+		upRubikFace     = rubikFaceArray[0];
+		rightRubikFace  = rubikFaceArray[1];
+		frontRubikFace  = rubikFaceArray[2];
+		downRubikFace   = rubikFaceArray[3];
+		leftRubikFace   = rubikFaceArray[4];
+		backRubikFace   = rubikFaceArray[5];
+	}
+
+
+	/**
+	 * Reset
+	 * 
+	 * Reset state to the initial values.
+	 */
+	public void reset() {
+
+		// Rubik Face of latest processed frame: may or may not be any of the six state objects.
+		activeRubikFace = null;
+
+		/*
+		 * This is "Rubik Cube State" or "Rubik Cube Model" in model-veiw-controller vernacular.
+		 */
+		upRubikFace    = null;
+		downRubikFace  = null;
+		leftRubikFace  = null;
+		rightRubikFace = null;
+		frontRubikFace = null;
+		backRubikFace  = null;
+
+		// Array of above rubik face objects index by TileColorEnum.
+		colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);
+
+		// Array of above rubik face objects index by FaceNameEnum
+		nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
+
+		// Application State = null; see AppStateEnum.
+		appState = AppStateEnum.START;
+
+		// Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
+		verificationResults = 0;
+
+		// String notation on how to solve cube.
+		solutionResults = null;
+
+		// Above, but broken into individual moves.
+		solutionResultsArray = null;
+
+		// Index to above array as to which move we are on.
+		solutionResultIndex = 0;
+
+		// We assume that faces will be explored in a particular sequence.
+		adoptFaceCount = 0;
+	}
 }
