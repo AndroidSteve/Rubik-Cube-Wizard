@@ -35,6 +35,7 @@ import java.util.HashMap;
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
+import org.ar.rubik.Constants.AppStateEnum;
 
 /**
  * @author android.steve@testlens.com
@@ -64,8 +65,10 @@ public class StateModel2 {
 	
 	// Array of above rubik face objects index by FaceNameEnum
 	public HashMap<FaceNameEnum, RubikFace2> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace2>(6);
-	
-	
+
+	//
+	public AppStateEnum appState = AppStateEnum.START;
+
     // Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
 	public int verificationResults;
 	
@@ -74,6 +77,9 @@ public class StateModel2 {
 	
 	// Above, but broken into individual moves.
 	public String [] solutionResultsArray;
+	
+	// Index to above array as to which move we are on.
+	public int solutionResultIndex;
 	
 	// We assume that faces will be explored in a particular sequence.
 	private int adoptFaceCount = 0;

@@ -13,6 +13,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 
+import android.util.Log;
+
 /**
  * @author android.steve@testlens.com
  *
@@ -80,8 +82,8 @@ public class Annotation2 {
 		}
 		
 		
-		// Hack only for call to user instructions
-		stateMachine2.renderUserInstructions(image, stateModel2.activeRubikFace);
+		// Render Text User Instructions on top part of screen.
+		renderUserInstructions(image);
 		
 		return image;
 	}
@@ -478,5 +480,175 @@ public class Annotation2 {
 			Core.putText(image, String.format("%s:  %d", constantTileColor, count ),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		}
 	}
+	
+	
+  	/**
+   	 * Render User Instructions
+   	 * 
+   	 * @param image
+   	 */
+   	public void renderUserInstructions(Mat image) {
+
+   		// Create black area for text
+   		if(RubikMenuAndParameters.userTextDisplay == true)
+   			Core.rectangle(image, new Point(0, 0), new Point(1270, 60), Constants.ColorBlack, -1);
+
+//   		pilotGLRenderer.setCubeOrienation(rubikFace);
+
+   		switch(stateModel2.appState) {
+
+   		case START:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Show Me The Rubik Cube", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+//   			pilotGLRenderer.setRenderArrow(false);
+   			break;
+
+   		case GOT_IT:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "OK, Got It", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+//   			pilotGLRenderer.setRenderArrow(false);
+//   			pilotGLRenderer.setRenderCube(RubikMenuAndParameters.cubeOverlayDisplay);
+   			break;
+
+   		case ROTATE:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Please Rotate: " + stateModel2.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+//   			if(  stateModel2.getNumValidFaces() % 2 == 0)
+//   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
+//   			else
+//   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
+   			break;
+
+   		case SEARCHING:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Searching for Another Face", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+//   			pilotGLRenderer.setRenderArrow(false);
+   			break;
+
+   		case COMPLETE:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Cube is Complete and has Good Colors", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   			break;
+
+   		case WAITING:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Waiting - Preload Next: " + stateMachine2.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+   			break;
+
+   		case BAD_COLORS:
+//   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Cube is Complete but has Bad Colors", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   			break;
+
+   		case VERIFIED:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Cube is Complete and Verified", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   			break;
+
+   		case INCORRECT:
+//   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel2.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   			break;
+
+   		case SOLVED:
+   			if(RubikMenuAndParameters.userTextDisplay == true) {
+   				Core.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   				Core.rectangle(image, new Point(0, 60), new Point(1270, 120), Constants.ColorBlack, -1);
+   				Core.putText(image, "" + stateModel2.solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
+   			}
+   			break;
+
+   		case DO_MOVE:
+   			String moveNumonic = stateModel2.solutionResultsArray[stateModel2.solutionResultIndex];
+   			Log.d(Constants.TAG, "Move:" + moveNumonic + ":");
+   			StringBuffer moveDescription = new StringBuffer("Rotate ");
+   			switch(moveNumonic.charAt(0)) {
+   			case 'U': moveDescription.append("Top Face"); break;
+   			case 'D': moveDescription.append("Down Face"); break;
+   			case 'L': moveDescription.append("Left Face"); break;
+   			case 'R': moveDescription.append("Right Face"); break;
+   			case 'F': moveDescription.append("Front Face"); break;
+   			case 'B': moveDescription.append("Back Face"); break;
+   			}
+   			if(moveNumonic.length() == 1)
+   				moveDescription.append(" Clockwise");
+   			else if(moveNumonic.charAt(1) == '2')
+   				moveDescription.append(" 180 Degrees");
+   			else if(moveNumonic.charAt(1) == '\'')
+   				moveDescription.append(" Counter Clockwise");
+   			else
+   				moveDescription.append("?");
+
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, moveDescription.toString(), new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+
+//
+//   			// Args to be passed to renderer.
+//   			Rotation rotation = null;
+//   			FaceType faceType = null;
+//   			Scalar color = null;
+//   			
+//   			if(moveNumonic.length() == 1) 
+//   				rotation = Rotation.CLOCKWISE;
+//   			else if(moveNumonic.charAt(1) == '2') 
+//   				rotation = Rotation.ONE_HUNDRED_EIGHTY;
+//   			else if(moveNumonic.charAt(1) == '\'') 
+//   				rotation = Rotation.COUNTER_CLOCKWISE;
+//   			else
+//   				throw new java.lang.Error("Unknow rotation amount");
+//
+//   			// Obtain details of arrow to be rendered.
+//   			switch(moveNumonic.charAt(0)) {
+//   			case 'U': 
+//   				faceType = FaceType.UP;
+//   				color = Constants.RubikWhite;
+//   				break;
+//   			case 'D': 
+//   				faceType = FaceType.DOWN;  
+//   				color = Constants.RubikYellow;
+//   				break;
+//   			case 'L': 
+//   				faceType = FaceType.LEFT;
+//   				color = Constants.RubikGreen;
+//   				break;
+//   			case 'R': 
+//   				faceType = FaceType.RIGHT; 
+//   				color = Constants.RubikBlue;
+//   				break;
+//   			case 'F': 
+//   				faceType = FaceType.FRONT;
+//   				color = Constants.RubikRed;
+//   				break;
+//   			case 'B':
+//   				faceType = FaceType.BACK;
+//   				color = Constants.RubikOrange;
+//   				break;
+//   			}
+//   			pilotGLRenderer.setRenderCube(true && RubikMenuAndParameters.cubeOverlayDisplay);
+//   			pilotGLRenderer.showCubeEdgeRotationArrow(
+//   					rotation,
+//   					faceType, 
+//   					color);
+   			break;
+
+   		case WAITING_FOR_MOVE_COMPLETE:
+//   			pilotGLRenderer.setRenderArrow(false);
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Waiting for move to be completed", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   			break;
+
+   		case DONE:
+//   			pilotGLRenderer.setRenderArrow(false);
+   			break;
+
+   		default:
+   			if(RubikMenuAndParameters.userTextDisplay == true)
+   				Core.putText(image, "Oops", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+   			break;
+   		}
+   		
+   		// User indicator that tables have been computed.
+   		Core.line(image, new Point(0, 0), new Point(1270, 0), stateMachine2.pruneTableLoaderCount < 12 ? Constants.ColorRed : Constants.ColorGreen, 4);
+   	}
 
 }
