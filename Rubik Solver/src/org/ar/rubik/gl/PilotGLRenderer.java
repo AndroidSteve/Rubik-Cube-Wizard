@@ -34,8 +34,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants;
 import org.ar.rubik.Lms;
-import org.ar.rubik.RubikFace;
-import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
+import org.ar.rubik.DeprecatedRubikFace;
+import org.ar.rubik.DeprecatedRubikFace.FaceRecognitionStatusEnum;
 import org.ar.rubik.gl.GLArrow.Amount;
 import org.opencv.core.Scalar;
 
@@ -280,7 +280,7 @@ public class PilotGLRenderer implements GLSurfaceView.Renderer {
 	 * 
 	 * @param rubikFace
 	 */
-	public void setCubeOrienation(RubikFace rubikFace) {
+	public void setCubeOrienation(DeprecatedRubikFace rubikFace) {
 		
 		final float opecnCL2opencvRatio = 100.0f;
 		final float xOffset = 650.0f;

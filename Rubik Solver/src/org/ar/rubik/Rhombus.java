@@ -356,9 +356,9 @@ public class Rhombus {
 	 * @param image
 	 * @param rhombusList
 	 */
-	public static void renderRhombusRecognitionMetrics(Mat image, List<Rhombus> rhombusList) {
+	public static void deprecatedRenderRhombusRecognitionMetrics(Mat image, List<Rhombus> rhombusList) {
 		
-		RubikFace.drawFlatFaceRepresentation(image, RubikCube.active, 50, 50, 50);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, DeprecatedRubikCube.active, 50, 50, 50);
 		
 		int totalNumber = 0;
 		int totalNumberValid = 0;

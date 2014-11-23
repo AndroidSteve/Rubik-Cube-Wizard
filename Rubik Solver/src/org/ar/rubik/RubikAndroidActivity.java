@@ -78,7 +78,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
 	private GLSurfaceView annotationGLSurfaceView;
 	
 	// Top Level Controller of this application
-    public Controller controller;  // =+= some menu actions need this.
+    public DeprecatedController controller;  // =+= some menu actions need this.
     
     // Primary Image Processor
     public ImageRecognizer2 imageRecognizer2;
@@ -199,7 +199,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
 
 
         	// Instantiate Controller Objet
-        	controller = new Controller(pilotGlRenderer, annotationGlRenderer);
+        	controller = new DeprecatedController(pilotGlRenderer, annotationGlRenderer);
         }
 
         // =+= Currently obsolete, but is used to support OpenCL

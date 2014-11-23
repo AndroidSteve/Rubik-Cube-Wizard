@@ -35,7 +35,7 @@ package org.ar.rubik;
 import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ImageProcessModeEnum;
 import org.ar.rubik.Constants.ImageSourceModeEnum;
-import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
+import org.ar.rubik.DeprecatedRubikFace.FaceRecognitionStatusEnum;
 import org.ar.rubik.gl.AnnotationGLRenderer;
 import org.ar.rubik.gl.PilotGLRenderer;
 import org.ar.rubik.gl.PilotGLRenderer.FaceType;
@@ -52,7 +52,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 
-public class Controller {
+public class DeprecatedController {
 	
 	public enum ControllerStateEnum { 
 		START,     // Ready
@@ -104,7 +104,7 @@ public class Controller {
 	private AnnotationGLRenderer annotationGlRenderer;
 
 	// Most recent face (not necessarily that which decision are made on).
-	private RubikFace rubikFace;
+	private DeprecatedRubikFace rubikFace;
 
 	// Perform reset on Frame Thread, otherwise if performed asynchronously, there are too many potential null pointer problems.
 	private boolean pendendReset = false;
@@ -112,7 +112,7 @@ public class Controller {
 	private boolean hackFastMode = false;
 	private boolean hackSkipImageProc = false;
 
-	private RubikFace hackRubikFace;
+	private DeprecatedRubikFace hackRubikFace;
 	
 
 
@@ -123,7 +123,7 @@ public class Controller {
      * @param annotationGlRenderer 
      * 
      */
-    public Controller(PilotGLRenderer pilotGLRenderer, AnnotationGLRenderer annotationGlRenderer) {
+    public DeprecatedController(PilotGLRenderer pilotGLRenderer, AnnotationGLRenderer annotationGlRenderer) {
     	
     	this.pilotGLRenderer = pilotGLRenderer;
     	this.annotationGlRenderer = annotationGlRenderer;
@@ -172,7 +172,7 @@ public class Controller {
 		    lastStableRubikFace = null;
 		    consecutiveCandiateRubikFaceCount = 0;
 		    allowOneMoreRotation = false;
-			RubikCube.reset();
+			DeprecatedRubikCube.reset();
 		}
 		
 		switch( imageSourceMode) {
@@ -203,7 +203,7 @@ public class Controller {
 		else {
 
 			// Instantiate a Rubik Face Object
-			rubikFace = new RubikFace(imageProcessMode);
+			rubikFace = new DeprecatedRubikFace(imageProcessMode);
 
 			// Process Image and Obtain a Rubik Face object if possible		
 			resultImage = rubikFace.findSolutionFromImage(image);
@@ -243,13 +243,13 @@ public class Controller {
     	PARTIAL  // A particular face seems to becoming unstable.
     	};
     private FaceRecogniztionState faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
-    private RubikFace candidateRubikFace = null;
+    private DeprecatedRubikFace candidateRubikFace = null;
     private int consecutiveCandiateRubikFaceCount = 0;
 	private final int consecutiveCandidateCountThreashold = 1;
 
-    private void processRubikFaceSolution(RubikFace rubikFace) {
+    private void processRubikFaceSolution(DeprecatedRubikFace rubikFace) {
     	
-    	RubikCube.active = rubikFace;
+    	DeprecatedRubikCube.active = rubikFace;
     	
     	// Sometimes, we want state to change simply on frame events.
        	onFrameStateChanges();
@@ -349,9 +349,9 @@ public class Controller {
      * @param hashCode 
      * 
      */
-    private RubikFace lastStableRubikFace = null;
+    private DeprecatedRubikFace lastStableRubikFace = null;
 	private boolean allowOneMoreRotation = false;
-    private void onStableRubikFaceRecognition(RubikFace rubikFace) {
+    private void onStableRubikFaceRecognition(DeprecatedRubikFace rubikFace) {
 
    		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + rubikFace.hashCode);
     	if(lastStableRubikFace == null || rubikFace.hashCode != lastStableRubikFace.hashCode) {
@@ -401,7 +401,7 @@ public class Controller {
      * 
      * @param rubikFaceHashCode
      */
-    private void onNewStableRubikFaceRecognized(RubikFace rubikFace) {
+    private void onNewStableRubikFaceRecognized(DeprecatedRubikFace rubikFace) {
     	
     	Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + controllerState);
 
@@ -409,16 +409,16 @@ public class Controller {
     	switch(controllerState) {
 
     	case START:
-    		RubikCube.adopt(rubikFace);
+    		DeprecatedRubikCube.adopt(rubikFace);
     		controllerState = ControllerStateEnum.GOT_IT;
     		hackFastMode = true;
     		break;
     		
     	case SEARCHING:
-    		RubikCube.adopt(rubikFace);
+    		DeprecatedRubikCube.adopt(rubikFace);
 
     		// Have not yet seen all six sides.
-    		if(RubikCube.isThereAfullSetOfFaces() == false) {
+    		if(DeprecatedRubikCube.isThereAfullSetOfFaces() == false) {
     			controllerState = ControllerStateEnum.GOT_IT;
     			hackFastMode = true;
     			allowOneMoreRotation = true;
@@ -433,7 +433,7 @@ public class Controller {
     		
     		// Begin processing of cube: first check that there are exactly 9 tiles of each color.
     		else
-    			if(RubikCube.isTileColorsValid() == true)
+    			if(DeprecatedRubikCube.isTileColorsValid() == true)
     				controllerState = ControllerStateEnum.COMPLETE;
     			else
     				controllerState = ControllerStateEnum.BAD_COLORS;
@@ -491,7 +491,7 @@ public class Controller {
 
 		   
 	   case COMPLETE:
-		   String cubeString = RubikCube.getStringRepresentationOfCube();
+		   String cubeString = DeprecatedRubikCube.getStringRepresentationOfCube();
 
 		   // Returns 0 if cube is solvable.
 		   verificationResults = Tools.verify(cubeString);
@@ -512,7 +512,7 @@ public class Controller {
 		   
 	   case VERIFIED:
 		   hackFastMode = false;
-		   String cubeString2 = RubikCube.getStringRepresentationOfCube();
+		   String cubeString2 = DeprecatedRubikCube.getStringRepresentationOfCube();
 
 		   // Returns 0 if solution computed
 		   solutionResults = Search.solution(cubeString2, 25, 2, false);
@@ -552,7 +552,7 @@ public class Controller {
 	 * @param image
 	 * @param rubikFace 
 	 */
-	private void renderUserInstructions(Mat image, RubikFace rubikFace) {
+	private void renderUserInstructions(Mat image, DeprecatedRubikFace rubikFace) {
 
 		// Create black area for text
 		if(RubikMenuAndParameters.userTextDisplay == true)
@@ -577,8 +577,8 @@ public class Controller {
 
 		case ROTATE:
 			if(RubikMenuAndParameters.userTextDisplay == true)
-				Core.putText(image, "Please Rotate: " + RubikCube.getNumValidFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-			if(  RubikCube.getNumValidFaces() % 2 == 0)
+				Core.putText(image, "Please Rotate: " + DeprecatedRubikCube.getNumValidFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+			if(  DeprecatedRubikCube.getNumValidFaces() % 2 == 0)
 				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
 			else
 				pilotGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
@@ -740,47 +740,47 @@ public class Controller {
 		case LAYOUT:
 			annotationGlRenderer.setRenderState(false);
 	    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-			RubikCube.renderFlatLayoutRepresentation(image);
+			DeprecatedRubikCube.renderFlatLayoutRepresentation(image);
 			break;
 			
 		case RHOMBUS:
 			annotationGlRenderer.setRenderState(false);
 	    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-	    	Rhombus.renderRhombusRecognitionMetrics(image, ProcessImage.polygonList);
+	    	Rhombus.deprecatedRenderRhombusRecognitionMetrics(image, DeprecatedProcessImage.polygonList);
 			break;
 
 		case FACE_METRICS:
 			annotationGlRenderer.setRenderState(false);
-			if(RubikCube.active != null) {
+			if(DeprecatedRubikCube.active != null) {
 		    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-				RubikCube.active.renderFaceRecognitionMetrics(image);
+				DeprecatedRubikCube.active.renderFaceRecognitionMetrics(image);
 			}
 			break;
 			
 		case CUBE_METRICS:
 			annotationGlRenderer.setRenderState(false);
 		    Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-			RubikCube.renderCubeMetrics(image);
+			DeprecatedRubikCube.renderCubeMetrics(image);
 			break;
 
 		case TIME:
 			annotationGlRenderer.setRenderState(false);
 	    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
-	    	ProcessImage.renderTimeConsumptionMetrics(image);
+	    	DeprecatedProcessImage.renderTimeConsumptionMetrics(image);
 			break;
 			
 		case COLOR:
 			annotationGlRenderer.setRenderState(false);
-			if(RubikCube.active != null) {
+			if(DeprecatedRubikCube.active != null) {
 		    	Core.rectangle(image, new Point(0, 0), new Point(570, 720), Constants.ColorBlack, -1);
-				RubikCube.active.renderColorMetrics(image);
+				DeprecatedRubikCube.active.renderColorMetrics(image);
 			}
 			break;
 			
 		case NORMAL:
 			Core.rectangle(image, new Point(0, 0), new Point(350, 720), Constants.ColorBlack, -1);
 			annotationGlRenderer.setRenderState(true);
-			annotationGlRenderer.setCubeOrienation(RubikCube.active);
+			annotationGlRenderer.setCubeOrienation(DeprecatedRubikCube.active);
 			break;
 		}
 		
@@ -822,7 +822,7 @@ public class Controller {
 	 * Save the cube state to file system.
 	 */
 	public void saveCube() {
-		RubikCube.saveCube();
+		DeprecatedRubikCube.saveCube();
 	}
 
 
@@ -832,10 +832,10 @@ public class Controller {
 	 */
 	public void recallCube() {
 		
-		RubikCube.recallCube();
+		DeprecatedRubikCube.recallCube();
 		
-		if(RubikCube.isThereAfullSetOfFaces() == true)
-			if(RubikCube.isTileColorsValid() == true)
+		if(DeprecatedRubikCube.isThereAfullSetOfFaces() == true)
+			if(DeprecatedRubikCube.isTileColorsValid() == true)
 				controllerState = ControllerStateEnum.COMPLETE;
 			else
 				controllerState = ControllerStateEnum.BAD_COLORS;

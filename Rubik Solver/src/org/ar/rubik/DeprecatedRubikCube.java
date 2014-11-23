@@ -44,25 +44,25 @@ import org.opencv.core.Point;
 import android.os.Environment;
 import android.util.Log;
 
-public class RubikCube {
+public class DeprecatedRubikCube {
 	
-	public static RubikFace active;
+	public static DeprecatedRubikFace active;
 	
 	// An array of Rubik Face Objects.  Order is per Logical Tile Color Enum Ordinal. 
 	// Faces are arranged by color of center tile.  
-	public static RubikFace [] rubikFaceArray = new RubikFace[6];
+	public static DeprecatedRubikFace [] rubikFaceArray = new DeprecatedRubikFace[6];
 	
 	// Count how many tile colors entire cube has as a first check.
 	private static int [] numColorTilesArray = new int[6];
 
 	
 	// We define this relationship: White on Top and Red on Front.
-	public static RubikFace getUpFace()    {return rubikFaceArray[ConstantTileColorEnum.WHITE.ordinal()];}
-	public static RubikFace getDownFace()  {return rubikFaceArray[ConstantTileColorEnum.YELLOW.ordinal()];}
-	public static RubikFace getRightFace() {return rubikFaceArray[ConstantTileColorEnum.BLUE.ordinal()];}
-	public static RubikFace getLeftFace()  {return rubikFaceArray[ConstantTileColorEnum.GREEN.ordinal()];}
-	public static RubikFace getFrontFace() {return rubikFaceArray[ConstantTileColorEnum.RED.ordinal()];}
-	public static RubikFace getBackFace()  {return rubikFaceArray[ConstantTileColorEnum.ORANGE.ordinal()];}
+	public static DeprecatedRubikFace getUpFace()    {return rubikFaceArray[ConstantTileColorEnum.WHITE.ordinal()];}
+	public static DeprecatedRubikFace getDownFace()  {return rubikFaceArray[ConstantTileColorEnum.YELLOW.ordinal()];}
+	public static DeprecatedRubikFace getRightFace() {return rubikFaceArray[ConstantTileColorEnum.BLUE.ordinal()];}
+	public static DeprecatedRubikFace getLeftFace()  {return rubikFaceArray[ConstantTileColorEnum.GREEN.ordinal()];}
+	public static DeprecatedRubikFace getFrontFace() {return rubikFaceArray[ConstantTileColorEnum.RED.ordinal()];}
+	public static DeprecatedRubikFace getBackFace()  {return rubikFaceArray[ConstantTileColorEnum.ORANGE.ordinal()];}
 		
 	
 	
@@ -80,20 +80,20 @@ public class RubikCube {
 		
 		
 		// Faces are orientated as per Face Recognition (and N, M axis)
-		RubikFace.drawFlatFaceRepresentation(image, getUpFace(),     3 * tSize, 0 * tSize + 70, tSize);
-		RubikFace.drawFlatFaceRepresentation(image, getLeftFace(),   0 * tSize, 3 * tSize + 70, tSize);
-		RubikFace.drawFlatFaceRepresentation(image, getFrontFace(),  3 * tSize, 3 * tSize + 70, tSize);
-		RubikFace.drawFlatFaceRepresentation(image, getRightFace(),  6 * tSize, 3 * tSize + 70, tSize);
-		RubikFace.drawFlatFaceRepresentation(image, getBackFace(),   9 * tSize, 3 * tSize + 70, tSize);
-		RubikFace.drawFlatFaceRepresentation(image, getDownFace(),   3 * tSize, 6 * tSize + 70, tSize);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, getUpFace(),     3 * tSize, 0 * tSize + 70, tSize);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, getLeftFace(),   0 * tSize, 3 * tSize + 70, tSize);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, getFrontFace(),  3 * tSize, 3 * tSize + 70, tSize);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, getRightFace(),  6 * tSize, 3 * tSize + 70, tSize);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, getBackFace(),   9 * tSize, 3 * tSize + 70, tSize);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, getDownFace(),   3 * tSize, 6 * tSize + 70, tSize);
 
 		// Faces are orientated as per a paper cut-out that can be folded into a cube.
-		RubikFace.drawLogicalFlatFaceRepresentation(image, getUpFace(),    getVirtualLogicalTileArray(  getUpFace()),     3 * tSize, 0 * tSize + 400, tSize);
-		RubikFace.drawLogicalFlatFaceRepresentation(image, getLeftFace(),  getVirtualLogicalTileArray(  getLeftFace()),   0 * tSize, 3 * tSize + 400, tSize);
-		RubikFace.drawLogicalFlatFaceRepresentation(image, getFrontFace(), getVirtualLogicalTileArray(  getFrontFace()),  3 * tSize, 3 * tSize + 400, tSize);
-		RubikFace.drawLogicalFlatFaceRepresentation(image, getRightFace(), getVirtualLogicalTileArray(  getRightFace()),  6 * tSize, 3 * tSize + 400, tSize);
-		RubikFace.drawLogicalFlatFaceRepresentation(image, getBackFace(),  getVirtualLogicalTileArray(  getBackFace()),   9 * tSize, 3 * tSize + 400, tSize);
-		RubikFace.drawLogicalFlatFaceRepresentation(image, getDownFace(),  getVirtualLogicalTileArray(  getDownFace()),   3 * tSize, 6 * tSize + 400, tSize);
+		DeprecatedRubikFace.drawLogicalFlatFaceRepresentation(image, getUpFace(),    getVirtualLogicalTileArray(  getUpFace()),     3 * tSize, 0 * tSize + 400, tSize);
+		DeprecatedRubikFace.drawLogicalFlatFaceRepresentation(image, getLeftFace(),  getVirtualLogicalTileArray(  getLeftFace()),   0 * tSize, 3 * tSize + 400, tSize);
+		DeprecatedRubikFace.drawLogicalFlatFaceRepresentation(image, getFrontFace(), getVirtualLogicalTileArray(  getFrontFace()),  3 * tSize, 3 * tSize + 400, tSize);
+		DeprecatedRubikFace.drawLogicalFlatFaceRepresentation(image, getRightFace(), getVirtualLogicalTileArray(  getRightFace()),  6 * tSize, 3 * tSize + 400, tSize);
+		DeprecatedRubikFace.drawLogicalFlatFaceRepresentation(image, getBackFace(),  getVirtualLogicalTileArray(  getBackFace()),   9 * tSize, 3 * tSize + 400, tSize);
+		DeprecatedRubikFace.drawLogicalFlatFaceRepresentation(image, getDownFace(),  getVirtualLogicalTileArray(  getDownFace()),   3 * tSize, 6 * tSize + 400, tSize);
 	}
 	
 	
@@ -106,7 +106,7 @@ public class RubikCube {
 	 * @param rubikFace
 	 * @return
 	 */
-	private static ConstantTile[][] getVirtualLogicalTileArray( RubikFace rubikFace) {
+	private static ConstantTile[][] getVirtualLogicalTileArray( DeprecatedRubikFace rubikFace) {
 
 		if(rubikFace == null)
 			return null;
@@ -167,7 +167,7 @@ public class RubikCube {
 	 * 
 	 * @param rubikFace
 	 */
-	public static void adopt(RubikFace rubikFace) {
+	public static void adopt(DeprecatedRubikFace rubikFace) {
 		// This is becoming archaic
 		active = rubikFace;
 		
@@ -218,7 +218,7 @@ public class RubikCube {
 
 		// Count up
 		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
-			RubikFace rubikFace = rubikFaceArray[constantTileColor.ordinal()];
+			DeprecatedRubikFace rubikFace = rubikFaceArray[constantTileColor.ordinal()];
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
 					numColorTilesArray[ rubikFace.logicalTileArray[n][m].constantTileColor.ordinal() ]++;
@@ -262,7 +262,7 @@ public class RubikCube {
 	 * @param rubikFace
 	 * @return
 	 */
-	private static StringBuffer getStringRepresentationOfFace(RubikFace rubikFace) {
+	private static StringBuffer getStringRepresentationOfFace(DeprecatedRubikFace rubikFace) {
 		StringBuffer sb = new StringBuffer();
 		ConstantTile[][] virtualLogicalTileArray = getVirtualLogicalTileArray(rubikFace);
 		for(int m=0; m<3; m++)
@@ -351,7 +351,7 @@ public class RubikCube {
 			String filename = "cube.ser";
 			File file = new File(path, filename);
 	        ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-	        rubikFaceArray = (RubikFace[])in.readObject();
+	        rubikFaceArray = (DeprecatedRubikFace[])in.readObject();
 	        in.close();
 			Log.i(Constants.TAG, "SUCCESS reading cube state to external storage:" + filename);
 		}

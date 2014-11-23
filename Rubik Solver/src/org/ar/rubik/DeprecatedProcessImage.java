@@ -51,7 +51,7 @@ import org.opencv.imgproc.Imgproc;
 
 import android.util.Log;
 
-public class ProcessImage {
+public class DeprecatedProcessImage {
 	
 	private static long startTimeStamp;
 	private static long greyscaleProcessTimeStamp;
@@ -83,7 +83,7 @@ public class ProcessImage {
 			ImageSourceModeEnum imageSourceMode,
 			ImageProcessModeEnum imageProcessMode,
 			List<Rhombus> rhombusList,
-			RubikFace rubikFace) {
+			DeprecatedRubikFace rubikFace) {
 
 
 		/* **********************************************************************
@@ -93,7 +93,7 @@ public class ProcessImage {
 			return original_image;
 		
 		final Size imageSize = original_image.size();
-		RubikCube.active = null;
+		DeprecatedRubikCube.active = null;
 		
 		startTimeStamp                     = System.currentTimeMillis();
 		greyscaleProcessTimeStamp          = startTimeStamp;
@@ -303,7 +303,7 @@ public class ProcessImage {
 
 	public static Mat renderTimeConsumptionMetrics(Mat image) {
 		
-		RubikFace.drawFlatFaceRepresentation(image, RubikCube.active, 50, 50, 50);
+		DeprecatedRubikFace.drawFlatFaceRepresentation(image, DeprecatedRubikCube.active, 50, 50, 50);
 
 		Core.putText(image, "Greyscale: " + (greyscaleProcessTimeStamp - startTimeStamp) + "mS", new Point(50, 300), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		Core.putText(image, "Gaussian Blur: " + (boxBlurProcessTimeStamp - greyscaleProcessTimeStamp) + "mS", new Point(50, 350), Constants.FontFace, 2, Constants.ColorWhite, 2);

@@ -33,8 +33,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Lms;
-import org.ar.rubik.RubikFace;
-import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
+import org.ar.rubik.DeprecatedRubikFace;
+import org.ar.rubik.DeprecatedRubikFace.FaceRecognitionStatusEnum;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -136,7 +136,7 @@ public class AnnotationGLRenderer implements GLSurfaceView.Renderer {
 	/**
 	 * @param active
 	 */
-    public void setCubeOrienation(RubikFace rubikFace) {
+    public void setCubeOrienation(DeprecatedRubikFace rubikFace) {
 		
 		cubeXrotation = 35.0f;
 		cubeYrotation = 45.0f;

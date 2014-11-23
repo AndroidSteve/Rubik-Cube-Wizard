@@ -84,7 +84,7 @@ import android.util.Log;
  * @author stevep
  *
  */
-public class RubikFace implements Serializable {
+public class DeprecatedRubikFace implements Serializable {
 	
 	// For purposes of serialization
 	private static final long serialVersionUID = -8498294721543708545L;
@@ -169,7 +169,7 @@ public class RubikFace implements Serializable {
 	 * @param imageProcessMode
 	 * @param annotationMode
 	 */
-	public RubikFace(ImageProcessModeEnum imageProcessMode) {
+	public DeprecatedRubikFace(ImageProcessModeEnum imageProcessMode) {
 		
 		this.imageProcessMode = imageProcessMode;
 		
@@ -197,7 +197,7 @@ public class RubikFace implements Serializable {
 		this.original_image = image;
 		
 		// This will fill in rhombusList.
-		Mat processImage = ProcessImage.processImageIntoRhombiList(
+		Mat processImage = DeprecatedProcessImage.processImageIntoRhombiList(
 			image, 
 			null,
 			imageProcessMode,
@@ -210,11 +210,11 @@ public class RubikFace implements Serializable {
 		
 		faceRecognitionStatus = findSolutionFromRhombiList();
 		
-		ProcessImage.noteCompletionTime();
+		DeprecatedProcessImage.noteCompletionTime();
 				
 		Log.i(Constants.TAG, String.format("Face Solution=%12s Time=%dmS NumRhombi=%d Sigma=%4.0f NumMoves=%d",
 				faceRecognitionStatus,
-				ProcessImage.getTotalComputionTime(),
+				DeprecatedProcessImage.getTotalComputionTime(),
 				rhombusList.size(),
 				lmsResult.sigma,
 				numRhombusMoves) );
@@ -942,7 +942,7 @@ public class RubikFace implements Serializable {
 	 * @param image
 	 * @param tSize 
 	 */
-	public static void drawFlatFaceRepresentation(Mat image, RubikFace rubikFace, double x, double y, int tSize) {
+	public static void drawFlatFaceRepresentation(Mat image, DeprecatedRubikFace rubikFace, double x, double y, int tSize) {
 		
 		if(rubikFace == null) {
 			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), Constants.ColorGrey, -1);
@@ -972,7 +972,7 @@ public class RubikFace implements Serializable {
 	 * @param image
 	 * @param tSize 
 	 */
-	public static void drawLogicalFlatFaceRepresentation(Mat image, RubikFace rubikFace, ConstantTile[][] array, double x, double y, int tSize) {
+	public static void drawLogicalFlatFaceRepresentation(Mat image, DeprecatedRubikFace rubikFace, ConstantTile[][] array, double x, double y, int tSize) {
 		
 		if(rubikFace == null) {
 			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), Constants.ColorGrey, -1);
@@ -1099,7 +1099,7 @@ public class RubikFace implements Serializable {
 
 
 
-	public boolean nearlyIdentical(RubikFace lastRubikFace) {
+	public boolean nearlyIdentical(DeprecatedRubikFace lastRubikFace) {
 		// TODO Auto-generated method stub
 		return false;
 	}
