@@ -42,29 +42,29 @@ import org.ar.rubik.Constants.AppStateEnum;
  * 
  *
  */
-public class StateModel2 {
+public class StateModel {
 	
 	// Rubik Face of latest processed frame: may or may not be any of the six state objects.
-	public RubikFace2 activeRubikFace;
+	public RubikFace activeRubikFace;
 	
 	/*
 	 * This is "Rubik Cube State" or "Rubik Cube Model" in model-veiw-controller vernacular.
 	 */
-	public RubikFace2 upRubikFace;
-	public RubikFace2 downRubikFace;
-	public RubikFace2 leftRubikFace;
-	public RubikFace2 rightRubikFace;
-	public RubikFace2 frontRubikFace;
-	public RubikFace2 backRubikFace;
+	public RubikFace upRubikFace;
+	public RubikFace downRubikFace;
+	public RubikFace leftRubikFace;
+	public RubikFace rightRubikFace;
+	public RubikFace frontRubikFace;
+	public RubikFace backRubikFace;
 	
 	// Set of above rubik faces for easy access
-//	public HashSet<RubikFace2> rubikFaceSet = new HashSet<RubikFace2>();
+//	public HashSet<RubikFace> rubikFaceSet = new HashSet<RubikFace>();
 	
 	// Array of above rubik face objects index by TileColorEnum.
-	public HashMap<ConstantTileColorEnum, RubikFace2> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace2>(6);
+	public HashMap<ConstantTileColorEnum, RubikFace> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);
 	
 	// Array of above rubik face objects index by FaceNameEnum
-	public HashMap<FaceNameEnum, RubikFace2> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace2>(6);
+	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
 
 	//
 	public AppStateEnum appState = AppStateEnum.START;
@@ -96,42 +96,42 @@ public class StateModel2 {
 	 * rotated version of the observed tile array so that the face orientations
 	 * match the convention of a cut-out rubik cube layout.
 	 * 
-	 * @param rubikFace2
+	 * @param rubikFace
 	 */
-    public void adopt(RubikFace2 rubikFace2) {
+    public void adopt(RubikFace rubikFace) {
 	    
     	switch(adoptFaceCount) {
     	
     	case 0:
-    		rubikFace2.faceNameEnum = FaceNameEnum.UP;
-    		upRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray =  Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
-    		rubikFace2.transformedTileArray = rubikFace2.observedTileArray.clone();
+    		rubikFace.faceNameEnum = FaceNameEnum.UP;
+    		upRubikFace = rubikFace;
+    		rubikFace.transformedTileArray =  Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
+    		rubikFace.transformedTileArray = rubikFace.observedTileArray.clone();
     		break;
     	case 1:
-    		rubikFace2.faceNameEnum = FaceNameEnum.RIGHT;
-    		rightRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace.faceNameEnum = FaceNameEnum.RIGHT;
+    		rightRubikFace = rubikFace;
+    		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 2:
-    		rubikFace2.faceNameEnum = FaceNameEnum.FRONT;
-    		frontRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace.faceNameEnum = FaceNameEnum.FRONT;
+    		frontRubikFace = rubikFace;
+    		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 3:
-    		rubikFace2.faceNameEnum = FaceNameEnum.DOWN;
-    		downRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace2.observedTileArray);
+    		rubikFace.faceNameEnum = FaceNameEnum.DOWN;
+    		downRubikFace = rubikFace;
+    		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 4:
-    		rubikFace2.faceNameEnum = FaceNameEnum.LEFT;
-    		leftRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getTileArrayRotated180(rubikFace2.observedTileArray);
+    		rubikFace.faceNameEnum = FaceNameEnum.LEFT;
+    		leftRubikFace = rubikFace;
+    		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     	case 5:
-    		rubikFace2.faceNameEnum = FaceNameEnum.BACK;
-    		backRubikFace = rubikFace2;
-    		rubikFace2.transformedTileArray = Util.getTileArrayRotated180(rubikFace2.observedTileArray);
+    		rubikFace.faceNameEnum = FaceNameEnum.BACK;
+    		backRubikFace = rubikFace;
+    		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     		
     		default:
@@ -139,8 +139,8 @@ public class StateModel2 {
     	}
     	
     	if(adoptFaceCount < 6) {
-    		colorRubikFaceMap.put(rubikFace2.observedTileArray[1][1].constantTileColor, rubikFace2); // =+= can be inaccurate!
-    		nameRubikFaceMap.put(rubikFace2.faceNameEnum, rubikFace2);
+    		colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
+    		nameRubikFaceMap.put(rubikFace.faceNameEnum, rubikFace);
     	}
     	
     	adoptFaceCount++;
@@ -179,10 +179,10 @@ public class StateModel2 {
     	
     	// Count how many tile colors entire cube has as a first check.
     	int [] numColorTilesArray = new int[] {0, 0, 0, 0, 0, 0};
-		for(RubikFace2 rubikFace2 : nameRubikFaceMap.values() ) {
+		for(RubikFace rubikFace : nameRubikFaceMap.values() ) {
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
-					numColorTilesArray[ rubikFace2.observedTileArray[n][m].constantTileColor.ordinal() ]++;
+					numColorTilesArray[ rubikFace.observedTileArray[n][m].constantTileColor.ordinal() ]++;
 				}
 			}	
 		}
@@ -226,7 +226,7 @@ public class StateModel2 {
 	 * @param rubikFace
 	 * @return
 	 */
-	private StringBuffer getStringRepresentationOfFace(RubikFace2 rubikFace) {
+	private StringBuffer getStringRepresentationOfFace(RubikFace rubikFace) {
 		StringBuffer sb = new StringBuffer();
 		ConstantTile[][] virtualLogicalTileArray = rubikFace.transformedTileArray;
 		for(int m=0; m<3; m++)

@@ -50,7 +50,7 @@ import android.util.Log;
  * @author android.steve@testlens.com
  *
  */
-public class RubikFace2 {
+public class RubikFace {
 	
 	// A Rubik Face can exist in the following states:
 	public enum FaceRecognitionStatusEnum {
@@ -139,7 +139,7 @@ public class RubikFace2 {
 	 * @param imageProcessMode
 	 * @param annotationMode
 	 */
-	public RubikFace2() {
+	public RubikFace() {
 			
 		// Dummy data
 		alphaAngle = 45.0 * Math.PI / 180.0;

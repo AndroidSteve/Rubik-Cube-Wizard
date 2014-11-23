@@ -104,9 +104,9 @@ public class Util {
 	 * Re-examine tile colors across entire cube.  Adjust selection so that there are nine tiles
 	 * of each color.  This provides much more robustness with respect to lighting conditions.
 	 * 
-	 * @param stateModel2 
+	 * @param stateModel 
 	 */
-	public static void reevauateSelectTileColors(StateModel2 stateModel2) {
+	public static void reevauateSelectTileColors(StateModel stateModel) {
 
 		/*
 		 * Populate a 3D space with 54 measure tile colors.
@@ -256,20 +256,20 @@ public class Util {
 	 * @author stevep
 	 *
 	 */
-	public static class LoadPruningTablesTask extends AsyncTask<StateMachine2, Void, Void> {
+	public static class LoadPruningTablesTask extends AsyncTask<StateMachine, Void, Void> {
 		
 	    private PruneTableLoader tableLoader = new PruneTableLoader();
-	    private StateMachine2 stateMachine2;
+	    private StateMachine stateMachine;
 
 	    @Override
-	    protected Void doInBackground(StateMachine2... params) {
+	    protected Void doInBackground(StateMachine... params) {
 	    	
-	    	stateMachine2 = params[0];
+	    	stateMachine = params[0];
 	    	
 	        /* load all tables if they are not already in RAM */
 	        while (!tableLoader.loadingFinished()) { // while tables are left to load
 	            tableLoader.loadNext(); // load next pruning table
-	            stateMachine2.pruneTableLoaderCount++;
+	            stateMachine.pruneTableLoaderCount++;
 	            Log.i(Constants.TAG_CNTRL, "Created a prune table.");
 	        }
 	        Log.i(Constants.TAG_CNTRL, "Completed all prune table.");

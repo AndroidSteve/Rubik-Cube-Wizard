@@ -60,10 +60,10 @@ public class Profiler {
 	 * Render Time Consumptions Annotation 
 	 * 
 	 * @param image
-	 * @param stateModel2
+	 * @param stateModel
 	 * @return
 	 */
-	public Mat renderTimeConsumptionMetrics(Mat image, StateModel2 stateModel2) {
+	public Mat renderTimeConsumptionMetrics(Mat image, StateModel stateModel) {
 
     	Core.rectangle(image, new Point(0, 0), new Point(500, 720), Constants.ColorBlack, -1);
 		int index = 0;

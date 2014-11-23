@@ -33,7 +33,7 @@ package org.ar.rubik;
 
 
 import org.ar.rubik.Constants.AppStateEnum;
-import org.ar.rubik.RubikFace2.FaceRecognitionStatusEnum;
+import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 //import org.ar.rubik.gl.PilotGLRenderer.FaceType;
 //import org.ar.rubik.gl.PilotGLRenderer.Rotation;
 import org.kociemba.twophase.Search;
@@ -47,7 +47,7 @@ import android.util.Log;
  * @author android.steve@testlens.com
  *
  */
-public class StateMachine2 {
+public class StateMachine {
 	
 //	public enum ControllerStateEnum { 
 //		START,     // Ready
@@ -67,7 +67,7 @@ public class StateMachine2 {
 	
 //	private ControllerStateEnum controllerState = ControllerStateEnum.START;
 	
-	private StateModel2 stateModel2;
+	private StateModel stateModel;
 	
 
 	
@@ -81,10 +81,10 @@ public class StateMachine2 {
 	
 
 	/**
-	 * @param stateModel2
+	 * @param stateModel
 	 */
-    public StateMachine2(StateModel2 stateModel2) {
-    	this.stateModel2 = stateModel2;
+    public StateMachine(StateModel stateModel) {
+    	this.stateModel = stateModel;
     }
 
     
@@ -103,7 +103,7 @@ public class StateMachine2 {
     	PARTIAL  // A particular face seems to becoming unstable.
     	};
     private FaceRecogniztionState faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
-    private RubikFace2 candidateRubikFace = null;
+    private RubikFace candidateRubikFace = null;
     private int consecutiveCandiateRubikFaceCount = 0;
 	private final int consecutiveCandidateCountThreashold = 1;
 	
@@ -114,7 +114,7 @@ public class StateMachine2 {
 	 * 
 	 * @param rubikFace2
 	 */
-    public void processFace(RubikFace2 rubikFace) {
+    public void processFace(RubikFace rubikFace) {
         	
         	// Sometimes, we want state to change simply on frame events.
            	onFrameStateChanges();
@@ -214,9 +214,9 @@ public class StateMachine2 {
          * @param hashCode 
          * 
          */
-        private RubikFace2 lastStableRubikFace = null;
+        private RubikFace lastStableRubikFace = null;
     	private boolean allowOneMoreRotation = false;
-        private void onStableRubikFaceRecognition(RubikFace2 candidateRubikFace2) {
+        private void onStableRubikFaceRecognition(RubikFace candidateRubikFace2) {
 
        		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + candidateRubikFace2.hashCode);
         	if(lastStableRubikFace == null || candidateRubikFace2.hashCode != lastStableRubikFace.hashCode) {
@@ -225,13 +225,13 @@ public class StateMachine2 {
         	}
         	
 
-        	switch (stateModel2.appState) {
+        	switch (stateModel.appState) {
         	
         	case WAITING_FOR_MOVE_COMPLETE:
-        		stateModel2.appState = AppStateEnum.DO_MOVE;
-        		stateModel2.solutionResultIndex++;
-        		if(stateModel2.solutionResultIndex == stateModel2.solutionResultsArray.length)
-        			stateModel2.appState = AppStateEnum.DONE;
+        		stateModel.appState = AppStateEnum.DO_MOVE;
+        		stateModel.solutionResultIndex++;
+        		if(stateModel.solutionResultIndex == stateModel.solutionResultsArray.length)
+        			stateModel.appState = AppStateEnum.DONE;
     		break;
 
         	default:
@@ -243,10 +243,10 @@ public class StateMachine2 {
         	Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.hashCode);
         	offNewStableRubikFaceRecognition();
         	
-        	switch (stateModel2.appState) {
+        	switch (stateModel.appState) {
 
         	case DO_MOVE:		
-        		stateModel2.appState = AppStateEnum.WAITING_FOR_MOVE_COMPLETE;
+        		stateModel.appState = AppStateEnum.WAITING_FOR_MOVE_COMPLETE;
         		break;
 
         	default:
@@ -266,40 +266,40 @@ public class StateMachine2 {
          * 
          * @param rubikFaceHashCode
          */
-        private void onNewStableRubikFaceRecognized(RubikFace2 candidateRubikFace2) {
+        private void onNewStableRubikFaceRecognized(RubikFace candidateRubikFace2) {
         	
-        	Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel2.appState);
+        	Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel.appState);
 
 
-        	switch(stateModel2.appState) {
+        	switch(stateModel.appState) {
 
         	case START:
-        		stateModel2.adopt(candidateRubikFace2);
-        		stateModel2.appState = AppStateEnum.GOT_IT;
+        		stateModel.adopt(candidateRubikFace2);
+        		stateModel.appState = AppStateEnum.GOT_IT;
         		break;
         		
         	case SEARCHING:
-        		stateModel2.adopt(candidateRubikFace2);
+        		stateModel.adopt(candidateRubikFace2);
 
         		// Have not yet seen all six sides.
-        		if(stateModel2.isThereAfullSetOfFaces() == false) {
-        			stateModel2.appState = AppStateEnum.GOT_IT;
+        		if(stateModel.isThereAfullSetOfFaces() == false) {
+        			stateModel.appState = AppStateEnum.GOT_IT;
         			allowOneMoreRotation = true;
         		}
         		
         		// Do one more turn so cube returns to original orientation.
         		else if(allowOneMoreRotation == true) {
-        			stateModel2.appState = AppStateEnum.GOT_IT;
+        			stateModel.appState = AppStateEnum.GOT_IT;
         			allowOneMoreRotation = false;
         		}
         		
         		// Begin processing of cube: first check that there are exactly 9 tiles of each color.
         		else {
-        			Util.reevauateSelectTileColors(stateModel2);
-        			if(stateModel2.isTileColorsValid() == true)
-        				stateModel2.appState = AppStateEnum.COMPLETE;
+        			Util.reevauateSelectTileColors(stateModel);
+        			if(stateModel.isTileColorsValid() == true)
+        				stateModel.appState = AppStateEnum.COMPLETE;
         			else
-        				stateModel2.appState = AppStateEnum.BAD_COLORS;
+        				stateModel.appState = AppStateEnum.BAD_COLORS;
         		}
         		break;
         		
@@ -309,12 +309,12 @@ public class StateMachine2 {
         }
        private void offNewStableRubikFaceRecognition() {
         	
-        	Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel2.appState);
+        	Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
         	
-           	switch(stateModel2.appState) {
+           	switch(stateModel.appState) {
 
         	case ROTATE:
-        		stateModel2.appState = AppStateEnum.SEARCHING;
+        		stateModel.appState = AppStateEnum.SEARCHING;
         		break;
         		
     		default:
@@ -332,11 +332,11 @@ public class StateMachine2 {
         */
        private void onFrameStateChanges() {
 
-    	   switch(stateModel2.appState) {
+    	   switch(stateModel.appState) {
 
     	   case WAITING:
     		   if(pruneTableLoaderCount == 12) {
-    			   stateModel2.appState = AppStateEnum.VERIFIED;
+    			   stateModel.appState = AppStateEnum.VERIFIED;
     		   }
     		   break;
 
@@ -345,54 +345,54 @@ public class StateMachine2 {
     		   if(gotItCount < 3)
     			   gotItCount++;
     		   else {
-    			   stateModel2.appState = AppStateEnum.ROTATE;
+    			   stateModel.appState = AppStateEnum.ROTATE;
     			   gotItCount = 0;
     		   }
     		   break;
 
     		   
     	   case COMPLETE:
-    		   String cubeString = stateModel2.getStringRepresentationOfCube();
+    		   String cubeString = stateModel.getStringRepresentationOfCube();
 
     		   // Returns 0 if cube is solvable.
-    		   stateModel2.verificationResults = Tools.verify(cubeString);
+    		   stateModel.verificationResults = Tools.verify(cubeString);
 
-    		   if(stateModel2.verificationResults == 0) {
-    			   stateModel2.appState = AppStateEnum.WAITING;
+    		   if(stateModel.verificationResults == 0) {
+    			   stateModel.appState = AppStateEnum.WAITING;
     		   }
     		   else
-    			   stateModel2.appState = AppStateEnum.INCORRECT;
+    			   stateModel.appState = AppStateEnum.INCORRECT;
 
-    		   String stringErrorMessage = Util.getTwoPhaseErrorString((char)(stateModel2.verificationResults * -1 + '0'));
+    		   String stringErrorMessage = Util.getTwoPhaseErrorString((char)(stateModel.verificationResults * -1 + '0'));
 
     		   Log.i(Constants.TAG_CNTRL, "Cube String Rep: " + cubeString);
-    		   Log.i(Constants.TAG_CNTRL, "Verification Results: (" + stateModel2.verificationResults + ") " + stringErrorMessage);
+    		   Log.i(Constants.TAG_CNTRL, "Verification Results: (" + stateModel.verificationResults + ") " + stringErrorMessage);
     		   break;
 
     		   
     	   case VERIFIED:
-    		   String cubeString2 = stateModel2.getStringRepresentationOfCube();
+    		   String cubeString2 = stateModel.getStringRepresentationOfCube();
 
     		   // Returns 0 if solution computed
-    		   stateModel2.solutionResults = Search.solution(cubeString2, 25, 2, false);
-    		   Log.i(Constants.TAG_CNTRL, "Solution Results: " + stateModel2.solutionResults);
-    		   if (stateModel2.solutionResults.contains("Error")) {
-    			   char solutionCode = stateModel2.solutionResults.charAt(stateModel2.solutionResults.length() - 1);
-    			   stateModel2.verificationResults = solutionCode - '0';
+    		   stateModel.solutionResults = Search.solution(cubeString2, 25, 2, false);
+    		   Log.i(Constants.TAG_CNTRL, "Solution Results: " + stateModel.solutionResults);
+    		   if (stateModel.solutionResults.contains("Error")) {
+    			   char solutionCode = stateModel.solutionResults.charAt(stateModel.solutionResults.length() - 1);
+    			   stateModel.verificationResults = solutionCode - '0';
     			   Log.i(Constants.TAG_CNTRL, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
-    			   stateModel2.appState = AppStateEnum.INCORRECT;
+    			   stateModel.appState = AppStateEnum.INCORRECT;
     		   }
     		   else {
-    			   stateModel2.appState = AppStateEnum.SOLVED;
+    			   stateModel.appState = AppStateEnum.SOLVED;
     		   }
     		   break;
 
     		   
     	   case SOLVED:
-    		   stateModel2.solutionResultsArray = stateModel2.solutionResults.split(" ");
-    		   Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + stateModel2.solutionResultsArray);
-    		   stateModel2.solutionResultIndex = 0;
-    		   stateModel2.appState = AppStateEnum.DO_MOVE;
+    		   stateModel.solutionResultsArray = stateModel.solutionResults.split(" ");
+    		   Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + stateModel.solutionResultsArray);
+    		   stateModel.solutionResultIndex = 0;
+    		   stateModel.appState = AppStateEnum.DO_MOVE;
     		   break;
     		   
     		   
@@ -408,7 +408,7 @@ public class StateMachine2 {
 //   	 * @param image
 //   	 * @param rubikFace 
 //   	 */
-//   	public void renderUserInstructions(Mat image, RubikFace2 rubikFace) {
+//   	public void renderUserInstructions(Mat image, RubikFace rubikFace) {
 //
 //   		// Create black area for text
 //   		if(RubikMenuAndParameters.userTextDisplay == true)
@@ -433,8 +433,8 @@ public class StateMachine2 {
 //
 //   		case ROTATE:
 //   			if(RubikMenuAndParameters.userTextDisplay == true)
-//   				Core.putText(image, "Please Rotate: " + stateModel2.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-////   			if(  stateModel2.getNumValidFaces() % 2 == 0)
+//   				Core.putText(image, "Please Rotate: " + stateModel.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+////   			if(  stateModel.getNumValidFaces() % 2 == 0)
 ////   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
 ////   			else
 ////   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
@@ -468,19 +468,19 @@ public class StateMachine2 {
 //
 //   		case INCORRECT:
 ////   			if(RubikMenuAndParameters.userTextDisplay == true)
-//   				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel2.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+//   				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 //   			break;
 //
 //   		case SOLVED:
 //   			if(RubikMenuAndParameters.userTextDisplay == true) {
 //   				Core.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 //   				Core.rectangle(image, new Point(0, 60), new Point(1270, 120), Constants.ColorBlack, -1);
-//   				Core.putText(image, "" + stateModel2.solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
+//   				Core.putText(image, "" + stateModel.solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
 //   			}
 //   			break;
 //
 //   		case DO_MOVE:
-//   			String moveNumonic = stateModel2.solutionResultsArray[stateModel2.solutionResultIndex];
+//   			String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
 //   			Log.d(Constants.TAG, "Move:" + moveNumonic + ":");
 //   			StringBuffer moveDescription = new StringBuffer("Rotate ");
 //   			switch(moveNumonic.charAt(0)) {

@@ -81,13 +81,13 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
     public DeprecatedController controller;  // =+= some menu actions need this.
     
     // Primary Image Processor
-    public ImageRecognizer2 imageRecognizer2;
+    public ImageRecognizer imageRecognizer;
     
     // Primary Application Controller
-    public StateMachine2 stateMachine2;
+    public StateMachine stateMachine;
     
     // Primary Application State
-    public StateModel2 stateModel2;
+    public StateModel stateModel;
     
     // Once an exception or error is encountered, display message from thence forth.
 	Mat errorImage = null;
@@ -127,9 +127,9 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         Log.i(Constants.TAG, "Instantiated new " + this.getClass());
         
         // Construct and associate Primary Components (i.e., "Objects") for this application.
-        stateModel2 = new StateModel2();
-        stateMachine2 = new StateMachine2(stateModel2);
-        imageRecognizer2 = new ImageRecognizer2(stateMachine2, stateModel2);
+        stateModel = new StateModel();
+        stateMachine = new StateMachine(stateModel);
+        imageRecognizer = new ImageRecognizer(stateMachine, stateModel);
         
     	/*
     	 * Launch thread to asynchronous, and probably in a different CPU, calculate
@@ -140,7 +140,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
     	 * =+= Normally, AsyncTask should be instantiated only on the UI thread.  
     	 * =+= Which thread are we on?
     	 */
-    	new Util.LoadPruningTablesTask().execute(stateMachine2);
+    	new Util.LoadPruningTablesTask().execute(stateMachine);
     }
 
     
@@ -166,7 +166,7 @@ public class RubikAndroidActivity extends Activity implements CvCameraViewListen
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         if(Constants.refactor == true) {
-        	mOpenCvCameraView.setCvCameraViewListener(imageRecognizer2);
+        	mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);
         }
 
         else {

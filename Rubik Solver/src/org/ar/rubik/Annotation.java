@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
-import org.ar.rubik.RubikFace2.FaceRecognitionStatusEnum;
+import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -19,18 +19,18 @@ import android.util.Log;
  * @author android.steve@testlens.com
  *
  */
-public class Annotation2 {
+public class Annotation {
 
-	private StateModel2 stateModel2;
-	private StateMachine2 stateMachine2;
+	private StateModel stateModel;
+	private StateMachine stateMachine;
 	
 	/**
-	 * @param stateModel2
-	 * @param stateMachine2 
+	 * @param stateModel
+	 * @param stateMachine 
 	 */
-    public Annotation2(StateModel2 stateModel2, StateMachine2 stateMachine2) {
-	    this.stateModel2 = stateModel2;
-	    this.stateMachine2 = stateMachine2;
+    public Annotation(StateModel stateModel, StateMachine stateMachine) {
+	    this.stateModel = stateModel;
+	    this.stateMachine = stateMachine;
     }
     
     
@@ -51,11 +51,11 @@ public class Annotation2 {
 			break;
 			
 		case RHOMBUS:
-	    	renderRhombusRecognitionMetrics(image, stateModel2.activeRubikFace.rhombusList);
+	    	renderRhombusRecognitionMetrics(image, stateModel.activeRubikFace.rhombusList);
 			break;
 
 		case FACE_METRICS:
-			renderRubikFaceMetrics(image, stateModel2.activeRubikFace);
+			renderRubikFaceMetrics(image, stateModel.activeRubikFace);
 			break;
 			
 		case CUBE_METRICS:
@@ -63,11 +63,11 @@ public class Annotation2 {
 			break;
 
 		case TIME:
-			stateModel2.activeRubikFace.profiler.renderTimeConsumptionMetrics(image, stateModel2);
+			stateModel.activeRubikFace.profiler.renderTimeConsumptionMetrics(image, stateModel);
 			break;
 			
 		case COLOR:
-			renderFaceColorMetrics(image, stateModel2.activeRubikFace);
+			renderFaceColorMetrics(image, stateModel.activeRubikFace);
 			break;
 			
 		case NORMAL:
@@ -108,21 +108,21 @@ public class Annotation2 {
 		final int tSize = 35;  // Tile Size in pixels
 		
 		// Faces are orientated as per Face Observation (and N, M axis)
-		renderFlatFaceRepresentation(image, stateModel2.upRubikFace,     3 * tSize, 0 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel2.leftRubikFace,   0 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel2.frontRubikFace,  3 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel2.rightRubikFace,  6 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel2.backRubikFace,   9 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel2.downRubikFace,   3 * tSize, 6 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.upRubikFace,     3 * tSize, 0 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.leftRubikFace,   0 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.frontRubikFace,  3 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.rightRubikFace,  6 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.backRubikFace,   9 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.downRubikFace,   3 * tSize, 6 * tSize + 70, tSize, true);
 		
 		// Faces are transformed (rotate) as per Unfolded Layout representation convention.
 		// Faces are orientated as per Face Observation (and N, M axis)
-		renderFlatFaceRepresentation(image, stateModel2.upRubikFace,     3 * tSize, 0 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel2.leftRubikFace,   0 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel2.frontRubikFace,  3 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel2.rightRubikFace,  6 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel2.backRubikFace,   9 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel2.downRubikFace,   3 * tSize, 6 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.upRubikFace,     3 * tSize, 0 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.leftRubikFace,   0 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.frontRubikFace,  3 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.rightRubikFace,  6 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.backRubikFace,   9 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.downRubikFace,   3 * tSize, 6 * tSize + 70 + 350, tSize, false);
     }
 
     
@@ -138,7 +138,7 @@ public class Annotation2 {
      * @param tSize
      * @param observed  If true, use observed tile array, otherwise use transformed tile array.
      */
-    private void renderFlatFaceRepresentation(Mat image, RubikFace2 rubikFace, int x, int y, int tSize, boolean observed) {
+    private void renderFlatFaceRepresentation(Mat image, RubikFace rubikFace, int x, int y, int tSize, boolean observed) {
 		
 		if(rubikFace == null) {
 			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), Constants.ColorGrey, -1);
@@ -177,7 +177,7 @@ public class Annotation2 {
 	 */
     private void renderFaceOverlayAnnotation(Mat img, boolean accepted) {
     	
-    	RubikFace2 face = stateModel2.activeRubikFace;
+    	RubikFace face = stateModel.activeRubikFace;
     	
 		Scalar color = Constants.ColorBlack;
 		switch(face.faceRecognitionStatus) {
@@ -342,14 +342,14 @@ public class Annotation2 {
 	 * @param image
 	 * @param activeRubikFace
 	 */
-    private void renderRubikFaceMetrics(Mat image, RubikFace2 activeRubikFace) {
+    private void renderRubikFaceMetrics(Mat image, RubikFace activeRubikFace) {
 
     	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
     	
     	if(activeRubikFace == null)
     		return;
 		
-    	RubikFace2 face = activeRubikFace;
+    	RubikFace face = activeRubikFace;
     	renderFlatFaceRepresentation(image, face, 50, 50, 50, true);
 
 		Core.putText(image, "Status = " + face.faceRecognitionStatus,                              new Point(50, 300), Constants.FontFace, 2, Constants.ColorWhite, 2);
@@ -376,7 +376,7 @@ public class Annotation2 {
 	 * @param image
 	 * @param face
 	 */
-    private void renderFaceColorMetrics(Mat image, RubikFace2 face) {
+    private void renderFaceColorMetrics(Mat image, RubikFace face) {
     	
     	Core.rectangle(image, new Point(0, 0), new Point(570, 720), Constants.ColorBlack, -1);
     	
@@ -460,16 +460,16 @@ public class Annotation2 {
 		
 		// Render Face Types and their center tile color
 		int pos = 1;
-		for(RubikFace2 rubikFace2 : stateModel2.nameRubikFaceMap.values()) {
-			Core.putText(image, String.format("%s:    %s", rubikFace2.faceNameEnum, rubikFace2.observedTileArray[1][1].constantTileColor),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values()) {
+			Core.putText(image, String.format("%s:    %s", rubikFace.faceNameEnum, rubikFace.observedTileArray[1][1].constantTileColor),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		}
 		
     	// Count how many tile colors entire cube has as a first check.
     	int [] numColorTilesArray = new int[] {0, 0, 0, 0, 0, 0};
-		for(RubikFace2 rubikFace2 : stateModel2.nameRubikFaceMap.values() ) {
+		for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values() ) {
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
-					numColorTilesArray[ rubikFace2.observedTileArray[n][m].constantTileColor.ordinal() ]++;
+					numColorTilesArray[ rubikFace.observedTileArray[n][m].constantTileColor.ordinal() ]++;
 				}
 			}	
 		}
@@ -495,7 +495,7 @@ public class Annotation2 {
 
 //   		pilotGLRenderer.setCubeOrienation(rubikFace);
 
-   		switch(stateModel2.appState) {
+   		switch(stateModel.appState) {
 
    		case START:
    			if(RubikMenuAndParameters.userTextDisplay == true)
@@ -512,8 +512,8 @@ public class Annotation2 {
 
    		case ROTATE:
    			if(RubikMenuAndParameters.userTextDisplay == true)
-   				Core.putText(image, "Please Rotate: " + stateModel2.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-//   			if(  stateModel2.getNumValidFaces() % 2 == 0)
+   				Core.putText(image, "Please Rotate: " + stateModel.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+//   			if(  stateModel.getNumValidFaces() % 2 == 0)
 //   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
 //   			else
 //   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
@@ -532,7 +532,7 @@ public class Annotation2 {
 
    		case WAITING:
    			if(RubikMenuAndParameters.userTextDisplay == true)
-   				Core.putText(image, "Waiting - Preload Next: " + stateMachine2.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+   				Core.putText(image, "Waiting - Preload Next: " + stateMachine.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
    			break;
 
    		case BAD_COLORS:
@@ -547,19 +547,19 @@ public class Annotation2 {
 
    		case INCORRECT:
 //   			if(RubikMenuAndParameters.userTextDisplay == true)
-   				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel2.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+   				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
    		case SOLVED:
    			if(RubikMenuAndParameters.userTextDisplay == true) {
    				Core.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    				Core.rectangle(image, new Point(0, 60), new Point(1270, 120), Constants.ColorBlack, -1);
-   				Core.putText(image, "" + stateModel2.solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
+   				Core.putText(image, "" + stateModel.solutionResults, new Point(0, 120), Constants.FontFace, 2, Constants.ColorWhite, 2);
    			}
    			break;
 
    		case DO_MOVE:
-   			String moveNumonic = stateModel2.solutionResultsArray[stateModel2.solutionResultIndex];
+   			String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
    			Log.d(Constants.TAG, "Move:" + moveNumonic + ":");
    			StringBuffer moveDescription = new StringBuffer("Rotate ");
    			switch(moveNumonic.charAt(0)) {
@@ -648,7 +648,7 @@ public class Annotation2 {
    		}
    		
    		// User indicator that tables have been computed.
-   		Core.line(image, new Point(0, 0), new Point(1270, 0), stateMachine2.pruneTableLoaderCount < 12 ? Constants.ColorRed : Constants.ColorGreen, 4);
+   		Core.line(image, new Point(0, 0), new Point(1270, 0), stateMachine.pruneTableLoaderCount < 12 ? Constants.ColorRed : Constants.ColorGreen, 4);
    	}
 
 }
