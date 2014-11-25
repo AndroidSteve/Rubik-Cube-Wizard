@@ -350,7 +350,9 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 * **********************************************************************
 			 * Face Recognition
 			 * 
-			 * 
+			 * Takes a collection of Rhombus objects and determines if a valid
+			 * Rubik Face can be determined from them, and then also determines 
+			 * initial color for all nine tiles. 
 			 */	 
 			rubikFace.processRhombuses(rhombusList, image);
 			rubikFace.profiler.markTime(Profiler.Event.FACE);
@@ -358,11 +360,11 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(image);
 			}
-
+			
 			
 			/* **********************************************************************
 			 * **********************************************************************
-			 * Controller
+			 * Application State Machine
 			 * 
 			 * Will provide user instructions.
 			 * Will determine when we are on-face and off-face

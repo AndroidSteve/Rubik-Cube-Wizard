@@ -104,6 +104,7 @@ public class StateMachine {
            	// Reset Application State.  All past is forgotten.
            	if(scheduleReset == true) {
            		scheduleReset = false;
+           		gotItCount = 0;
            		stateModel.reset();
            	}
            	

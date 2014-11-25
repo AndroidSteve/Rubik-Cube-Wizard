@@ -129,7 +129,7 @@ public class RubikFace {
 	// Profiles CPU Consumption
 	public Profiler profiler = new Profiler();
 	
-	// Face Designation
+	// Face Designation: i.e., Up, Down, ....
 	public FaceNameEnum faceNameEnum;
 	
 	
