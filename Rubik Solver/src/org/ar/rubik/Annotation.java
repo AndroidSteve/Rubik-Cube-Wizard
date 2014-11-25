@@ -22,15 +22,15 @@ import android.util.Log;
 public class Annotation {
 
 	private StateModel stateModel;
-	private StateMachine stateMachine;
+	private AppStateMachine appStateMachine;
 	
 	/**
 	 * @param stateModel
-	 * @param stateMachine 
+	 * @param appStateMachine 
 	 */
-    public Annotation(StateModel stateModel, StateMachine stateMachine) {
+    public Annotation(StateModel stateModel, AppStateMachine appStateMachine) {
 	    this.stateModel = stateModel;
-	    this.stateMachine = stateMachine;
+	    this.appStateMachine = appStateMachine;
     }
     
     
@@ -532,7 +532,7 @@ public class Annotation {
 
    		case WAITING:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Waiting - Preload Next: " + stateMachine.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
+   				Core.putText(image, "Waiting - Preload Next: " + appStateMachine.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
    			break;
 
    		case BAD_COLORS:
@@ -648,7 +648,7 @@ public class Annotation {
    		}
    		
    		// User indicator that tables have been computed.
-   		Core.line(image, new Point(0, 0), new Point(1270, 0), stateMachine.pruneTableLoaderCount < 12 ? Constants.ColorRed : Constants.ColorGreen, 4);
+   		Core.line(image, new Point(0, 0), new Point(1270, 0), appStateMachine.pruneTableLoaderCount < 12 ? Constants.ColorRed : Constants.ColorGreen, 4);
    	}
 
 }

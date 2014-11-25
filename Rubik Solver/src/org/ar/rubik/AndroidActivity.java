@@ -84,7 +84,7 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
     public ImageRecognizer imageRecognizer;
     
     // Primary Application Controller
-    public StateMachine stateMachine;
+    public AppStateMachine appStateMachine;
     
     // Primary Application State
     public StateModel stateModel;
@@ -128,8 +128,8 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
         
         // Construct and associate Primary Components (i.e., "Objects") for this application.
         stateModel = new StateModel();
-        stateMachine = new StateMachine(stateModel);
-        imageRecognizer = new ImageRecognizer(stateMachine, stateModel);
+        appStateMachine = new AppStateMachine(stateModel);
+        imageRecognizer = new ImageRecognizer(appStateMachine, stateModel);
         
     	/*
     	 * Launch thread to asynchronous, and probably in a different CPU, calculate
@@ -140,7 +140,7 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
     	 * =+= Normally, AsyncTask should be instantiated only on the UI thread.  
     	 * =+= Which thread are we on?
     	 */
-    	new Util.LoadPruningTablesTask().execute(stateMachine);
+    	new Util.LoadPruningTablesTask().execute(appStateMachine);
     }
 
     

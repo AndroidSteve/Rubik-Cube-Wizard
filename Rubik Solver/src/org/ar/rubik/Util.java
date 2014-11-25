@@ -256,20 +256,20 @@ public class Util {
 	 * @author stevep
 	 *
 	 */
-	public static class LoadPruningTablesTask extends AsyncTask<StateMachine, Void, Void> {
+	public static class LoadPruningTablesTask extends AsyncTask<AppStateMachine, Void, Void> {
 		
 	    private PruneTableLoader tableLoader = new PruneTableLoader();
-	    private StateMachine stateMachine;
+	    private AppStateMachine appStateMachine;
 
 	    @Override
-	    protected Void doInBackground(StateMachine... params) {
+	    protected Void doInBackground(AppStateMachine... params) {
 	    	
-	    	stateMachine = params[0];
+	    	appStateMachine = params[0];
 	    	
 	        /* load all tables if they are not already in RAM */
 	        while (!tableLoader.loadingFinished()) { // while tables are left to load
 	            tableLoader.loadNext(); // load next pruning table
-	            stateMachine.pruneTableLoaderCount++;
+	            appStateMachine.pruneTableLoaderCount++;
 	            Log.i(Constants.TAG_CNTRL, "Created a prune table.");
 	        }
 	        Log.i(Constants.TAG_CNTRL, "Completed all prune table.");

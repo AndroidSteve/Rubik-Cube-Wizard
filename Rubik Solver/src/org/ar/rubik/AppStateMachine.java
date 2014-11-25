@@ -10,7 +10,9 @@
  *   
  * File Description:
  *   This class interprets the recognized Rubik Faces and determines how primary
- *   application state should change.
+ *   application state should change.  There are two state machines contained in this
+ *   class: the Stable Face Recognizer State Machine, and the Application State Machine.
+ *   See Design.docx for more details.
  * 
  * License:
  * 
@@ -47,7 +49,7 @@ import android.util.Log;
  * @author android.steve@testlens.com
  *
  */
-public class StateMachine {
+public class AppStateMachine {
 	
 	private StateModel stateModel;
 	
@@ -66,7 +68,7 @@ public class StateMachine {
 	/**
 	 * @param stateModel
 	 */
-    public StateMachine(StateModel stateModel) {
+    public AppStateMachine(StateModel stateModel) {
     	this.stateModel = stateModel;
     }
 

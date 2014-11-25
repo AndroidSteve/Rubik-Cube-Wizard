@@ -302,7 +302,7 @@ public class MenuAndParams {
 
 		case R.id.resetImageMenuItem:
 			ma.controller.reset();
-			ma.stateMachine.reset();
+			ma.appStateMachine.reset();
 			break;
 
 		case R.id.exitImageMenuItem:

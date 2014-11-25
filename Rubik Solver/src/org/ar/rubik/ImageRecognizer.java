@@ -59,7 +59,7 @@ import android.util.Log;
  */
 public class ImageRecognizer implements CvCameraViewListener2 {
 	
-	private StateMachine stateMachine;
+	private AppStateMachine appStateMachine;
 	private StateModel stateModel;
 	private Annotation annotation;
 
@@ -71,13 +71,13 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 	/**
 	 * Image Recognizer Constructor
 	 * 
-	 * @param stateMachine
+	 * @param appStateMachine
 	 * @param stateModel
 	 */
-    public ImageRecognizer(StateMachine stateMachine, StateModel stateModel) {
-    	this.stateMachine = stateMachine;
+    public ImageRecognizer(AppStateMachine appStateMachine, StateModel stateModel) {
+    	this.appStateMachine = appStateMachine;
     	this.stateModel = stateModel;
-    	this.annotation = new Annotation(this.stateModel, this.stateMachine);
+    	this.annotation = new Annotation(this.stateModel, this.appStateMachine);
     }
 
 
@@ -371,7 +371,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 * Will determine when we are on-new-face
 			 * Will change state 
 			 */	
-			stateMachine.processFace(rubikFace);
+			appStateMachine.processFace(rubikFace);
 			rubikFace.profiler.markTime(Profiler.Event.CONTROLLER);
 			rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 
