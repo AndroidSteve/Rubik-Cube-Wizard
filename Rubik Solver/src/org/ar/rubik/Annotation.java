@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
+import org.ar.rubik.Constants.FaceRecogniztionState;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -42,7 +43,7 @@ public class Annotation {
 	 */
 	public Mat renderAnnotation(Mat image) {
 		
-		renderFaceOverlayAnnotation(image, false);
+		renderFaceOverlayAnnotation(image);
 		
 		switch(MenuAndParams.annotationMode) {
 		
@@ -171,11 +172,9 @@ public class Annotation {
 
 	/**
 	 * Render Face Overlay Annotation
-	 * 
-	 * 
 	 * @param image
 	 */
-    private void renderFaceOverlayAnnotation(Mat img, boolean accepted) {
+    private void renderFaceOverlayAnnotation(Mat img) {
     	
     	RubikFace face = stateModel.activeRubikFace;
     	
@@ -194,7 +193,7 @@ public class Annotation {
 			color = Constants.ColorOrange;
 			break;
 		case SOLVED:
-			color = accepted ? Constants.ColorGreen : Constants.ColorYellow;
+			color = stateModel.faceRecogniztionState == FaceRecogniztionState.STABLE ? Constants.ColorGreen : Constants.ColorYellow;
 			break;
 		}
 		

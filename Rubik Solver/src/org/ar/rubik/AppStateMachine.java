@@ -35,6 +35,7 @@ package org.ar.rubik;
 
 
 import org.ar.rubik.Constants.AppStateEnum;
+import org.ar.rubik.Constants.FaceRecogniztionState;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 //import org.ar.rubik.gl.PilotGLRenderer.FaceType;
 //import org.ar.rubik.gl.PilotGLRenderer.Rotation;
@@ -50,356 +51,353 @@ import android.util.Log;
  *
  */
 public class AppStateMachine {
-	
+
 	private StateModel stateModel;
-	
+
 	// 12 tables need to be generated.  When count is 12, tables are valid.
 	// =+= used by prune table loader.  
 	public int pruneTableLoaderCount = 0;
-	
+
 	// Allows for more pleasing user interface
 	private int gotItCount = 0;
-	
+
 	// Set when we want to reset state, but do it synchronously in the frame thread.
 	private boolean scheduleReset = false;
 
+	// Candidate Rubik Face to be possible adopted by Stable Face Recognizer state machine.
+	private RubikFace candidateRubikFace = null;
+
+	// Consecutive counts use by Stable Face Recognizer state machine.
+	private int consecutiveCandiateRubikFaceCount = 0;
 	
+	// Use by "New Stable Face Recognizer" state machine.
+	private RubikFace lastStableRubikFace = null;
+	
+	// After all six faces have been seen, allow one more rotation to return cube to original orientation.
+	private boolean allowOneMoreRotation = false;
+
 
 	/**
 	 * @param stateModel
 	 */
-    public AppStateMachine(StateModel stateModel) {
-    	this.stateModel = stateModel;
-    }
+	public AppStateMachine(StateModel stateModel) {
+		this.stateModel = stateModel;
+	}
 
-    
-    /**
-     * On Rubik Face Recognized
-     * 
-     * This function is called any time a Rubik Face is recognized, even if it may be 
-     * inaccurate.  Further filtering is perform in this function.
-     * @param rubikFace 
-     * 
-     */
-    private enum FaceRecogniztionState { 
-    	UNKNOWN, // No face recognition
-    	PENDING, // A particular face seems to becoming stable.
-    	STABLE,  // A particular face is stable.
-    	PARTIAL  // A particular face seems to becoming unstable.
-    	};
-    private FaceRecogniztionState faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
-    private RubikFace candidateRubikFace = null;
-    private int consecutiveCandiateRubikFaceCount = 0;
-	private final int consecutiveCandidateCountThreashold = 1;
-	
+
 	/**
-	 * Process Rubik Face
+	 * On Rubik Face Recognized
 	 * 
-	 * Assuming that a Rubik Face is recognized, then update the Application State Machine.
+	 * This function is called any time a Rubik Face is recognized, even if it may be 
+	 * inaccurate.  Further filtering is perform in this function.  The purpose
+	 * of this state machine is to detect a reliable stable face, and to make 
+	 * the event calls of onFace and offFace into the app state machine.
 	 * 
-	 * @param rubikFace2
+	 * @param rubikFace 
+	 * 
 	 */
-    public void processFace(RubikFace rubikFace) {
-        	
-           	Log.d(Constants.TAG_CNTRL, "processRubikFaceSolution() state=" + faceRecogniztionState + " candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " newFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
- 
-           	// Reset Application State.  All past is forgotten.
-           	if(scheduleReset == true) {
-           		scheduleReset = false;
-           		gotItCount = 0;
-           		stateModel.reset();
-           	}
-           	
-           	// Sometimes, we want state to change simply on frame events.
-           	onFrameStateChanges();
- 
-        	switch(faceRecogniztionState) {
+	public void processFace(RubikFace rubikFace) {
 
-        	case UNKNOWN:
-        		if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
-        			faceRecogniztionState = FaceRecogniztionState.PENDING;
-        			candidateRubikFace = rubikFace;
-        			consecutiveCandiateRubikFaceCount = 0;
-        		}
-        		else
-        			; // stay in unknown state.
-        		break;
+		// Threshold for the number of times a face must be seen in order to declare it stable.
+		final int consecutiveCandidateCountThreashold = 4;	
 
+		Log.d(Constants.TAG_CNTRL, "processRubikFaceSolution() state=" + stateModel.faceRecogniztionState + " candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " newFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
 
-        	case PENDING:
-        		if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
+		// Reset Application State.  All past is forgotten.
+		if(scheduleReset == true) {
+			scheduleReset = false;
+			gotItCount = 0;
+			stateModel.reset();
+		}
 
-        			if(rubikFace.hashCode == candidateRubikFace.hashCode) {
+		// Sometimes, we want state to change simply on frame events.
+		onFrameStateChanges();
 
-        				if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-        					faceRecogniztionState = FaceRecogniztionState.STABLE;
-        					onStableRubikFaceRecognition(candidateRubikFace);
-        				}
-        				else 
-        					consecutiveCandiateRubikFaceCount++;
-        			}
-//        			else if(false)
-//        				;// =+= add partial match here
-        			else
-        				faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
-        		}
-        		else
-        			faceRecogniztionState = FaceRecogniztionState.UNKNOWN;	
-        		break;
+		switch(stateModel.faceRecogniztionState) {
+
+		case UNKNOWN:
+			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
+				stateModel.faceRecogniztionState = FaceRecogniztionState.PENDING;
+				candidateRubikFace = rubikFace;
+				consecutiveCandiateRubikFaceCount = 0;
+			}
+			else
+				; // stay in unknown state.
+				break;
 
 
-        	case STABLE:
-        		if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
+		case PENDING:
+			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
-        			if(rubikFace.hashCode == candidateRubikFace.hashCode) 
-        				; // Just stay in this state
-//        			else if(false)
-//        				; // =+= add partial match here
-        			else {
-        				faceRecogniztionState = FaceRecogniztionState.PARTIAL;
-        				consecutiveCandiateRubikFaceCount = 0;
-        			}
-        		}
-        		else {
-        			faceRecogniztionState = FaceRecogniztionState.PARTIAL;
-        			consecutiveCandiateRubikFaceCount = 0;
-        		}
-        		break;
+				if(rubikFace.hashCode == candidateRubikFace.hashCode) {
 
-
-        	case PARTIAL:
-        		if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
-        			
-        			if(rubikFace.hashCode == candidateRubikFace.hashCode)
-        				faceRecogniztionState = FaceRecogniztionState.STABLE;
-//        			else if(false)
-//        				; // =+= add partial match here
-        			else {
-            			if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-            				faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
-            				offStableRubikFaceRecognition();
-            			}
-            			else 
-            				consecutiveCandiateRubikFaceCount++; // stay in partial state
-        			}
-        		}
-        		else {
-        			if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-        				faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
-        				offStableRubikFaceRecognition();
-        			}
-        			else 
-        				consecutiveCandiateRubikFaceCount++; // stay in partial state
-        		}
-        		break;
-
-        	}
-        }
-
-        
-
-    	/**
-         * On Stable Rubik Face Recognized
-         * 
-         * This function is called ever frame when a valid and stable Rubik Face is recognized.
-         * 
-         * @param hashCode 
-         * 
-         */
-        private RubikFace lastStableRubikFace = null;
-    	private boolean allowOneMoreRotation = false;
-        private void onStableRubikFaceRecognition(RubikFace candidateRubikFace2) {
-
-       		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + candidateRubikFace2.hashCode);
-        	if(lastStableRubikFace == null || candidateRubikFace2.hashCode != lastStableRubikFace.hashCode) {
-        		lastStableRubikFace = candidateRubikFace2;
-        		onNewStableRubikFaceRecognized(candidateRubikFace2);
-        	}
-        	
-
-        	switch (stateModel.appState) {
-        	
-        	case WAITING_FOR_MOVE_COMPLETE:
-        		stateModel.appState = AppStateEnum.DO_MOVE;
-        		stateModel.solutionResultIndex++;
-        		if(stateModel.solutionResultIndex == stateModel.solutionResultsArray.length)
-        			stateModel.appState = AppStateEnum.DONE;
-    		break;
-
-        	default:
-        		break;
-        	}
-        }
-        public void offStableRubikFaceRecognition() {
-        	
-        	Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.hashCode);
-        	offNewStableRubikFaceRecognition();
-        	
-        	switch (stateModel.appState) {
-
-        	case DO_MOVE:		
-        		stateModel.appState = AppStateEnum.WAITING_FOR_MOVE_COMPLETE;
-        		break;
-
-        	default:
-        		break;
-        	}
-        }
-        
-
-        
-        /**
-         * On New Stable Rubik Face Recognized
-         * 
-         * This function is called when a new and different stable Rubik Face is recognized.
-         * In other words, this should be a different face than the last stable face, 
-         * however, it will be called on frame rate while new stable Rubik Face is 
-         * recognized in image.
-         * 
-         * @param rubikFaceHashCode
-         */
-        private void onNewStableRubikFaceRecognized(RubikFace candidateRubikFace2) {
-        	
-        	Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel.appState);
+					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
+						stateModel.faceRecogniztionState = FaceRecogniztionState.STABLE;
+						onStableRubikFaceRecognition(candidateRubikFace);
+					}
+					else 
+						consecutiveCandiateRubikFaceCount++;
+				}
+				//        			else if(false)
+					//        				;// =+= add partial match here
+				else
+					stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+			}
+			else
+				stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;	
+			break;
 
 
-        	switch(stateModel.appState) {
+		case STABLE:
+			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
-        	case START:
-        		stateModel.adopt(candidateRubikFace2);
-        		stateModel.appState = AppStateEnum.GOT_IT;
-        		break;
-        		
-        	case SEARCHING:
-        		stateModel.adopt(candidateRubikFace2);
-
-        		// Have not yet seen all six sides.
-        		if(stateModel.isThereAfullSetOfFaces() == false) {
-        			stateModel.appState = AppStateEnum.GOT_IT;
-        			allowOneMoreRotation = true;
-        		}
-        		
-        		// Do one more turn so cube returns to original orientation.
-        		else if(allowOneMoreRotation == true) {
-        			stateModel.appState = AppStateEnum.GOT_IT;
-        			allowOneMoreRotation = false;
-        		}
-        		
-        		// Begin processing of cube: first check that there are exactly 9 tiles of each color.
-        		else {
-        			Util.reevauateSelectTileColors(stateModel);
-        			if(stateModel.isTileColorsValid() == true)
-        				stateModel.appState = AppStateEnum.COMPLETE;
-        			else
-        				stateModel.appState = AppStateEnum.BAD_COLORS;
-        		}
-        		break;
-        		
-    		default:
-    			break;
-        	}
-        }
-       private void offNewStableRubikFaceRecognition() {
-        	
-        	Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
-        	
-           	switch(stateModel.appState) {
-
-        	case ROTATE:
-        		stateModel.appState = AppStateEnum.SEARCHING;
-        		break;
-        		
-    		default:
-    			break;
-        	}
-        }   
+				if(rubikFace.hashCode == candidateRubikFace.hashCode) 
+					; // Just stay in this state
+				//        			else if(false)
+				//        				; // =+= add partial match here
+				else {
+					stateModel.faceRecogniztionState = FaceRecogniztionState.PARTIAL;
+					consecutiveCandiateRubikFaceCount = 0;
+				}
+			}
+			else {
+				stateModel.faceRecogniztionState = FaceRecogniztionState.PARTIAL;
+				consecutiveCandiateRubikFaceCount = 0;
+			}
+			break;
 
 
-       /**
-        * On Frame State Changes
-        * 
-        * It appears handy to have some controller state changes advanced on the periodic frame rate.
-        * Unfortunately, the rate that is function is called is dependent upon the bulk of opencv
-        * processing which can vary with the background.
-        */
-       private void onFrameStateChanges() {
+		case PARTIAL:
+			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
-    	   switch(stateModel.appState) {
+				if(rubikFace.hashCode == candidateRubikFace.hashCode)
+					stateModel.faceRecogniztionState = FaceRecogniztionState.STABLE;
+				//        			else if(false)
+				//        				; // =+= add partial match here
+				else {
+					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
+						stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+						offStableRubikFaceRecognition();
+					}
+					else 
+						consecutiveCandiateRubikFaceCount++; // stay in partial state
+				}
+			}
+			else {
+				if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
+					stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+					offStableRubikFaceRecognition();
+				}
+				else 
+					consecutiveCandiateRubikFaceCount++; // stay in partial state
+			}
+			break;
 
-    	   case WAITING:
-    		   if(pruneTableLoaderCount == 12) {
-    			   stateModel.appState = AppStateEnum.VERIFIED;
-    		   }
-    		   break;
+		}
+	}
 
 
-    	   case GOT_IT:
-    		   if(gotItCount < 3)
-    			   gotItCount++;
-    		   else {
-    			   stateModel.appState = AppStateEnum.ROTATE;
-    			   gotItCount = 0;
-    		   }
-    		   break;
 
-    		   
-    	   case COMPLETE:
-    		   String cubeString = stateModel.getStringRepresentationOfCube();
+	/**
+	 * On Stable Rubik Face Recognized
+	 * 
+	 * This function is called ever frame when a valid and stable Rubik Face is recognized.
+	 * 
+	 * @param hashCode 
+	 * 
+	 */
+	private void onStableRubikFaceRecognition(RubikFace rubikFace) {
 
-    		   // Returns 0 if cube is solvable.
-    		   stateModel.verificationResults = Tools.verify(cubeString);
+		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + rubikFace.hashCode);
+		if(lastStableRubikFace == null || rubikFace.hashCode != lastStableRubikFace.hashCode) {
+			lastStableRubikFace = rubikFace;
+			onNewStableRubikFaceRecognized(rubikFace);
+		}
 
-    		   if(stateModel.verificationResults == 0) {
-    			   stateModel.appState = AppStateEnum.WAITING;
-    		   }
-    		   else
-    			   stateModel.appState = AppStateEnum.INCORRECT;
 
-    		   String stringErrorMessage = Util.getTwoPhaseErrorString((char)(stateModel.verificationResults * -1 + '0'));
+		switch (stateModel.appState) {
 
-    		   Log.i(Constants.TAG_CNTRL, "Cube String Rep: " + cubeString);
-    		   Log.i(Constants.TAG_CNTRL, "Verification Results: (" + stateModel.verificationResults + ") " + stringErrorMessage);
-    		   break;
+		case WAITING_FOR_MOVE_COMPLETE:
+			stateModel.appState = AppStateEnum.DO_MOVE;
+			stateModel.solutionResultIndex++;
+			if(stateModel.solutionResultIndex == stateModel.solutionResultsArray.length)
+				stateModel.appState = AppStateEnum.DONE;
+			break;
 
-    		   
-    	   case VERIFIED:
-    		   String cubeString2 = stateModel.getStringRepresentationOfCube();
+		default:
+			break;
+		}
+	}
+	public void offStableRubikFaceRecognition() {
 
-    		   // Returns 0 if solution computed
-    		   stateModel.solutionResults = Search.solution(cubeString2, 25, 2, false);
-    		   Log.i(Constants.TAG_CNTRL, "Solution Results: " + stateModel.solutionResults);
-    		   if (stateModel.solutionResults.contains("Error")) {
-    			   char solutionCode = stateModel.solutionResults.charAt(stateModel.solutionResults.length() - 1);
-    			   stateModel.verificationResults = solutionCode - '0';
-    			   Log.i(Constants.TAG_CNTRL, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
-    			   stateModel.appState = AppStateEnum.INCORRECT;
-    		   }
-    		   else {
-    			   stateModel.appState = AppStateEnum.SOLVED;
-    		   }
-    		   break;
+		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.hashCode);
+		offNewStableRubikFaceRecognition();
 
-    		   
-    	   case SOLVED:
-    		   stateModel.solutionResultsArray = stateModel.solutionResults.split(" ");
-    		   Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + stateModel.solutionResultsArray);
-    		   stateModel.solutionResultIndex = 0;
-    		   stateModel.appState = AppStateEnum.DO_MOVE;
-    		   break;
-    		   
-    		   
-    	   default:
-    		   break;
-    	   }
-       }
-       
-       
-       
+		switch (stateModel.appState) {
+
+		case DO_MOVE:		
+			stateModel.appState = AppStateEnum.WAITING_FOR_MOVE_COMPLETE;
+			break;
+
+		default:
+			break;
+		}
+	}
+
+
+
+	/**
+	 * On New Stable Rubik Face Recognized
+	 * 
+	 * This function is called when a new and different stable Rubik Face is recognized.
+	 * In other words, this should be a different face than the last stable face, 
+	 * however, it will be called on frame rate while new stable Rubik Face is 
+	 * recognized in image.
+	 * 
+	 * @param rubikFaceHashCode
+	 */
+	private void onNewStableRubikFaceRecognized(RubikFace candidateRubikFace2) {
+
+		Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel.appState);
+
+
+		switch(stateModel.appState) {
+
+		case START:
+			stateModel.adopt(candidateRubikFace2);
+			stateModel.appState = AppStateEnum.GOT_IT;
+			break;
+
+		case SEARCHING:
+			stateModel.adopt(candidateRubikFace2);
+
+			// Have not yet seen all six sides.
+			if(stateModel.isThereAfullSetOfFaces() == false) {
+				stateModel.appState = AppStateEnum.GOT_IT;
+				allowOneMoreRotation = true;
+			}
+
+			// Do one more turn so cube returns to original orientation.
+			else if(allowOneMoreRotation == true) {
+				stateModel.appState = AppStateEnum.GOT_IT;
+				allowOneMoreRotation = false;
+			}
+
+			// Begin processing of cube: first check that there are exactly 9 tiles of each color.
+			else {
+				Util.reevauateSelectTileColors(stateModel);
+				if(stateModel.isTileColorsValid() == true)
+					stateModel.appState = AppStateEnum.COMPLETE;
+				else
+					stateModel.appState = AppStateEnum.BAD_COLORS;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+	private void offNewStableRubikFaceRecognition() {
+
+		Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
+
+		switch(stateModel.appState) {
+
+		case ROTATE:
+			stateModel.appState = AppStateEnum.SEARCHING;
+			break;
+
+		default:
+			break;
+		}
+	}   
+
+
+	/**
+	 * On Frame State Changes
+	 * 
+	 * It appears handy to have some controller state changes advanced on the periodic frame rate.
+	 * Unfortunately, the rate that is function is called is dependent upon the bulk of opencv
+	 * processing which can vary with the background.
+	 */
+	private void onFrameStateChanges() {
+
+		switch(stateModel.appState) {
+
+		case WAITING:
+			if(pruneTableLoaderCount == 12) {
+				stateModel.appState = AppStateEnum.VERIFIED;
+			}
+			break;
+
+
+		case GOT_IT:
+			if(gotItCount < 3)
+				gotItCount++;
+			else {
+				stateModel.appState = AppStateEnum.ROTATE;
+				gotItCount = 0;
+			}
+			break;
+
+
+		case COMPLETE:
+			String cubeString = stateModel.getStringRepresentationOfCube();
+
+			// Returns 0 if cube is solvable.
+			stateModel.verificationResults = Tools.verify(cubeString);
+
+			if(stateModel.verificationResults == 0) {
+				stateModel.appState = AppStateEnum.WAITING;
+			}
+			else
+				stateModel.appState = AppStateEnum.INCORRECT;
+
+			String stringErrorMessage = Util.getTwoPhaseErrorString((char)(stateModel.verificationResults * -1 + '0'));
+
+			Log.i(Constants.TAG_CNTRL, "Cube String Rep: " + cubeString);
+			Log.i(Constants.TAG_CNTRL, "Verification Results: (" + stateModel.verificationResults + ") " + stringErrorMessage);
+			break;
+
+
+		case VERIFIED:
+			String cubeString2 = stateModel.getStringRepresentationOfCube();
+
+			// Returns 0 if solution computed
+			stateModel.solutionResults = Search.solution(cubeString2, 25, 2, false);
+			Log.i(Constants.TAG_CNTRL, "Solution Results: " + stateModel.solutionResults);
+			if (stateModel.solutionResults.contains("Error")) {
+				char solutionCode = stateModel.solutionResults.charAt(stateModel.solutionResults.length() - 1);
+				stateModel.verificationResults = solutionCode - '0';
+				Log.i(Constants.TAG_CNTRL, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
+				stateModel.appState = AppStateEnum.INCORRECT;
+			}
+			else {
+				stateModel.appState = AppStateEnum.SOLVED;
+			}
+			break;
+
+
+		case SOLVED:
+			stateModel.solutionResultsArray = stateModel.solutionResults.split(" ");
+			Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + stateModel.solutionResultsArray);
+			stateModel.solutionResultIndex = 0;
+			stateModel.appState = AppStateEnum.DO_MOVE;
+			break;
+
+
+		default:
+			break;
+		}
+	}
+
+
+
 	/**
 	 * Request that the state is reset to initial values.  This is performed
 	 * synchronously in the frame thread to eliminate problems.
 	 */
-    public void reset() {
-    	scheduleReset = true;
-    }
+	public void reset() {
+		scheduleReset = true;
+	}
 }
