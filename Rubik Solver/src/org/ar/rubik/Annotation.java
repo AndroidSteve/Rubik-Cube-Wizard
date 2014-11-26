@@ -43,32 +43,32 @@ public class Annotation {
 	 */
 	public Mat renderAnnotation(Mat image) {
 		
-		renderFaceOverlayAnnotation(image);
+		drawFaceOverlayAnnotation(image);
 		
 		switch(MenuAndParams.annotationMode) {
 		
 		case LAYOUT:
-			renderFlatCubeLayoutRepresentations(image);
+			drawFlatCubeLayoutRepresentations(image);
 			break;
 			
 		case RHOMBUS:
-	    	renderRhombusRecognitionMetrics(image, stateModel.activeRubikFace.rhombusList);
+	    	drawRhombusRecognitionMetrics(image, stateModel.activeRubikFace.rhombusList);
 			break;
 
 		case FACE_METRICS:
-			renderRubikFaceMetrics(image, stateModel.activeRubikFace);
+			drawRubikFaceMetrics(image, stateModel.activeRubikFace);
 			break;
 			
 		case CUBE_METRICS:
-			renderCubeMetrics(image);
+			drawCubeMetrics(image);
 			break;
 
 		case TIME:
-			stateModel.activeRubikFace.profiler.renderTimeConsumptionMetrics(image, stateModel);
+			stateModel.activeRubikFace.profiler.drawTimeConsumptionMetrics(image, stateModel);
 			break;
 			
 		case COLOR:
-			renderFaceColorMetrics(image, stateModel.activeRubikFace);
+			drawFaceColorMetrics(image, stateModel.activeRubikFace);
 			break;
 			
 		case NORMAL:
@@ -102,7 +102,7 @@ public class Annotation {
 	 * 
 	 * @param image
 	 */
-    private void renderFlatCubeLayoutRepresentations(Mat image) {
+    private void drawFlatCubeLayoutRepresentations(Mat image) {
     	
     	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
 	    
@@ -174,7 +174,7 @@ public class Annotation {
 	 * Render Face Overlay Annotation
 	 * @param image
 	 */
-    private void renderFaceOverlayAnnotation(Mat img) {
+    private void drawFaceOverlayAnnotation(Mat img) {
     	
     	RubikFace face = stateModel.activeRubikFace;
     	
@@ -280,7 +280,7 @@ public class Annotation {
 	 * @param image
 	 * @param rhombusList
 	 */
-    private void renderRhombusRecognitionMetrics(Mat image, List<Rhombus> rhombusList) {
+    private void drawRhombusRecognitionMetrics(Mat image, List<Rhombus> rhombusList) {
     	
 //		RubikFace.drawFlatFaceRepresentation(image, RubikCube.active, 50, 50, 50);
 
@@ -344,7 +344,7 @@ public class Annotation {
 	 * @param image
 	 * @param activeRubikFace
 	 */
-    private void renderRubikFaceMetrics(Mat image, RubikFace activeRubikFace) {
+    private void drawRubikFaceMetrics(Mat image, RubikFace activeRubikFace) {
 
     	Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
     	
@@ -378,7 +378,7 @@ public class Annotation {
 	 * @param image
 	 * @param face
 	 */
-    private void renderFaceColorMetrics(Mat image, RubikFace face) {
+    private void drawFaceColorMetrics(Mat image, RubikFace face) {
     	
     	Core.rectangle(image, new Point(0, 0), new Point(570, 720), Constants.ColorBlack, -1);
     	
@@ -458,7 +458,7 @@ public class Annotation {
 	 * 
 	 * @param image
 	 */
-	public void renderCubeMetrics(Mat image) {
+	public void drawCubeMetrics(Mat image) {
 		
 		Core.rectangle(image, new Point(0, 0), new Point(450, 720), Constants.ColorBlack, -1);
 		
