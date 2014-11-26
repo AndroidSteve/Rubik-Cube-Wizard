@@ -52,7 +52,8 @@ public class Annotation {
 			break;
 			
 		case RHOMBUS:
-	    	drawRhombusRecognitionMetrics(image, stateModel.activeRubikFace.rhombusList);
+			if(stateModel.activeRubikFace != null)
+				drawRhombusRecognitionMetrics(image, stateModel.activeRubikFace.rhombusList);
 			break;
 
 		case FACE_METRICS:
@@ -64,7 +65,8 @@ public class Annotation {
 			break;
 
 		case TIME:
-			stateModel.activeRubikFace.profiler.drawTimeConsumptionMetrics(image, stateModel);
+			if(stateModel.activeRubikFace != null)
+				stateModel.activeRubikFace.profiler.drawTimeConsumptionMetrics(image, stateModel);
 			break;
 			
 		case COLOR:

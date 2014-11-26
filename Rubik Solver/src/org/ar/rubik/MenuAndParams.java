@@ -233,6 +233,8 @@ public class MenuAndParams {
 
 		case R.id.timeAnnotationMenuItem:
 			annotationMode = AnnotationModeEnum.TIME;
+			if(ma.stateModel.activeRubikFace != null)
+				ma.stateModel.activeRubikFace.profiler.reset();
 			break;
 
 		case R.id.colorAnnotationMenuItem:

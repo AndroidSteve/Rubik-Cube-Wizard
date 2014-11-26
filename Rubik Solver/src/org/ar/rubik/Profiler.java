@@ -49,11 +49,17 @@ public class Profiler {
 	private Map<Event,Long> eventSet = new HashMap<Event,Long>(32);
 	private static Map<Event,Long> minEventSet = new HashMap<Event, Long>(32);
 	
+	private boolean scheduleReset = false;
+	
 	public void markTime(Event event) {
 		long time = System.currentTimeMillis();
 		eventSet.put(event, time);
 		if(minEventSet.containsKey(event) == false)
 			minEventSet.put(event, Long.MAX_VALUE);
+	}
+	
+	public void reset() {
+		scheduleReset = true;
 	}
 	
 	/**
@@ -81,6 +87,11 @@ public class Profiler {
 		renderAndIndex(Event.FACE,       Event.RHOMBUS,   image, index++);
 		renderAndIndex(Event.CONTROLLER, Event.FACE,      image, index++);
 		renderAndIndex(Event.TOTAL,      Event.START,     image, index++);
+		
+		if(scheduleReset) {
+			minEventSet = new HashMap<Event, Long>(32);
+			scheduleReset = false;
+		}
 
 		return image;
 	}
@@ -88,9 +99,6 @@ public class Profiler {
 	
 	/**
 	 * Render one line of time consumption
-	 * 
-	 * =+= Correction Needed: Min Total time need to be the sum of the individuals
-	 * =+= for each frame.  This makes for a faster converging solution.
 	 * 
      * @param endEvent
      * @param startEvent
@@ -100,6 +108,20 @@ public class Profiler {
     private void renderAndIndex(Event endEvent, Event startEvent, Mat image, int index) {
     	if(eventSet.containsKey(endEvent) == false) {
     		Core.putText(image, endEvent.toString() + ": NA", new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    	}
+    	else if(endEvent == Event.TOTAL) {
+ 
+    		long endTimeStamp = eventSet.get(endEvent);
+    		long startTimeStamp = eventSet.get(startEvent);
+    		long elapsedTime = endTimeStamp - startTimeStamp;
+    		
+    		// Sum up all minimum times: this converges faster than recording the minimum total time and should be the same.
+    		long minValue = 0;
+    		for(long minEventTime : minEventSet.values())
+    			minValue += minEventTime;
+
+			String string = String.format("%10s: %3dmS %3dmS", endEvent.toString(), elapsedTime, minValue);
+    		Core.putText(image, string, new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
     	}
     	else {
     		long endTimeStamp = eventSet.get(endEvent);
