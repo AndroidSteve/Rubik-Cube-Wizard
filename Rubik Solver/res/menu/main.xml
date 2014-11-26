@@ -80,9 +80,6 @@
             <group 
                 android:id="@+id/paramMenuGroup">
                 <item 
-                    android:id="@+id/luminousOffsetMenuItem" 
-                    android:title="Manual Luminous Offset" />
-                <item 
                     android:id="@+id/boxBlurKernelSizeMenuItem" 
                     android:title="Gaussian Blur Kernel Size" />
                 <item 

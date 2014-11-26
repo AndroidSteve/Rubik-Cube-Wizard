@@ -113,9 +113,6 @@ public class MenuAndParams {
 	// Face Least Means Square Threshold
 	public static RubikMenuParam faceLmsThresholdParam       = new RubikMenuParam("Face LMS Threshold",              +5.0,    +150.0, +35.0);
 	
-	// Manual Luminous Offset
-	public static RubikMenuParam luminousOffsetParam         = new RubikMenuParam("Luminous Offset",                -50.0,     +50.0,   0.0);
-
 
 	/**
 	 * Rubik Menu Parameters
@@ -244,10 +241,6 @@ public class MenuAndParams {
 
 
 			// Adjustable Parameters
-		case R.id.luminousOffsetMenuItem:
-			seekerDialogNew(luminousOffsetParam, ma);
-			return true;
-
 		case R.id.boxBlurKernelSizeMenuItem:
 			seekerDialogNew(gaussianBlurKernelSizeParam, ma);
 			break;
@@ -291,17 +284,17 @@ public class MenuAndParams {
 
 			// Miscellaneous
 		case R.id.saveCubeMenuItem:
-			ma.controller.saveCube();
+//			ma.controller.saveCube();
 			ma.stateModel.saveState();
 			break;
 
 		case R.id.recallCubeMenuItem:
-			ma.controller.recallCube();
+//			ma.controller.recallCube();
 			ma.stateModel.recallState();
 			break;
 
 		case R.id.resetImageMenuItem:
-			ma.controller.reset();
+//			ma.controller.reset();
 			ma.appStateMachine.reset();
 			break;
 

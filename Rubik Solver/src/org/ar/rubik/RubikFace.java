@@ -687,7 +687,7 @@ public class RubikFace {
 
 					// Only examine U and V axis, and not luminous.
 					double error =
-							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) +
+							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset)) +
 							(candidateColorYUV[1] -  measuredColorYUV[1]) * (candidateColorYUV[1] - measuredColorYUV[1]) +
 							(candidateColorYUV[2] -  measuredColorYUV[2]) * (candidateColorYUV[2] - measuredColorYUV[2]);
 

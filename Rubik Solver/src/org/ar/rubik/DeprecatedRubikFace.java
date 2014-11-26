@@ -569,7 +569,7 @@ public class DeprecatedRubikFace implements Serializable {
 
 					// Only examine U and V axis, and not luminous.
 					double error =
-							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset + MenuAndParams.luminousOffsetParam.value)) +
+							(candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset)) +
 							(candidateColorYUV[1] -  measuredColorYUV[1]) * (candidateColorYUV[1] - measuredColorYUV[1]) +
 							(candidateColorYUV[2] -  measuredColorYUV[2]) * (candidateColorYUV[2] - measuredColorYUV[2]);
 
@@ -1066,7 +1066,7 @@ public class DeprecatedRubikFace implements Serializable {
 				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
 				
 				// Draw tile characters on right side for Y axis
-				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + luminousOffset  + MenuAndParams.luminousOffsetParam.value), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + luminousOffset), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
 				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, logicalTileArray[n][m].color, 3);
 //				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
 			}

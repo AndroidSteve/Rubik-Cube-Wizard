@@ -178,6 +178,9 @@ public class Annotation {
     	
     	RubikFace face = stateModel.activeRubikFace;
     	
+    	if(face == null)
+    		return;
+    	
 		Scalar color = Constants.ColorBlack;
 		switch(face.faceRecognitionStatus) {
 		case UNKNOWN:
@@ -379,7 +382,7 @@ public class Annotation {
     	
     	Core.rectangle(image, new Point(0, 0), new Point(570, 720), Constants.ColorBlack, -1);
     	
-		if(face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
+		if(face == null || face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
 			return;
 
 		// Draw simple grid
@@ -412,8 +415,10 @@ public class Annotation {
 				// Draw tile character in UV plane
 				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
 				
-				// Draw tile characters on right side for Y axis
-				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset  + MenuAndParams.luminousOffsetParam.value), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
+				// Draw tile characters on INSIDE right side for Y axis for adjusted luminosity.
+				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
+				
+				// Draw tile characters on OUTSIDE right side for Y axis as directly measured.
 				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
 //				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
 			}
