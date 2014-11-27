@@ -558,7 +558,7 @@ public class DeprecatedController {
 		if(MenuAndParams.userTextDisplay == true)
 			Core.rectangle(image, new Point(0, 0), new Point(1270, 60), Constants.ColorBlack, -1);
 
-		userInstructionsGLRenderer.setCubeOrienation(rubikFace);
+//		userInstructionsGLRenderer.setCubeOrienation(rubikFace);
 
 		switch(controllerState) {
 

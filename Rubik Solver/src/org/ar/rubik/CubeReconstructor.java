@@ -53,6 +53,10 @@ public class CubeReconstructor {
 	/**
 	 * =+= this is temporary code
 	 * 
+	 * This function actually calculates, currently rather crudely, a 2D to 3D translation.
+	 * That is, information from the Rubik Face object is used to deduce the 
+	 * true location in OpenGL space of the cube and it's orientation.  
+	 * 
 	 * @param rubikFace
 	 */
     public void reconstruct(RubikFace rubikFace) {

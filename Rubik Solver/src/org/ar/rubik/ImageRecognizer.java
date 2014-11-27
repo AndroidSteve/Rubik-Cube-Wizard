@@ -377,7 +377,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 * **********************************************************************
 			 * Cube Recognition
 			 * 
-			 * Reconstruct Rubik Cube 3D location and orientation in GL space coordinates.
+			 * Reconstruct the Rubik Cube 3D location and orientation in GL space coordinates.
 			 */
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 				CubeReconstructor cubeReconstructor = new CubeReconstructor();

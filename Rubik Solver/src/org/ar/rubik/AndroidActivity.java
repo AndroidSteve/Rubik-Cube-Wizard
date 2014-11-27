@@ -177,7 +177,7 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
         layout.addView(userInstructionsGLSurfaceView);
-        UserInstructionsGLRenderer userInstructionGLRenderer = new UserInstructionsGLRenderer(this);
+        UserInstructionsGLRenderer userInstructionGLRenderer = new UserInstructionsGLRenderer(stateModel);
         userInstructionsGLSurfaceView.setRenderer(userInstructionGLRenderer);
 
         

@@ -33,13 +33,10 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants;
-import org.ar.rubik.LeastMeansSquare;
-import org.ar.rubik.DeprecatedRubikFace;
-import org.ar.rubik.DeprecatedRubikFace.FaceRecognitionStatusEnum;
+import org.ar.rubik.StateModel;
 import org.ar.rubik.gl.GLArrow.Amount;
 import org.opencv.core.Scalar;
 
-import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 
@@ -58,8 +55,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	// Basically clockwise, or counter clockwise as to original rendering of arrow on XY plane.
 	public enum Direction { POSITIVE, NEGATIVE };
 
-	@SuppressWarnings("unused")
-	private Context context;   // Application's context
+	private StateModel stateModel;
 	
 	// Control Flags
 	private boolean renderCube   = false;
@@ -77,23 +73,17 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	private Scalar color         = Constants.ColorGrey;
 	private FaceType faceType    = null;
 
-	// Cube (and really scene) rendering information
-	private float scale;
-	private float x;
-	private float y;
-	private float cubeXrotation = +45f;
-	private float cubeYrotation = +55f;
-
 	private Rotation rotation;
 
 
 
 	/**
-	 * Constructor with global application context
-	 * @param context
+	 * Constructor with global application stateModel
+	 * @param stateModel
 	 */
-	public UserInstructionsGLRenderer(Context context) {
-		this.context = context;
+	public UserInstructionsGLRenderer(StateModel stateModel) {
+		
+		this.stateModel = stateModel;
 		
 		overlayGLCube = new OverlayGLCube();
 		
@@ -155,21 +145,32 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		
-//		x = 0;
-//		y = 0;
+		// Clear color and depth buffers using clear-value set earlier
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		
+		if(stateModel.cubeReconstructor == null)
+			return;
+		
+		float scale = stateModel.cubeReconstructor.scale;
+		float x = stateModel.cubeReconstructor.x;
+		float y = stateModel.cubeReconstructor.y;
+		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
+		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
+		
+////		x = 0;
+////		y = 0;
 //		faceType = FaceType.RIGHT;
 //		rotation = Rotation.CLOCKWISE;
 //		amount = Amount.QUARTER_TURN;
 //		size = Size.NARROW;
 //		color = Constants.ColorRed;
 //		renderArrow = true;
-//		scale = 2.5f;
-//		cubeYrotation = 0f;
-//		cubeXrotation =0f;
+//		renderCube = true;
+////		scale = 2.5f;
+////		cubeYrotation = 0f;
+////		cubeXrotation =0f;
 		
-		
-		// Clear color and depth buffers using clear-value set earlier
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
 		
 		if(renderCube == false && renderArrow == false)
 			return;
@@ -270,52 +271,6 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		renderCube = state;
 	}
 	
-	/**
-	 * Set Cube Orientation
-	 * 
-	 * This function actually calculates, currently rather crudely, a 2D to 3D translation.
-	 * That is, information from the Rubik Face object is used to deduce the 
-	 * true location in OpenGL space of the cube and it's orientation.  
-	 * 
-	 * 
-	 * @param rubikFace
-	 */
-	public void setCubeOrienation(DeprecatedRubikFace rubikFace) {
-		
-		final float opecnCL2opencvRatio = 100.0f;
-		final float xOffset = 650.0f;
-		final float yOffset = 200.0f;
-		
-		if(rubikFace == null)
-			return;
-		
-		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
-			return;
-		
-		LeastMeansSquare lmsResult = rubikFace.lmsResult;
-		
-		if(lmsResult == null)
-			return;
-		
-				
-		// This is very crude.
-		this.scale = (float) Math.sqrt(Math.abs(rubikFace.alphaLatticLength * rubikFace.betaLatticLength)) / 70.0f;
-		
-		// =+= not necessarily correct, really should use X, Y rotations
-		x = (float) ((lmsResult.origin.x - xOffset) / opecnCL2opencvRatio);
-		y = (float) (-1 * (lmsResult.origin.y - yOffset) / opecnCL2opencvRatio);
-		
-		float alpha = 90.0f - (float) (rubikFace.alphaAngle * 180.0 / Math.PI);
-		float beta = (float) (rubikFace.betaAngle * 180.0 / Math.PI) - 90.0f;
-		
-		
-		// Very crude estimations of orientation.  These equations and number found empirically.
-		// =+= We require a solution of two non-linear equations and two unknowns to correctly calculate
-		// =+= X and Y 3D rotation values from 2D alpha and beta values.  Probably use of Newton successive
-		// =+= approximation will produce good results.
-		cubeYrotation = 45.0f + (alpha - beta) / 2.0f;
-		cubeXrotation =  90.0f + ( (alpha - 45.0f) + (beta - 45.0f) )/ -0.5f;
-	}
 
 
 	/**
