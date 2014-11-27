@@ -96,6 +96,9 @@ public class StateModel {
 
 	// True if we are to render GL Pilot Cube
 	public boolean renderPilotCube = true;
+
+	// Cube Location and Orientation deduced from Face.
+	public CubeReconstructor cubeReconstructor;
 	
 	
 	

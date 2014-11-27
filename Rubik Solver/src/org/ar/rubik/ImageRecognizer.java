@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.ar.rubik.Constants.ImageProcessModeEnum;
 import org.ar.rubik.Constants.ImageSourceModeEnum;
+import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Core;
@@ -114,7 +115,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 	@Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 		
-		Log.e(Constants.TAG, "CV Thread ID = " + Thread.currentThread().getId());
+//		Log.e(Constants.TAG, "CV Thread ID = " + Thread.currentThread().getId());
 
 		// Just display error message if it is non-null.
 		if(errorImage != null)
@@ -370,6 +371,21 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 				return annotation.renderAnnotation(image);
 			}
+			
+			
+			/* **********************************************************************
+			 * **********************************************************************
+			 * Cube Recognition
+			 * 
+			 * Reconstruct Rubik Cube 3D location and orientation in GL space coordinates.
+			 */
+			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
+				CubeReconstructor cubeReconstructor = new CubeReconstructor();
+				cubeReconstructor.reconstruct(rubikFace);
+				stateModel.cubeReconstructor = cubeReconstructor;
+			}
+			else
+				stateModel.cubeReconstructor = null;
 			
 			
 			/* **********************************************************************

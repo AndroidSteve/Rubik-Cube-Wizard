@@ -33,16 +33,9 @@ package org.ar.rubik.gl;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import org.ar.rubik.Constants;
-import org.ar.rubik.LeastMeansSquare;
-import org.ar.rubik.RubikFace;
-import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.ar.rubik.StateModel;
-
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
-import android.util.Log;
 
 /**
  * @author stevep
@@ -52,8 +45,6 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 
     private StateModel stateModel;
 	private PilotGLCube pilotGLCube;
-	private float cubeXrotation = 35.0f;
-	private float cubeYrotation = 45.0f;
 	
 	// True if we are actively tracking the cube (i.e. solve or partially solved)
 	private boolean active = false;
@@ -76,7 +67,7 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
     	
-    	Log.e(Constants.TAG, "GL Thread ID = " + Thread.currentThread().getId());
+//    	Log.e(Constants.TAG, "GL Thread ID = " + Thread.currentThread().getId());
     	
 		// Clear color and depth buffers using clear-value set earlier
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
@@ -84,8 +75,11 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 		if(stateModel.renderPilotCube == false)
 			return;
 		
-		if( calculateCubeOrienation(stateModel.activeRubikFace) == false)
+		if(stateModel.cubeReconstructor == null)
 			return;
+		
+		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
+		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
 		
 		gl.glLoadIdentity();                   // Reset model-view matrix 
 		
@@ -141,50 +135,6 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 		gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
 	}
 
-    
-	/**
-	 * @param active
-	 */
-    private boolean calculateCubeOrienation(RubikFace rubikFace) {
-		
-		cubeXrotation = 35.0f;
-		cubeYrotation = 45.0f;
-		active = false;
-		
-		if(rubikFace == null) {
-//			Log.e(Constants.TAG, "face was null");
-			return false;
-		}
-		
-		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED) {
-//			Log.e(Constants.TAG, "status was not solved: " + rubikFace.faceRecognitionStatus);
-			return false;
-		}
-		
-		LeastMeansSquare lmsResult = rubikFace.lmsResult;
-		
-		if(lmsResult == null) {
-//			Log.e(Constants.TAG, "no lms");
-			return false;
-		}
-		
-	
-		active = true;
-		
-		
-		float alpha = 90.0f - (float) (rubikFace.alphaAngle * 180.0 / Math.PI);
-		float beta = (float) (rubikFace.betaAngle * 180.0 / Math.PI) - 90.0f;
-		
-		
-		// Very crude estimations of orientation.  These equations and number found empirically.
-		// =+= We require a solution of two non-linear equations and two unknowns to correctly calculate
-		// =+= X and Y 3D rotation values from 2D alpha and beta values.  Probably use of Newton successive
-		// =+= approximation will produce good results.
-		cubeYrotation = 45.0f + (alpha - beta) / 2.0f;
-		cubeXrotation =  90.0f + ( (alpha - 45.0f) + (beta - 45.0f) )/ -0.5f;
-		
-		return true;
-    }
 
     
 	/** =+= delete this

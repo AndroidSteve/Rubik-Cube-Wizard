@@ -150,7 +150,6 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
      * (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
-    @SuppressWarnings("unused")
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	
@@ -165,74 +164,38 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view); 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);
+
         
-        if(Constants.refactor == true) {
-        	mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);
-        	
-//        	// Setup and Add Pilot GL Surface View and Pilot GL Renderer
-//        	userInstructionsGLSurfaceView = new GLSurfaceView(this);
-//        	userInstructionsGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-//        	userInstructionsGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-//        	userInstructionsGLSurfaceView.setZOrderOnTop(true);
-//        	userInstructionsGLSurfaceView.setLayoutParams(
-//        			new FrameLayout.LayoutParams(
-//        					FrameLayout.LayoutParams.MATCH_PARENT,
-//        					FrameLayout.LayoutParams.MATCH_PARENT));
-//        	layout.addView(userInstructionsGLSurfaceView);
-//        	UserInstructionsGLRenderer pilotGlRenderer = new UserInstructionsGLRenderer(this);
-//        	userInstructionsGLSurfaceView.setRenderer(pilotGlRenderer);
-        	
-        	// Setup and add Annotation GL Surface View and Annotation GL Renderer
-        	pilotGLSurfaceView = new GLSurfaceView(this);
-        	pilotGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-        	pilotGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-        	pilotGLSurfaceView.setZOrderOnTop(true);
-        	pilotGLSurfaceView.setLayoutParams(
-        			new FrameLayout.LayoutParams(
-        					FrameLayout.LayoutParams.MATCH_PARENT,
-        					FrameLayout.LayoutParams.MATCH_PARENT));
-        	layout.addView(pilotGLSurfaceView);
-        	PilotCubeGLRenderer pilotCubeGlRenderer = new PilotCubeGLRenderer(stateModel);
-        	pilotGLSurfaceView.setRenderer(pilotCubeGlRenderer);  	
-        	
-        }
+        // Setup and Add User Instruction GL Surface View and User Instruction GL Renderer
+        userInstructionsGLSurfaceView = new GLSurfaceView(this);
+        userInstructionsGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+        userInstructionsGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+        userInstructionsGLSurfaceView.setZOrderOnTop(true);
+        userInstructionsGLSurfaceView.setLayoutParams(
+        		new FrameLayout.LayoutParams(
+        				FrameLayout.LayoutParams.MATCH_PARENT,
+        				FrameLayout.LayoutParams.MATCH_PARENT));
+        layout.addView(userInstructionsGLSurfaceView);
+        UserInstructionsGLRenderer userInstructionGLRenderer = new UserInstructionsGLRenderer(this);
+        userInstructionsGLSurfaceView.setRenderer(userInstructionGLRenderer);
 
-        else {
-//        	// Setup and Add Pilot GL Surface View and Pilot GL Renderer
-//        	userInstructionsGLSurfaceView = new GLSurfaceView(this);
-//        	userInstructionsGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-//        	userInstructionsGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-//        	userInstructionsGLSurfaceView.setZOrderOnTop(true);
-//        	userInstructionsGLSurfaceView.setLayoutParams(
-//        			new FrameLayout.LayoutParams(
-//        					FrameLayout.LayoutParams.MATCH_PARENT,
-//        					FrameLayout.LayoutParams.MATCH_PARENT));
-//        	layout.addView(userInstructionsGLSurfaceView);
-//        	UserInstructionsGLRenderer pilotGlRenderer = new UserInstructionsGLRenderer(this);
-//        	userInstructionsGLSurfaceView.setRenderer(pilotGlRenderer);
-//
-//
-//        	// Setup and add Annotation GL Surface View and Annotation GL Renderer
-//        	pilotGLSurfaceView = new GLSurfaceView(this);
-//        	pilotGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-//        	pilotGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-//        	pilotGLSurfaceView.setZOrderOnTop(true);
-//        	pilotGLSurfaceView.setLayoutParams(
-//        			new FrameLayout.LayoutParams(
-//        					FrameLayout.LayoutParams.MATCH_PARENT,
-//        					FrameLayout.LayoutParams.MATCH_PARENT));
-//        	layout.addView(pilotGLSurfaceView);
-//        	PilotCubeGLRenderer annotationGlRenderer = new PilotCubeGLRenderer(this);
-//        	pilotGLSurfaceView.setRenderer(annotationGlRenderer);
-//
-//
-//        	// Instantiate Controller Objet
-//        	controller = new DeprecatedController(pilotGlRenderer, annotationGlRenderer);
-        }
+        
+        // Setup and Add Pilot GL Surface View and Pilot GL Renderer
+        pilotGLSurfaceView = new GLSurfaceView(this);
+        pilotGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+        pilotGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+        pilotGLSurfaceView.setZOrderOnTop(true);
+        pilotGLSurfaceView.setLayoutParams(
+        		new FrameLayout.LayoutParams(
+        				FrameLayout.LayoutParams.MATCH_PARENT,
+        				FrameLayout.LayoutParams.MATCH_PARENT));
+        layout.addView(pilotGLSurfaceView);
+        PilotCubeGLRenderer pilotCubeGlRenderer = new PilotCubeGLRenderer(stateModel);
+        pilotGLSurfaceView.setRenderer(pilotCubeGlRenderer);  	
 
-        // =+= Currently obsolete, but is used to support OpenCL
+        // =+= Currently not in use, but is used to support OpenCL
         MonoChromatic.initOpenCL(getOpenCLProgram());
-
     }
 
     @Override
