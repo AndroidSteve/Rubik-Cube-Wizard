@@ -47,7 +47,7 @@ import android.opengl.GLU;
 /**
  *  OpenGL Custom renderer used with GLSurfaceView 
  */
-public class PilotGLRenderer implements GLSurfaceView.Renderer {
+public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 
 	public enum FaceType { UP, DOWN, LEFT, RIGHT, FRONT, BACK, FRONT_TOP, LEFT_TOP };
 	
@@ -92,7 +92,7 @@ public class PilotGLRenderer implements GLSurfaceView.Renderer {
 	 * Constructor with global application context
 	 * @param context
 	 */
-	public PilotGLRenderer(Context context) {
+	public UserInstructionsGLRenderer(Context context) {
 		this.context = context;
 		
 		overlayGLCube = new OverlayGLCube();

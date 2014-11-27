@@ -9,6 +9,8 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
+ *   This class renders the "Pilot Cube" which appears on the right hand side in
+ *   normal mode.  It tracks rotation of the cube, but not translation.
  * 
  * License:
  * 
@@ -44,27 +46,29 @@ import android.opengl.GLU;
  * @author stevep
  *
  */
-public class AnnotationGLRenderer implements GLSurfaceView.Renderer {
+public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 
 	@SuppressWarnings("unused")
     private Context context;
-	private GLCube gLCube;
+	private PilotGLCube pilotGLCube;
 	private float cubeXrotation = 35.0f;
 	private float cubeYrotation = 45.0f;
 	private boolean renderState = false;
 	
 	// True if we are actively tracking the cube (i.e. solve or partially solved)
 	private boolean active = false;
+	
 
 	/**
 	 * @param mainActivity
 	 */
-    public AnnotationGLRenderer(Context context) {
+    public PilotCubeGLRenderer(Context context) {
 		this.context = context;
 		
-		gLCube = new GLCube();
+		pilotGLCube = new PilotGLCube();
     }
 
+    
 	/**
 	 *  (non-Javadoc)
 	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
@@ -87,7 +91,7 @@ public class AnnotationGLRenderer implements GLSurfaceView.Renderer {
 		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of +45
 		gl.glRotatef(cubeYrotation + 25.0f, 0.0f, 1.0f, 0.0f);  // Y rotation of +45
 		
-		gLCube.draw(gl, active);
+		pilotGLCube.draw(gl, active);
     }
 
     

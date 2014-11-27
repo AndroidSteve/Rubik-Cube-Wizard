@@ -37,8 +37,8 @@ package org.ar.rubik;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.FaceRecogniztionState;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
-//import org.ar.rubik.gl.PilotGLRenderer.FaceType;
-//import org.ar.rubik.gl.PilotGLRenderer.Rotation;
+//import org.ar.rubik.gl.UserInstructionsGLRenderer.FaceType;
+//import org.ar.rubik.gl.UserInstructionsGLRenderer.Rotation;
 import org.kociemba.twophase.Search;
 import org.kociemba.twophase.Tools;
 
@@ -107,6 +107,10 @@ public class AppStateMachine {
 		if(scheduleReset == true) {
 			scheduleReset = false;
 			gotItCount = 0;
+			candidateRubikFace = null;
+			consecutiveCandiateRubikFaceCount = 0;
+			lastStableRubikFace = null;
+			allowOneMoreRotation = false;
 			stateModel.reset();
 		}
 

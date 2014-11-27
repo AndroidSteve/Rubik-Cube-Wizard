@@ -43,57 +43,57 @@ import javax.microedition.khronos.opengles.GL10;
  * @author stevep
  *
  */
-public class GLCube {
+public class PilotGLCube {
 
-	  // Buffer for vertex-array
+	// Buffer for vertex-array
 	private FloatBuffer frontVertexBuffer;
 	private FloatBuffer leftVertexBuffer;
 	private FloatBuffer topVertexBuffer;
 	private FloatBuffer frontOutlineVertexBuffer;
 	private FloatBuffer leftOutlineVertexBuffer;
 	private FloatBuffer topOutlineVertexBuffer;
-	
+
 	private float[] frontVertices = { 
 			+1.0f,  +1.0f,  +1.0f,
 			+1.0f,  -1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f,
 			-1.0f,  -1.0f,  +1.0f };
-	
+
 	private float[] frontOutlineVertices = {
-				+1.0f,  +1.0f,  +1.0f,
-				+1.0f,  -1.0f,  +1.0f,
-				-1.0f,  -1.0f,  +1.0f,
-				-1.0f,  +1.0f,  +1.0f };
+			+1.0f,  +1.0f,  +1.0f,
+			+1.0f,  -1.0f,  +1.0f,
+			-1.0f,  -1.0f,  +1.0f,
+			-1.0f,  +1.0f,  +1.0f };
 
 	private float[] leftVertices = { 		
 			-1.0f,  -1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f,
 			-1.0f,  -1.0f,  -1.0f,
 			-1.0f,  +1.0f,  -1.0f,};
-	
+
 	private float[] leftOutlineVertices = { 		
 			-1.0f,  -1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f,
 			-1.0f,  +1.0f,  -1.0f,
 			-1.0f,  -1.0f,  -1.0f,};
-	
+
 	private float[] topVertices = { 		
 			+1.0f,  +1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f,
 			+1.0f,  +1.0f,  -1.0f,
 			-1.0f,  +1.0f,  -1.0f,};
-	
+
 	private float[] topOutlineVertices = { 		
 			+1.0f,  +1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f,
 			-1.0f,  +1.0f,  -1.0f,
 			+1.0f,  +1.0f,  -1.0f,};
-	
+
 
 
 	// Constructor - Setup the vertex buffer
-	public GLCube() {
-		
+	public PilotGLCube() {
+
 		// Setup vertex array buffer. Vertices in float. A float has 4 bytes
 		ByteBuffer frontByteBuffer = ByteBuffer.allocateDirect(frontVertices.length * 4);
 		frontByteBuffer.order(ByteOrder.nativeOrder()); 
@@ -114,9 +114,9 @@ public class GLCube {
 		topVertexBuffer = topByteBuffer.asFloatBuffer();
 		topVertexBuffer.put(topVertices);
 		topVertexBuffer.position(0);
-		
-		
-		
+
+
+
 		// Setup vertex array buffer. Vertices in float. A float has 4 bytes
 		ByteBuffer frontOutlineByteBuffer = ByteBuffer.allocateDirect(frontOutlineVertices.length * 4);
 		frontOutlineByteBuffer.order(ByteOrder.nativeOrder()); 
@@ -141,12 +141,12 @@ public class GLCube {
 
 	// Render the shape
 	public void draw(GL10 gl, boolean active) {
-		
+
 		float intensity = active ? 1.0f : 0.5f;
 
 		// Enable vertex-array and define its buffer
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		
+
 		gl.glColor4f(intensity, 0.0f, 0.0f, 1.0f);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, frontVertexBuffer);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, frontVertices.length / 3);
@@ -158,19 +158,19 @@ public class GLCube {
 		gl.glColor4f(intensity, intensity, intensity, 1.0f);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, topVertexBuffer);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, topVertices.length / 3);
-		
-		
+
+
 
 		gl.glLineWidth(10.0f);
 		gl.glColor4f(intensity, intensity, intensity, 1.0f);
-		
+
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, frontOutlineVertexBuffer);
 		gl.glDrawArrays(GL10.GL_LINE_LOOP, 0, frontOutlineVertices.length / 3);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, topOutlineVertexBuffer);
 		gl.glDrawArrays(GL10.GL_LINE_LOOP, 0, topOutlineVertices.length / 3);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, leftOutlineVertexBuffer);
 		gl.glDrawArrays(GL10.GL_LINE_LOOP, 0, leftOutlineVertices.length / 3);
-	
+
 
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 	}

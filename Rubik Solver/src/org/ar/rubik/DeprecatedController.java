@@ -36,10 +36,10 @@ import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ImageProcessModeEnum;
 import org.ar.rubik.Constants.ImageSourceModeEnum;
 import org.ar.rubik.DeprecatedRubikFace.FaceRecognitionStatusEnum;
-import org.ar.rubik.gl.AnnotationGLRenderer;
-import org.ar.rubik.gl.PilotGLRenderer;
-import org.ar.rubik.gl.PilotGLRenderer.FaceType;
-import org.ar.rubik.gl.PilotGLRenderer.Rotation;
+import org.ar.rubik.gl.PilotCubeGLRenderer;
+import org.ar.rubik.gl.UserInstructionsGLRenderer;
+import org.ar.rubik.gl.UserInstructionsGLRenderer.FaceType;
+import org.ar.rubik.gl.UserInstructionsGLRenderer.Rotation;
 import org.kociemba.twophase.PruneTableLoader;
 import org.kociemba.twophase.Search;
 import org.kociemba.twophase.Tools;
@@ -100,8 +100,8 @@ public class DeprecatedController {
 	private int solutionResultIndex;
 
 	// Each of this is a layer on the screen
-	private PilotGLRenderer pilotGLRenderer;
-	private AnnotationGLRenderer annotationGlRenderer;
+	private UserInstructionsGLRenderer userInstructionsGLRenderer;
+	private PilotCubeGLRenderer annotationGlRenderer;
 
 	// Most recent face (not necessarily that which decision are made on).
 	private DeprecatedRubikFace rubikFace;
@@ -119,13 +119,13 @@ public class DeprecatedController {
 	
     /**
      * Controller Constructor
-     * @param pilotGLRenderer 
+     * @param userInstructionsGLRenderer 
      * @param annotationGlRenderer 
      * 
      */
-    public DeprecatedController(PilotGLRenderer pilotGLRenderer, AnnotationGLRenderer annotationGlRenderer) {
+    public DeprecatedController(UserInstructionsGLRenderer userInstructionsGLRenderer, PilotCubeGLRenderer annotationGlRenderer) {
     	
-    	this.pilotGLRenderer = pilotGLRenderer;
+    	this.userInstructionsGLRenderer = userInstructionsGLRenderer;
     	this.annotationGlRenderer = annotationGlRenderer;
     	
     	/*
@@ -558,36 +558,36 @@ public class DeprecatedController {
 		if(MenuAndParams.userTextDisplay == true)
 			Core.rectangle(image, new Point(0, 0), new Point(1270, 60), Constants.ColorBlack, -1);
 
-		pilotGLRenderer.setCubeOrienation(rubikFace);
+		userInstructionsGLRenderer.setCubeOrienation(rubikFace);
 
 		switch(controllerState) {
 
 		case START:
 			if(MenuAndParams.userTextDisplay == true)
 				Core.putText(image, "Show Me The Rubik Cube", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-			pilotGLRenderer.setRenderArrow(false);
+			userInstructionsGLRenderer.setRenderArrow(false);
 			break;
 
 		case GOT_IT:
 			if(MenuAndParams.userTextDisplay == true)
 				Core.putText(image, "OK, Got It", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-			pilotGLRenderer.setRenderArrow(false);
-			pilotGLRenderer.setRenderCube(MenuAndParams.cubeOverlayDisplay);
+			userInstructionsGLRenderer.setRenderArrow(false);
+			userInstructionsGLRenderer.setRenderCube(MenuAndParams.cubeOverlayDisplay);
 			break;
 
 		case ROTATE:
 			if(MenuAndParams.userTextDisplay == true)
 				Core.putText(image, "Please Rotate: " + DeprecatedRubikCube.getNumValidFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
 			if(  DeprecatedRubikCube.getNumValidFaces() % 2 == 0)
-				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
+				userInstructionsGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
 			else
-				pilotGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
+				userInstructionsGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
 			break;
 
 		case SEARCHING:
 			if(MenuAndParams.userTextDisplay == true)
 				Core.putText(image, "Searching for Another Face", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-			pilotGLRenderer.setRenderArrow(false);
+			userInstructionsGLRenderer.setRenderArrow(false);
 			break;
 
 		case COMPLETE:
@@ -689,21 +689,21 @@ public class DeprecatedController {
 				color = Constants.RubikOrange;
 				break;
 			}
-			pilotGLRenderer.setRenderCube(true && MenuAndParams.cubeOverlayDisplay);
-			pilotGLRenderer.showCubeEdgeRotationArrow(
+			userInstructionsGLRenderer.setRenderCube(true && MenuAndParams.cubeOverlayDisplay);
+			userInstructionsGLRenderer.showCubeEdgeRotationArrow(
 					rotation,
 					faceType, 
 					color);
 			break;
 
 		case WAITING_FOR_MOVE_COMPLETE:
-			pilotGLRenderer.setRenderArrow(false);
+			userInstructionsGLRenderer.setRenderArrow(false);
 			if(MenuAndParams.userTextDisplay == true)
 				Core.putText(image, "Waiting for move to be completed", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 			break;
 
 		case DONE:
-			pilotGLRenderer.setRenderArrow(false);
+			userInstructionsGLRenderer.setRenderArrow(false);
 			break;
 
 		default:
