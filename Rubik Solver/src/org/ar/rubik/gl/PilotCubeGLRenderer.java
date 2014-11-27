@@ -34,13 +34,15 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.ar.rubik.Constants;
 import org.ar.rubik.LeastMeansSquare;
-import org.ar.rubik.DeprecatedRubikFace;
-import org.ar.rubik.DeprecatedRubikFace.FaceRecognitionStatusEnum;
+import org.ar.rubik.RubikFace;
+import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
+import org.ar.rubik.StateModel;
 
-import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
+import android.util.Log;
 
 /**
  * @author stevep
@@ -48,12 +50,10 @@ import android.opengl.GLU;
  */
 public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 
-	@SuppressWarnings("unused")
-    private Context context;
+    private StateModel stateModel;
 	private PilotGLCube pilotGLCube;
 	private float cubeXrotation = 35.0f;
 	private float cubeYrotation = 45.0f;
-	private boolean renderState = false;
 	
 	// True if we are actively tracking the cube (i.e. solve or partially solved)
 	private boolean active = false;
@@ -62,8 +62,8 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 	/**
 	 * @param mainActivity
 	 */
-    public PilotCubeGLRenderer(Context context) {
-		this.context = context;
+    public PilotCubeGLRenderer(StateModel stateModel) {
+		this.stateModel = stateModel;
 		
 		pilotGLCube = new PilotGLCube();
     }
@@ -76,10 +76,15 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 gl) {
     	
+    	Log.e(Constants.TAG, "GL Thread ID = " + Thread.currentThread().getId());
+    	
 		// Clear color and depth buffers using clear-value set earlier
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
-		if(renderState == false)
+		if(stateModel.renderPilotCube == false)
+			return;
+		
+		if( calculateCubeOrienation(stateModel.activeRubikFace) == false)
 			return;
 		
 		gl.glLoadIdentity();                   // Reset model-view matrix 
@@ -140,22 +145,28 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 	/**
 	 * @param active
 	 */
-    public void setCubeOrienation(DeprecatedRubikFace rubikFace) {
+    private boolean calculateCubeOrienation(RubikFace rubikFace) {
 		
 		cubeXrotation = 35.0f;
 		cubeYrotation = 45.0f;
 		active = false;
 		
-		if(rubikFace == null)
-			return;
+		if(rubikFace == null) {
+//			Log.e(Constants.TAG, "face was null");
+			return false;
+		}
 		
-		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
-			return;
+		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED) {
+//			Log.e(Constants.TAG, "status was not solved: " + rubikFace.faceRecognitionStatus);
+			return false;
+		}
 		
 		LeastMeansSquare lmsResult = rubikFace.lmsResult;
 		
-		if(lmsResult == null)
-			return;
+		if(lmsResult == null) {
+//			Log.e(Constants.TAG, "no lms");
+			return false;
+		}
 		
 	
 		active = true;
@@ -171,14 +182,16 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 		// =+= approximation will produce good results.
 		cubeYrotation = 45.0f + (alpha - beta) / 2.0f;
 		cubeXrotation =  90.0f + ( (alpha - 45.0f) + (beta - 45.0f) )/ -0.5f;
+		
+		return true;
     }
 
     
-	/**
+	/** =+= delete this
 	 * @param renderState
 	 */
     public void setRenderState(boolean renderState) {
-    	this.renderState = renderState;
+//    	this.renderState = renderState;
     }
 
 }

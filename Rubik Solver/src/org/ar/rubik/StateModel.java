@@ -93,6 +93,9 @@ public class StateModel {
 	
 	// We assume that faces will be explored in a particular sequence.
 	private int adoptFaceCount = 0;
+
+	// True if we are to render GL Pilot Cube
+	public boolean renderPilotCube = true;
 	
 	
 	

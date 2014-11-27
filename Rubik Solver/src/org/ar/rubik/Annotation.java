@@ -5,6 +5,7 @@ package org.ar.rubik;
 
 import java.util.List;
 
+import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.ar.rubik.Constants.FaceRecogniztionState;
@@ -22,10 +23,16 @@ import android.util.Log;
  */
 public class Annotation {
 
+	// Local reference to State Model
 	private StateModel stateModel;
+	
+	// Local reference to Application State Machine
 	private AppStateMachine appStateMachine;
 	
+	
 	/**
+	 * Annotation Constructor
+	 * 
 	 * @param stateModel
 	 * @param appStateMachine 
 	 */
@@ -44,6 +51,9 @@ public class Annotation {
 	public Mat renderAnnotation(Mat image) {
 		
 		drawFaceOverlayAnnotation(image);
+		
+		if(MenuAndParams.annotationMode != AnnotationModeEnum.NORMAL)
+			stateModel.renderPilotCube = false;
 		
 		switch(MenuAndParams.annotationMode) {
 		
@@ -78,6 +88,10 @@ public class Annotation {
 			// hack so that user instructions are all visible
 			Core.rectangle(image, new Point(0, 60), new Point(350, 720), Constants.ColorBlack, -1);
 
+//			annotationGlRenderer.setRenderState(true);
+//			pilotCubeGLRenderer.setCubeOrienation(stateModel.activeRubikFace);
+			stateModel.renderPilotCube = true;
+			
 //			Core.rectangle(image, new Point(0, 0), new Point(350, 720), Constants.ColorBlack, -1);
 //			annotationGlRenderer.setRenderState(true);
 //			annotationGlRenderer.setCubeOrienation(RubikCube.active);

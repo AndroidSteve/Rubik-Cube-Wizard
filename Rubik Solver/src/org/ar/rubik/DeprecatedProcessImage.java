@@ -137,7 +137,7 @@ public class DeprecatedProcessImage {
 		
 		boxBlurProcessTimeStamp = System.currentTimeMillis();
 
-		if(imageProcessMode == ImageProcessModeEnum.BOXBLUR)
+		if(imageProcessMode == ImageProcessModeEnum.GAUSSIAN)
 			return blur_image;
 
 		

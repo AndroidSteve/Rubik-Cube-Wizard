@@ -178,7 +178,7 @@ public class MenuAndParams {
 			return true;
 
 		case R.id.boxBlurImageProcessMenuItem:
-			imageProcessMode = ImageProcessModeEnum.BOXBLUR; 
+			imageProcessMode = ImageProcessModeEnum.GAUSSIAN; 
 			return true;
 
 		case R.id.cannyImageProcessMenuItem:

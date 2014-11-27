@@ -779,8 +779,8 @@ public class DeprecatedController {
 			
 		case NORMAL:
 			Core.rectangle(image, new Point(0, 0), new Point(350, 720), Constants.ColorBlack, -1);
-			annotationGlRenderer.setRenderState(true);
-			annotationGlRenderer.setCubeOrienation(DeprecatedRubikCube.active);
+//			annotationGlRenderer.setRenderState(true);
+//			annotationGlRenderer.setCubeOrienation(DeprecatedRubikCube.active);
 			break;
 		}
 		

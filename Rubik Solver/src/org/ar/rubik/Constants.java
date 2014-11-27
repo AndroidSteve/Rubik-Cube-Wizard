@@ -68,7 +68,7 @@ public class Constants {
 	public enum ImageSourceModeEnum { NORMAL, SAVE_NEXT, PLAYBACK}
 
 	// Specifies what to do with image
-	public enum ImageProcessModeEnum { DIRECT, MONOCHROMATIC, GREYSCALE, BOXBLUR, CANNY, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE_DETECT, NORMAL}
+	public enum ImageProcessModeEnum { DIRECT, MONOCHROMATIC, GREYSCALE, GAUSSIAN, CANNY, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE_DETECT, NORMAL}
 
 	// Specifies what annotation to add
 	public enum AnnotationModeEnum { LAYOUT, RHOMBUS, FACE_METRICS, TIME, COLOR, CUBE_METRICS, NORMAL }
@@ -89,10 +89,10 @@ public class Constants {
 	// Constant Colors as Scalar objects to match Rubik tile colors.
 	// This values below are calibrated for morning light.
 	public final static Scalar RubikRed    = new Scalar(180.0,  20.0,  30.0);
-//	public final static Scalar RubikOrange = new Scalar(240.0,  80.0,   0.0);
-		public final static Scalar RubikOrange = new Scalar(240.0, 120.0,   0.0);
-//		public final static Scalar RubikYellow = new Scalar(230.0, 230.0,  20.0);
-		public final static Scalar RubikYellow = new Scalar(230.0, 230.0,  80.0);
+	public final static Scalar RubikOrange = new Scalar(240.0,  80.0,   0.0);
+//		public final static Scalar RubikOrange = new Scalar(240.0, 120.0,   0.0);
+	public final static Scalar RubikYellow = new Scalar(230.0, 230.0,  20.0);
+//		public final static Scalar RubikYellow = new Scalar(230.0, 230.0,  80.0);
 	public final static Scalar RubikGreen  = new Scalar(  0.0, 140.0,  60.0);
 	public final static Scalar RubikBlue   = new Scalar(  0.0,  60.0, 220.0);
 	public final static Scalar RubikWhite  = new Scalar(225.0, 255.0, 255.0);
