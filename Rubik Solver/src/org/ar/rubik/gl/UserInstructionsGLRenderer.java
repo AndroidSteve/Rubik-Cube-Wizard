@@ -134,6 +134,218 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix =+=
 		gl.glLoadIdentity();                 // Reset
 	}
+	
+	
+	
+	/**
+	 * @param gl
+	 */
+	public void onDrawFrame(GL10 gl) {
+		
+		// Clear color and depth buffers using clear-value set earlier
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		
+		if(stateModel.cubeReconstructor == null)
+			return;
+
+		switch(stateModel.appState) {
+		
+		case ROTATE:
+			renderCubeFullRotationArrow2(gl);
+			break;
+
+		case DO_MOVE:
+			renderCubeEdgeRotationArrow2(gl);
+			break;
+			
+		default:
+			break;
+		}
+	}
+
+
+	/**
+	 * Render Cube Edge Rotation Arrow
+	 * 
+	 * Render an Rubik Cube Edge Rotation request/instruction.
+	 * This is used after a solution has been computed and to instruct 
+	 * the user to rotate one edge at a time.
+	 * 
+	 * @param gl
+	 */
+	private void renderCubeEdgeRotationArrow2(GL10 gl) {
+		
+		String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
+
+		if(moveNumonic.length() == 1) 
+			rotation = Rotation.CLOCKWISE;
+		else if(moveNumonic.charAt(1) == '2') 
+			rotation = Rotation.ONE_HUNDRED_EIGHTY;
+		else if(moveNumonic.charAt(1) == '\'') 
+			rotation = Rotation.COUNTER_CLOCKWISE;
+		else
+			throw new java.lang.Error("Unknow rotation amount");
+		
+		// Obtain details of arrow to be rendered.
+		switch(moveNumonic.charAt(0)) {
+		case 'U': 
+			faceType = FaceType.UP;
+			color = Constants.RubikWhite;
+			break;
+		case 'D': 
+			faceType = FaceType.DOWN;  
+			color = Constants.RubikYellow;
+			break;
+		case 'L': 
+			faceType = FaceType.LEFT;
+			color = Constants.RubikGreen;
+			break;
+		case 'R': 
+			faceType = FaceType.RIGHT; 
+			color = Constants.RubikBlue;
+			break;
+		case 'F': 
+			faceType = FaceType.FRONT;
+			color = Constants.RubikRed;
+			break;
+		case 'B':
+			faceType = FaceType.BACK;
+			color = Constants.RubikOrange;
+			break;
+		}
+		
+		float scale = stateModel.cubeReconstructor.scale;
+		float x = stateModel.cubeReconstructor.x;
+		float y = stateModel.cubeReconstructor.y;
+		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
+		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
+		
+		gl.glLoadIdentity();                   // Reset model-view matrix 
+		
+		// Perspective Translate
+		gl.glTranslatef(x, y, -10.0f);
+		gl.glScalef(scale, scale, scale);
+
+		
+		// Cube Rotation
+		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of ~35
+		gl.glRotatef(cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of ~45
+
+		// Specify location and orientation relative to cube of arrow
+		switch(faceType) {
+		
+		case FRONT:
+			gl.glTranslatef(0.0f, 0.0f, +2.0f);
+			direction = rotation == Rotation.COUNTER_CLOCKWISE ? Direction.NEGATIVE : Direction.POSITIVE; 
+			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			break;
+		case BACK:
+			gl.glTranslatef(0.0f, 0.0f, -2.0f);
+			direction = rotation == Rotation.CLOCKWISE ?         Direction.NEGATIVE : Direction.POSITIVE; 
+			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			break;
+
+		case UP:
+			gl.glTranslatef(0.0f, +2.0f, 0.0f);
+			gl.glRotatef(90f, 1.0f, 0.0f, 0.0f);  // X rotation
+			direction = rotation == Rotation.CLOCKWISE ?         Direction.NEGATIVE : Direction.POSITIVE; 
+			break;
+		case DOWN:			
+			gl.glTranslatef(0.0f, -2.0f, 0.0f);
+			gl.glRotatef(90f, 1.0f, 0.0f, 0.0f);  // X rotation
+			direction = rotation == Rotation.COUNTER_CLOCKWISE ? Direction.NEGATIVE : Direction.POSITIVE; 
+			break;
+			
+		case LEFT:
+			gl.glTranslatef(-2.0f, 0.0f, 0.0f);
+			gl.glRotatef(90f, 0.0f, 1.0f, 0.0f);  // Y rotation
+			direction = rotation == Rotation.CLOCKWISE ?         Direction.NEGATIVE : Direction.POSITIVE; 
+			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			break;
+		case RIGHT:
+			gl.glTranslatef(+2.0f, 0.0f, 0.0f);
+			gl.glRotatef(90f, 0.0f, 1.0f, 0.0f);  // Y rotation
+			direction = rotation == Rotation.COUNTER_CLOCKWISE ? Direction.NEGATIVE : Direction.POSITIVE;
+			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			break;
+		}
+		
+		// Specify direction of arrow
+		if(direction == Direction.NEGATIVE)  {
+			gl.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+			gl.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+		}
+		
+		// Specify width of arrow
+		if(size == Size.WIDE)  {
+			gl.glScalef(1.0f, 1.0f, 3.0f);
+		}
+		
+		if(amount == Amount.QUARTER_TURN)
+			arrowQuarterTurn.draw(gl, color);
+		else
+			arrowHalfTurn.draw(gl, color);
+		
+	}
+
+
+	/**
+	 * Render Cube Full Rotation Arrow
+	 * 
+	 * Render a Rubik Cube Body Rotation request/instruction.
+	 * This is used during the exploration phase to observed all six
+	 * sides of the cube before any solution is compute or attempted.
+	 * 
+	 * @param gl
+	 */
+	private void renderCubeFullRotationArrow2(GL10 gl) {
+
+		float scale = stateModel.cubeReconstructor.scale;
+		float x = stateModel.cubeReconstructor.x;
+		float y = stateModel.cubeReconstructor.y;
+		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
+		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
+		
+		gl.glLoadIdentity();                   // Reset model-view matrix 
+		
+		// Perspective Translate
+		gl.glTranslatef(x, y, -10.0f);
+		gl.glScalef(scale, scale, scale);
+
+		
+		// Cube Rotation
+		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of ~35
+		gl.glRotatef(cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of ~45
+		
+		
+		// =+= above is common
+		
+		
+		// Render Front Face to Top Face Arrow Rotation
+		if(stateModel.getNumObservedFaces() % 2 != 0) {
+			gl.glTranslatef(0.0f, +1.5f, +1.5f);
+			gl.glRotatef(-90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
+			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better		
+		}
+		
+		// Render Left Face to Top Face Arrow Rotation
+		else {
+			gl.glTranslatef(-1.5f, +1.5f, 0.0f);
+			gl.glRotatef(180f, 0.0f, 1.0f, 0.0f);  // Y rotation of 180
+			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+		}
+		
+		
+		// Reverse direction of arrow.
+		gl.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+		gl.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+
+		// Make Arrow Wide
+		gl.glScalef(1.0f, 1.0f, 3.0f);
+		
+		// Render Quarter Turn Arrow
+		arrowQuarterTurn.draw(gl, Constants.ColorWhite);
+	}
 
 
 	/**
@@ -142,8 +354,8 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	 *  (non-Javadoc)
 	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
 	 */
-	@Override
-	public void onDrawFrame(GL10 gl) {
+//	@Override
+	public void onDrawFramexxx(GL10 gl) {
 		
 		// Clear color and depth buffers using clear-value set earlier
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);

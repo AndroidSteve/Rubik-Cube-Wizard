@@ -99,7 +99,7 @@ public class AppStateMachine {
 	public void processFace(RubikFace rubikFace) {
 
 		// Threshold for the number of times a face must be seen in order to declare it stable.
-		final int consecutiveCandidateCountThreashold = 4;	
+		final int consecutiveCandidateCountThreashold = 3;	
 
 		Log.d(Constants.TAG_CNTRL, "processRubikFaceSolution() state=" + stateModel.faceRecogniztionState + " candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " newFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
 
