@@ -406,17 +406,29 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			return annotation.renderAnnotation(image);
 
 		} catch (CvException e) {
+			Log.e(Constants.TAG, "CvException: " + e.getMessage());
 			e.printStackTrace();        	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			Core.putText(errorImage, "CvException: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			int i = 1;
+			for(StackTraceElement element : e.getStackTrace ())
+				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		} catch (Exception e) {
+			Log.e(Constants.TAG, "Exception: " + e.getMessage());
 			e.printStackTrace();        	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			Core.putText(errorImage, "Exception: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			int i = 1;
+			for(StackTraceElement element : e.getStackTrace ())
+				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		} catch (Error e) {
+			Log.e(Constants.TAG, "Error: " + e.getMessage());
 			e.printStackTrace();        	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			Core.putText(errorImage, "Error: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			int i = 1;
+			for(StackTraceElement element : e.getStackTrace ())
+				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		}
 
 		return annotation.renderAnnotation(image);

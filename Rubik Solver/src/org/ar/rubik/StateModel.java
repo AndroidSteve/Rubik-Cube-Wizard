@@ -316,7 +316,7 @@ public class StateModel {
 
 
 	/**
-	 * Recall cube state from file.
+	 * Recall cube state (i.e., the six faces) from file.
 	 */
 	public void recallState() {
 		
@@ -342,6 +342,12 @@ public class StateModel {
 		downRubikFace   = rubikFaceArray[3];
 		leftRubikFace   = rubikFaceArray[4];
 		backRubikFace   = rubikFaceArray[5];
+		
+		// Rebuild Color and Name Rubik Maps.
+		for(RubikFace rubikFace : rubikFaceArray) {
+    		colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
+    		nameRubikFaceMap.put(rubikFace.faceNameEnum, rubikFace);
+		}
 	}
 
 
@@ -373,6 +379,9 @@ public class StateModel {
 
 		// Application State = null; see AppStateEnum.
 		appState = AppStateEnum.START;
+		
+		// Stable Face Recognizer State
+	    faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
 
 		// Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
 		verificationResults = 0;
@@ -388,5 +397,11 @@ public class StateModel {
 
 		// We assume that faces will be explored in a particular sequence.
 		adoptFaceCount = 0;
+		
+		// True if we are to render GL Pilot Cube
+		renderPilotCube = true;
+
+		// Cube Location and Orientation deduced from Face.
+		cubeReconstructor = null;
 	}
 }

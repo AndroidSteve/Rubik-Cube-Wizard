@@ -76,6 +76,9 @@ public class AppStateMachine {
 	// After all six faces have been seen, allow one more rotation to return cube to original orientation.
 	private boolean allowOneMoreRotation = false;
 
+	// Set when we want to recall a state from file, but do it synchronously in the frame thread.
+	private boolean scheduleRecall = false;
+
 
 	/**
 	 * @param stateModel
@@ -101,18 +104,32 @@ public class AppStateMachine {
 		// Threshold for the number of times a face must be seen in order to declare it stable.
 		final int consecutiveCandidateCountThreashold = 3;	
 
-		Log.d(Constants.TAG_CNTRL, "processRubikFaceSolution() state=" + stateModel.faceRecogniztionState + " candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " newFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
+		Log.d(Constants.TAG_CNTRL, "processFace() AppState=" + stateModel.appState + " FaceState=" + stateModel.faceRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
 
 		// Reset Application State.  All past is forgotten.
 		if(scheduleReset == true) {
-			scheduleReset = false;
 			gotItCount = 0;
+			scheduleReset = false;
 			candidateRubikFace = null;
 			consecutiveCandiateRubikFaceCount = 0;
 			lastStableRubikFace = null;
 			allowOneMoreRotation = false;
 			stateModel.reset();
 		}
+		
+		// Reset Application State, and then recall app state from file.
+		if(scheduleRecall == true) {
+			gotItCount = 0;
+			scheduleRecall = false;
+			candidateRubikFace = null;
+			consecutiveCandiateRubikFaceCount = 0;
+			lastStableRubikFace = null;
+			allowOneMoreRotation = false;
+			stateModel.reset();
+			stateModel.recallState();
+			stateModel.appState = AppStateEnum.COMPLETE;  // Assumes state stored in file is complete.
+		}
+
 
 		// Sometimes, we want state to change simply on frame events.
 		onFrameStateChanges();
@@ -399,9 +416,18 @@ public class AppStateMachine {
 
 	/**
 	 * Request that the state is reset to initial values.  This is performed
-	 * synchronously in the frame thread to eliminate problems.
+	 * synchronously in the frame thread to eliminate concurrency problems.
 	 */
 	public void reset() {
 		scheduleReset = true;
 	}
+
+
+	/**
+	 * Request that the state is recalled from file.  This is performed
+	 * synchronously in the frame thread to eliminate concurrency problems.
+	 */
+    public void recallState() {
+    	scheduleRecall = true;
+    }
 }

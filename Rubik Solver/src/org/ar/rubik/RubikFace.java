@@ -31,6 +31,7 @@
  */
 package org.ar.rubik;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +51,11 @@ import android.util.Log;
  * @author android.steve@testlens.com
  *
  */
-public class RubikFace {
+public class RubikFace implements Serializable {
+	
+	// For purposes of serialization
+	private static final long serialVersionUID = -8498294721543708545L;
+
 	
 	// A Rubik Face can exist in the following states:
 	public enum FaceRecognitionStatusEnum {
@@ -127,7 +132,7 @@ public class RubikFace {
 	public double colorErrorAfterCorrection;
 	
 	// Profiles CPU Consumption
-	public Profiler profiler = new Profiler();
+	public transient Profiler profiler = new Profiler();
 	
 	// Face Designation: i.e., Up, Down, ....
 	public FaceNameEnum faceNameEnum;
