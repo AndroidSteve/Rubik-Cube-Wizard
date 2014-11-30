@@ -1,5 +1,36 @@
 /**
+ * Augmented Reality Rubik Cube Solver
  * 
+ * Author: Steven P. Punte (aka Android Steve)
+ * Date:   Nov 1st 2014
+ * 
+ * Project Description:
+ *   Android application developed on a commercial Smart Phone which, when run on a pair 
+ *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
+ *   
+ * File Description:
+ *   Draws a wide variety of diagnostic information on right side of the screen
+ *   using OpenCV procedure calls.  Activation of these diagnostics is through
+ *   the Menu -> Annotation option.  Also, draws user instructions (same information
+ *   as UserInstructionsGLRenderer but in text form) across the top when
+ *   enabled.
+ * 
+ * License:
+ * 
+ *  GPL
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.ar.rubik;
 
@@ -507,36 +538,26 @@ public class Annotation {
    		if(MenuAndParams.userTextDisplay == true)
    			Core.rectangle(image, new Point(0, 0), new Point(1270, 60), Constants.ColorBlack, -1);
 
-//   		pilotGLRenderer.setCubeOrienation(rubikFace);
-
    		switch(stateModel.appState) {
 
    		case START:
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Show Me The Rubik Cube", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-//   			pilotGLRenderer.setRenderArrow(false);
    			break;
 
    		case GOT_IT:
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "OK, Got It", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-//   			pilotGLRenderer.setRenderArrow(false);
-//   			pilotGLRenderer.setRenderCube(MenuAndParams.cubeOverlayDisplay);
    			break;
 
    		case ROTATE:
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Please Rotate: " + stateModel.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-//   			if(  stateModel.getNumValidFaces() % 2 == 0)
-//   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.LEFT_TOP);
-//   			else
-//   				pilotGLRenderer.showFullCubeRotateArrow(FaceType.FRONT_TOP);
    			break;
 
    		case SEARCHING:
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Searching for Another Face", new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
-//   			pilotGLRenderer.setRenderArrow(false);
    			break;
 
    		case COMPLETE:
@@ -550,7 +571,6 @@ public class Annotation {
    			break;
 
    		case BAD_COLORS:
-//   			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Cube is Complete but has Bad Colors", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
@@ -560,7 +580,6 @@ public class Annotation {
    			break;
 
    		case INCORRECT:
-//   			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
@@ -596,63 +615,16 @@ public class Annotation {
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, moveDescription.toString(), new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
 
-//
-//   			// Args to be passed to renderer.
-//   			Rotation rotation = null;
-//   			FaceType faceType = null;
-//   			Scalar color = null;
-//   			
-//   			if(moveNumonic.length() == 1) 
-//   				rotation = Rotation.CLOCKWISE;
-//   			else if(moveNumonic.charAt(1) == '2') 
-//   				rotation = Rotation.ONE_HUNDRED_EIGHTY;
-//   			else if(moveNumonic.charAt(1) == '\'') 
-//   				rotation = Rotation.COUNTER_CLOCKWISE;
-//   			else
-//   				throw new java.lang.Error("Unknow rotation amount");
-//
-//   			// Obtain details of arrow to be rendered.
-//   			switch(moveNumonic.charAt(0)) {
-//   			case 'U': 
-//   				faceType = FaceType.UP;
-//   				color = Constants.RubikWhite;
-//   				break;
-//   			case 'D': 
-//   				faceType = FaceType.DOWN;  
-//   				color = Constants.RubikYellow;
-//   				break;
-//   			case 'L': 
-//   				faceType = FaceType.LEFT;
-//   				color = Constants.RubikGreen;
-//   				break;
-//   			case 'R': 
-//   				faceType = FaceType.RIGHT; 
-//   				color = Constants.RubikBlue;
-//   				break;
-//   			case 'F': 
-//   				faceType = FaceType.FRONT;
-//   				color = Constants.RubikRed;
-//   				break;
-//   			case 'B':
-//   				faceType = FaceType.BACK;
-//   				color = Constants.RubikOrange;
-//   				break;
-//   			}
-//   			pilotGLRenderer.setRenderCube(true && MenuAndParams.cubeOverlayDisplay);
-//   			pilotGLRenderer.showCubeEdgeRotationArrow(
-//   					rotation,
-//   					faceType, 
-//   					color);
    			break;
 
    		case WAITING_FOR_MOVE_COMPLETE:
-//   			pilotGLRenderer.setRenderArrow(false);
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Waiting for move to be completed", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
-   		case DONE:
-//   			pilotGLRenderer.setRenderArrow(false);
+   		case DONE:   			
+   			if(MenuAndParams.userTextDisplay == true)
+				Core.putText(image, "Cube should now be solved.", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
    		default:
