@@ -124,43 +124,44 @@ public class StateModel {
 	 */
     public void adopt(RubikFace rubikFace) {
 	    
+    	
     	switch(adoptFaceCount) {
     	
     	case 0:
     		rubikFace.faceNameEnum = FaceNameEnum.UP;
     		upRubikFace = rubikFace;
     		rubikFace.transformedTileArray =  Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
-    		rubikFace.transformedTileArray = rubikFace.observedTileArray.clone();
     		break;
     	case 1:
-    		rubikFace.faceNameEnum = FaceNameEnum.RIGHT;
-    		rightRubikFace = rubikFace;
+    		rubikFace.faceNameEnum = FaceNameEnum.FRONT;
+    		frontRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 2:
-    		rubikFace.faceNameEnum = FaceNameEnum.FRONT;
-    		frontRubikFace = rubikFace;
+    		rubikFace.faceNameEnum = FaceNameEnum.LEFT;
+    		leftRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 3:
     		rubikFace.faceNameEnum = FaceNameEnum.DOWN;
     		downRubikFace = rubikFace;
-    		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
+    		rubikFace.transformedTileArray = rubikFace.observedTileArray.clone();
     		break;
     	case 4:
-    		rubikFace.faceNameEnum = FaceNameEnum.LEFT;
-    		leftRubikFace = rubikFace;
+    		rubikFace.faceNameEnum = FaceNameEnum.BACK;
+    		backRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     	case 5:
-    		rubikFace.faceNameEnum = FaceNameEnum.BACK;
-    		backRubikFace = rubikFace;
+    		rubikFace.faceNameEnum = FaceNameEnum.RIGHT;
+    		rightRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     		
     		default:
     			// =+= log error ?
     	}
+    	
     	
     	if(adoptFaceCount < 6) {
     		colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!

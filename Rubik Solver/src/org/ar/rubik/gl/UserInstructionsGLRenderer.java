@@ -206,12 +206,18 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		
 		String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
 
-		if(moveNumonic.length() == 1) 
+		if(moveNumonic.length() == 1)  {
 			rotation = Rotation.CLOCKWISE;
-		else if(moveNumonic.charAt(1) == '2') 
+			this.amount = Amount.QUARTER_TURN;
+		}
+		else if(moveNumonic.charAt(1) == '2') {
 			rotation = Rotation.ONE_HUNDRED_EIGHTY;
-		else if(moveNumonic.charAt(1) == '\'') 
+			this.amount = Amount.HALF_TURN;
+		}
+		else if(moveNumonic.charAt(1) == '\'') {
 			rotation = Rotation.COUNTER_CLOCKWISE;
+			this.amount = Amount.QUARTER_TURN;
+		}
 		else
 			throw new java.lang.Error("Unknow rotation amount");
 		
@@ -222,27 +228,27 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		switch(moveNumonic.charAt(0)) {
 		case 'U': 
 			faceType = FaceType.UP;
-			color = Constants.RubikWhite;
+			color = stateModel.upRubikFace.observedTileArray[1][1].color;
 			break;
 		case 'D': 
-			faceType = FaceType.DOWN;  
-			color = Constants.RubikYellow;
+			faceType = FaceType.DOWN;
+			color = stateModel.downRubikFace.observedTileArray[1][1].color;
 			break;
 		case 'L': 
 			faceType = FaceType.LEFT;
-			color = Constants.RubikGreen;
+			color = stateModel.leftRubikFace.observedTileArray[1][1].color;
 			break;
 		case 'R': 
-			faceType = FaceType.RIGHT; 
-			color = Constants.RubikBlue;
+			faceType = FaceType.RIGHT;
+			color = stateModel.rightRubikFace.observedTileArray[1][1].color;
 			break;
 		case 'F': 
 			faceType = FaceType.FRONT;
-			color = Constants.RubikRed;
+			color = stateModel.frontRubikFace.observedTileArray[1][1].color;
 			break;
 		case 'B':
 			faceType = FaceType.BACK;
-			color = Constants.RubikOrange;
+			color = stateModel.backRubikFace.observedTileArray[1][1].color;
 			break;
 		}
 

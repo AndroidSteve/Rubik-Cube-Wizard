@@ -88,7 +88,7 @@ public class Constants {
 
 	// Constant Colors as Scalar objects to match Rubik tile colors.
 	// This values below are calibrated for morning light.
-	public final static Scalar RubikRed    = new Scalar(180.0,  20.0,  30.0);
+	public final static Scalar RubikRed    = new Scalar(220.0,  20.0,  30.0);
 	public final static Scalar RubikOrange = new Scalar(240.0,  80.0,   0.0);
 //		public final static Scalar RubikOrange = new Scalar(240.0, 120.0,   0.0);
 	public final static Scalar RubikYellow = new Scalar(230.0, 230.0,  20.0);

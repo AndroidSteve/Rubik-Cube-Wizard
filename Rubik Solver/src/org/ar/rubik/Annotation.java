@@ -85,16 +85,10 @@ public class Annotation {
 			
 		case NORMAL:
 			
-			// hack so that user instructions are all visible
+			// =+= hack so that user instructions are all visible
 			Core.rectangle(image, new Point(0, 60), new Point(350, 720), Constants.ColorBlack, -1);
-
-//			annotationGlRenderer.setRenderState(true);
-//			pilotCubeGLRenderer.setCubeOrienation(stateModel.activeRubikFace);
-			stateModel.renderPilotCube = true;
 			
-//			Core.rectangle(image, new Point(0, 0), new Point(350, 720), Constants.ColorBlack, -1);
-//			annotationGlRenderer.setRenderState(true);
-//			annotationGlRenderer.setCubeOrienation(RubikCube.active);
+			stateModel.renderPilotCube = true;
 			break;
 		}
 		
