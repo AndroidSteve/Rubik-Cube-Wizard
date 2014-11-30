@@ -57,7 +57,7 @@ public class Constants {
 		DONE       // Cube should be completely physically solved.
 	};
 
-	public enum FaceRecogniztionState { 
+	public enum FaceRecogniztionStateEnum { 
 		UNKNOWN, // No face recognition
 		PENDING, // A particular face seems to becoming stable.
 		STABLE,  // A particular face is stable.
@@ -119,12 +119,10 @@ public class Constants {
 		}
 	}
 
-	// Six Logical Tile types: =+= not yet filled out.
-	public final static ConstantTile redLogicalTile = new ConstantTile(ConstantTileColorEnum.RED,     RubikRed,    'R');
 
 	// Array of possible Rubik Tile Colors.
 	public final static ConstantTile [] constantTileColorArray = {
-		redLogicalTile,
+		new ConstantTile(ConstantTileColorEnum.RED,     RubikRed,    'R'),
 		new ConstantTile(ConstantTileColorEnum.ORANGE,  RubikOrange, 'O'),
 		new ConstantTile(ConstantTileColorEnum.YELLOW,  RubikYellow, 'Y'),
 		new ConstantTile(ConstantTileColorEnum.GREEN,   RubikGreen,  'G'),
@@ -134,7 +132,4 @@ public class Constants {
 
 	// Any OpenCV font
 	public final static int FontFace = Core.FONT_HERSHEY_PLAIN;
-
-	// Control if new refactored code is running.  =+= Development Only
-	public final static boolean refactor = true;
 }

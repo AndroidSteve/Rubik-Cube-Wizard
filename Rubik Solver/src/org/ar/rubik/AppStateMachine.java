@@ -35,7 +35,7 @@ package org.ar.rubik;
 
 
 import org.ar.rubik.Constants.AppStateEnum;
-import org.ar.rubik.Constants.FaceRecogniztionState;
+import org.ar.rubik.Constants.FaceRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 //import org.ar.rubik.gl.UserInstructionsGLRenderer.FaceType;
 //import org.ar.rubik.gl.UserInstructionsGLRenderer.Rotation;
@@ -138,7 +138,7 @@ public class AppStateMachine {
 
 		case UNKNOWN:
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
-				stateModel.faceRecogniztionState = FaceRecogniztionState.PENDING;
+				stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PENDING;
 				candidateRubikFace = rubikFace;
 				consecutiveCandiateRubikFaceCount = 0;
 			}
@@ -153,7 +153,7 @@ public class AppStateMachine {
 				if(rubikFace.hashCode == candidateRubikFace.hashCode) {
 
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-						stateModel.faceRecogniztionState = FaceRecogniztionState.STABLE;
+						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
 						onStableRubikFaceRecognition(candidateRubikFace);
 					}
 					else 
@@ -162,10 +162,10 @@ public class AppStateMachine {
 				//        			else if(false)
 					//        				;// =+= add partial match here
 				else
-					stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
 			}
 			else
-				stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;	
+				stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;	
 			break;
 
 
@@ -177,12 +177,12 @@ public class AppStateMachine {
 				//        			else if(false)
 				//        				; // =+= add partial match here
 				else {
-					stateModel.faceRecogniztionState = FaceRecogniztionState.PARTIAL;
+					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
 					consecutiveCandiateRubikFaceCount = 0;
 				}
 			}
 			else {
-				stateModel.faceRecogniztionState = FaceRecogniztionState.PARTIAL;
+				stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
 				consecutiveCandiateRubikFaceCount = 0;
 			}
 			break;
@@ -192,12 +192,12 @@ public class AppStateMachine {
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
 				if(rubikFace.hashCode == candidateRubikFace.hashCode)
-					stateModel.faceRecogniztionState = FaceRecogniztionState.STABLE;
+					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
 				//        			else if(false)
 				//        				; // =+= add partial match here
 				else {
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-						stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
 						offStableRubikFaceRecognition();
 					}
 					else 
@@ -206,7 +206,7 @@ public class AppStateMachine {
 			}
 			else {
 				if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-					stateModel.faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
 					offStableRubikFaceRecognition();
 				}
 				else 

@@ -154,7 +154,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.DIRECT) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
-				return annotation.renderAnnotation(image);
+				return annotation.drawAnnotation(image);
 			}
 
 			
@@ -172,7 +172,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.GREYSCALE) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
-				return annotation.renderAnnotation(greyscale_image);
+				return annotation.drawAnnotation(greyscale_image);
 			}
 
 
@@ -193,7 +193,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.GAUSSIAN) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
-				return annotation.renderAnnotation(blur_image);
+				return annotation.drawAnnotation(blur_image);
 			}
 
 
@@ -214,7 +214,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.CANNY) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
-				return annotation.renderAnnotation(canny_image);
+				return annotation.drawAnnotation(canny_image);
 			}
 
 			
@@ -236,7 +236,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.DILATION) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
-				return annotation.renderAnnotation(dilate_image);
+				return annotation.drawAnnotation(dilate_image);
 			}
 
 
@@ -265,7 +265,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 3);
 				Imgproc.drawContours(rgba_gray_image, contours, -1, Constants.ColorYellow, 3);
 				Core.putText(rgba_gray_image, "Num Contours: " + contours.size(),  new Point(500, 50), Constants.FontFace, 4, Constants.ColorRed, 4);
-				return annotation.renderAnnotation(rgba_gray_image);
+				return annotation.drawAnnotation(rgba_gray_image);
 			}
 			
 
@@ -317,7 +317,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				for(Rhombus polygon : polygonList)
 					polygon.draw(rgba_gray_image, Constants.ColorYellow);
 				Core.putText(rgba_gray_image, "Num Polygons: " + polygonList.size(),  new Point(500, 50), Constants.FontFace, 3, Constants.ColorRed, 4);
-				return annotation.renderAnnotation(rgba_gray_image);
+				return annotation.drawAnnotation(rgba_gray_image);
 			}
 
 
@@ -352,7 +352,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				for(Rhombus rhombus : rhombusList)
 					rhombus.draw(rgba_gray_image, Constants.ColorYellow);
 				Core.putText(rgba_gray_image, "Num Rhombus: " + rhombusList.size(),  new Point(500, 50), Constants.FontFace, 4, Constants.ColorRed, 4);
-				return annotation.renderAnnotation(rgba_gray_image);
+				return annotation.drawAnnotation(rgba_gray_image);
 			}
 
 
@@ -369,7 +369,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.FACE_DETECT) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
-				return annotation.renderAnnotation(image);
+				return annotation.drawAnnotation(image);
 			}
 			
 			
@@ -403,7 +403,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 
 			// Normal return point.
 			stateModel.activeRubikFace = rubikFace;
-			return annotation.renderAnnotation(image);
+			return annotation.drawAnnotation(image);
 
 		} catch (CvException e) {
 			Log.e(Constants.TAG, "CvException: " + e.getMessage());
@@ -431,7 +431,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		}
 
-		return annotation.renderAnnotation(image);
+		return annotation.drawAnnotation(image);
 	}
 
 }

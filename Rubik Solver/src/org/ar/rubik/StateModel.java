@@ -42,7 +42,7 @@ import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.AppStateEnum;
-import org.ar.rubik.Constants.FaceRecogniztionState;
+import org.ar.rubik.Constants.FaceRecogniztionStateEnum;
 
 import android.os.Environment;
 import android.util.Log;
@@ -70,7 +70,7 @@ public class StateModel {
 	public AppStateEnum appState = AppStateEnum.START;
 	
 	// Stable Face Recognizer State
-    public FaceRecogniztionState faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+    public FaceRecogniztionStateEnum faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
 
     // Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
 	public int verificationResults;
@@ -367,7 +367,7 @@ public class StateModel {
 		appState = AppStateEnum.START;
 		
 		// Stable Face Recognizer State
-	    faceRecogniztionState = FaceRecogniztionState.UNKNOWN;
+	    faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
 
 		// Result when Two Phase algorithm is ask to evaluate if cube in valid.  If valid, code is zero.
 		verificationResults = 0;
