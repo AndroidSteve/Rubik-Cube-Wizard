@@ -36,6 +36,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants;
 import org.ar.rubik.Constants.AppStateEnum;
+import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
 import org.ar.rubik.gl.GLArrow.Amount;
 import org.opencv.core.Scalar;
@@ -236,39 +237,39 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		// Obtain details of arrow to be rendered.
 		switch(moveNumonic.charAt(0)) {
 		case 'U':
-			color = stateModel.upRubikFace.observedTileArray[1][1].color;
+			color = stateModel.getFaceByName(FaceNameEnum.UP).observedTileArray[1][1].color;
 			gl.glTranslatef(0.0f, +2.0f, 0.0f);
 			gl.glRotatef(90f, 1.0f, 0.0f, 0.0f);  // X rotation
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
 			break;
 		case 'D':
-			color = stateModel.downRubikFace.observedTileArray[1][1].color;		
+			color = stateModel.getFaceByName(FaceNameEnum.DOWN).observedTileArray[1][1].color;		
 			gl.glTranslatef(0.0f, -2.0f, 0.0f);
 			gl.glRotatef(90f, 1.0f, 0.0f, 0.0f);  // X rotation
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE; 
 			break;
 		case 'L':
-			color = stateModel.leftRubikFace.observedTileArray[1][1].color;
+			color = stateModel.getFaceByName(FaceNameEnum.LEFT).observedTileArray[1][1].color;
 			gl.glTranslatef(-2.0f, 0.0f, 0.0f);
 			gl.glRotatef(90f, 0.0f, 1.0f, 0.0f);  // Y rotation
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
 			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'R':
-			color = stateModel.rightRubikFace.observedTileArray[1][1].color;
+			color = stateModel.getFaceByName(FaceNameEnum.RIGHT).observedTileArray[1][1].color;
 			gl.glTranslatef(+2.0f, 0.0f, 0.0f);
 			gl.glRotatef(90f, 0.0f, 1.0f, 0.0f);  // Y rotation
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE;
 			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'F':
-			color = stateModel.frontRubikFace.observedTileArray[1][1].color;
+			color = stateModel.getFaceByName(FaceNameEnum.FRONT).observedTileArray[1][1].color;
 			gl.glTranslatef(0.0f, 0.0f, +2.0f);
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE; 
 			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'B':
-			color = stateModel.backRubikFace.observedTileArray[1][1].color;
+			color = stateModel.getFaceByName(FaceNameEnum.BACK).observedTileArray[1][1].color;
 			gl.glTranslatef(0.0f, 0.0f, -2.0f);
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
 			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better

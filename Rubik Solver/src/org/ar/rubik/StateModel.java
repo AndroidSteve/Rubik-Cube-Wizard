@@ -9,7 +9,8 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
- *   Represents state of Rubik Cube.
+ *   Contains state of Rubik Cube plus a variety of other key application state parameters.
+ *   This class represents the "Model" in the MVC design paradigm.
  * 
  * License:
  * 
@@ -47,31 +48,23 @@ import android.os.Environment;
 import android.util.Log;
 
 /**
- * @author android.steve@testlens.com
+ * Rubik Cube and application State
  * 
- *
+ * @author android.steve@testlens.com
  */
 public class StateModel {
-
 
 	// Rubik Face of latest processed frame: may or may not be any of the six state objects.
 	public RubikFace activeRubikFace;
 	
 	/*
 	 * This is "Rubik Cube State" or "Rubik Cube Model" in model-veiw-controller vernacular.
+	 * Array of above rubik face objects index by FaceNameEnum
 	 */
-	public RubikFace upRubikFace;
-	public RubikFace downRubikFace;
-	public RubikFace leftRubikFace;
-	public RubikFace rightRubikFace;
-	public RubikFace frontRubikFace;
-	public RubikFace backRubikFace;
+	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
 	
 	// Array of above rubik face objects index by TileColorEnum.
 	public HashMap<ConstantTileColorEnum, RubikFace> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);
-	
-	// Array of above rubik face objects index by FaceNameEnum
-	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
 
 	// Application State; see AppStateEnum.
 	public AppStateEnum appState = AppStateEnum.START;
@@ -129,32 +122,26 @@ public class StateModel {
     	
     	case 0:
     		rubikFace.faceNameEnum = FaceNameEnum.UP;
-    		upRubikFace = rubikFace;
     		rubikFace.transformedTileArray =  Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 1:
     		rubikFace.faceNameEnum = FaceNameEnum.FRONT;
-    		frontRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 2:
     		rubikFace.faceNameEnum = FaceNameEnum.LEFT;
-    		leftRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 3:
     		rubikFace.faceNameEnum = FaceNameEnum.DOWN;
-    		downRubikFace = rubikFace;
     		rubikFace.transformedTileArray = rubikFace.observedTileArray.clone();
     		break;
     	case 4:
     		rubikFace.faceNameEnum = FaceNameEnum.BACK;
-    		backRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     	case 5:
     		rubikFace.faceNameEnum = FaceNameEnum.RIGHT;
-    		rightRubikFace = rubikFace;
     		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     		
@@ -162,13 +149,23 @@ public class StateModel {
     			// =+= log error ?
     	}
     	
-    	
     	if(adoptFaceCount < 6) {
     		colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
     		nameRubikFaceMap.put(rubikFace.faceNameEnum, rubikFace);
     	}
     	
     	adoptFaceCount++;
+    }
+    
+    
+    /**
+     * Get Rubik Face by Name
+     * 
+     * @param faceNameEnum
+     * @return
+     */
+    public RubikFace getFaceByName(FaceNameEnum faceNameEnum) {
+    	return nameRubikFaceMap.get(faceNameEnum);
     }
     
     
@@ -196,7 +193,7 @@ public class StateModel {
 
 
 	/**
-	 * Returns true if there are exactly nine of each tile cover over entire cube.
+	 * Returns true if there are exactly nine of each tile color over entire cube.
 	 * 
 	 * @return
 	 */
@@ -234,12 +231,12 @@ public class StateModel {
 	 */
 	public String getStringRepresentationOfCube() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(getStringRepresentationOfFace( upRubikFace ) );
-		sb.append(getStringRepresentationOfFace( rightRubikFace ) );
-		sb.append(getStringRepresentationOfFace( frontRubikFace ) );
-		sb.append(getStringRepresentationOfFace( downRubikFace ) );
-		sb.append(getStringRepresentationOfFace( leftRubikFace ) );
-		sb.append(getStringRepresentationOfFace( backRubikFace ) );
+		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.UP)));
+		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.RIGHT)));
+		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.FRONT)));
+		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.DOWN)));
+		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.LEFT)));
+		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.BACK)));
 		return sb.toString();
 	}
 
@@ -273,7 +270,6 @@ public class StateModel {
 	 */
 	private char getCharacterRepresentingColor(ConstantTileColorEnum colorEnum) {
 
-
 		switch(colorRubikFaceMap.get(colorEnum).faceNameEnum) {
 		case FRONT: return 'F';
 		case BACK:  return 'B';
@@ -292,12 +288,12 @@ public class StateModel {
 	public void saveState() {
 		
 		RubikFace [] rubikFaceArray = new RubikFace[] { 
-				upRubikFace,
-				rightRubikFace,
-				frontRubikFace,
-				downRubikFace,
-				leftRubikFace,
-				backRubikFace};
+				getFaceByName(FaceNameEnum.UP),
+				getFaceByName(FaceNameEnum.RIGHT),
+				getFaceByName(FaceNameEnum.FRONT),
+				getFaceByName(FaceNameEnum.DOWN),
+				getFaceByName(FaceNameEnum.LEFT),
+				getFaceByName(FaceNameEnum.BACK)};
 		
 		try {
 			File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -337,18 +333,17 @@ public class StateModel {
 			Log.e(Constants.TAG, "Fail reading cube to external storage: " + e);
 		}
 		
-		upRubikFace     = rubikFaceArray[0];
-		rightRubikFace  = rubikFaceArray[1];
-		frontRubikFace  = rubikFaceArray[2];
-		downRubikFace   = rubikFaceArray[3];
-		leftRubikFace   = rubikFaceArray[4];
-		backRubikFace   = rubikFaceArray[5];
+		nameRubikFaceMap.put(FaceNameEnum.UP, rubikFaceArray[0]);
+		nameRubikFaceMap.put(FaceNameEnum.RIGHT, rubikFaceArray[1]);
+		nameRubikFaceMap.put(FaceNameEnum.FRONT, rubikFaceArray[2]);
+		nameRubikFaceMap.put(FaceNameEnum.DOWN, rubikFaceArray[3]);
+		nameRubikFaceMap.put(FaceNameEnum.LEFT, rubikFaceArray[4]);
+		nameRubikFaceMap.put(FaceNameEnum.BACK, rubikFaceArray[5]);
+		
 		
 		// Rebuild Color and Name Rubik Maps.
-		for(RubikFace rubikFace : rubikFaceArray) {
+		for(RubikFace rubikFace : rubikFaceArray)
     		colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
-    		nameRubikFaceMap.put(rubikFace.faceNameEnum, rubikFace);
-		}
 	}
 
 
@@ -361,16 +356,6 @@ public class StateModel {
 
 		// Rubik Face of latest processed frame: may or may not be any of the six state objects.
 		activeRubikFace = null;
-
-		/*
-		 * This is "Rubik Cube State" or "Rubik Cube Model" in model-veiw-controller vernacular.
-		 */
-		upRubikFace    = null;
-		downRubikFace  = null;
-		leftRubikFace  = null;
-		rightRubikFace = null;
-		frontRubikFace = null;
-		backRubikFace  = null;
 
 		// Array of above rubik face objects index by TileColorEnum.
 		colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);

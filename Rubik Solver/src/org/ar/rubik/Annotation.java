@@ -39,6 +39,7 @@ import java.util.List;
 import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
+import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.FaceRecogniztionState;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.core.Core;
@@ -150,21 +151,21 @@ public class Annotation {
 		final int tSize = 35;  // Tile Size in pixels
 		
 		// Faces are orientated as per Face Observation (and N, M axis)
-		renderFlatFaceRepresentation(image, stateModel.upRubikFace,     3 * tSize, 0 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel.leftRubikFace,   0 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel.frontRubikFace,  3 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel.rightRubikFace,  6 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel.backRubikFace,   9 * tSize, 3 * tSize + 70, tSize, true);
-		renderFlatFaceRepresentation(image, stateModel.downRubikFace,   3 * tSize, 6 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.UP),     3 * tSize, 0 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.LEFT),   0 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.FRONT),  3 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.RIGHT),  6 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.BACK),   9 * tSize, 3 * tSize + 70, tSize, true);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.DOWN),   3 * tSize, 6 * tSize + 70, tSize, true);
 		
 		// Faces are transformed (rotate) as per Unfolded Layout representation convention.
 		// Faces are orientated as per Face Observation (and N, M axis)
-		renderFlatFaceRepresentation(image, stateModel.upRubikFace,     3 * tSize, 0 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel.leftRubikFace,   0 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel.frontRubikFace,  3 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel.rightRubikFace,  6 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel.backRubikFace,   9 * tSize, 3 * tSize + 70 + 350, tSize, false);
-		renderFlatFaceRepresentation(image, stateModel.downRubikFace,   3 * tSize, 6 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.UP),     3 * tSize, 0 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.LEFT),   0 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.FRONT),  3 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.RIGHT),  6 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.BACK),   9 * tSize, 3 * tSize + 70 + 350, tSize, false);
+		renderFlatFaceRepresentation(image, stateModel.getFaceByName(FaceNameEnum.DOWN),   3 * tSize, 6 * tSize + 70 + 350, tSize, false);
     }
 
     
