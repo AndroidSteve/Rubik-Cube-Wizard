@@ -11,7 +11,12 @@
  * File Description:
  *   This is the primary Android Activity class for this application.  Intentionally,
  *   as little is done as possible in this class.  Work is partitioned and 
- *   handled in other classes.
+ *   handled in other classes.  The key actions here are to:
+ *   1)  Obtains the OpenCV JavaCameraView
+ *   2)  Create and attach a frame listener: i.e., ImageRecognizer.
+ *   3)  Create and attach to GL renderers.
+ *   
+ *   Note, OpenCL is supported, but not actually in use (at least directly).
  * 
  * License:
  * 
@@ -87,6 +92,11 @@ public class AndroidActivity extends Activity {
     }
     
     
+    /**
+     * Base Loader Callback.
+     * 
+     * This informs us that OpenCV has successfully loaded.
+     */
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -126,7 +136,8 @@ public class AndroidActivity extends Activity {
     	 * about 15 seconds to compute.  They are required by the Two Phase algorithm
     	 * to compute a solution for a valid Rubik Cube.
     	 * 
-    	 * =+= Normally, AsyncTask should be instantiated only on the UI thread.  
+    	 * Normally, AsyncTask should be instantiated only on the UI thread, however,
+    	 * this seems to work find.
     	 * =+= Which thread are we on?
     	 */
     	new Util.LoadPruningTablesTask().execute(appStateMachine);
@@ -145,14 +156,19 @@ public class AndroidActivity extends Activity {
         Log.i(Constants.TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         
+        // Don't allow screen to go dim or dark.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        // Set up display as per layout.xml
         setContentView(R.layout.surface_view);
-        FrameLayout layout = (FrameLayout) findViewById(R.id.activity_frame_layout);
+        
+        // Obtain Frame Layout object.
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.activity_frame_layout);
 
+        // Obtain JavaCameraView object.
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view); 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);
+        mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);  // Image Recognizer is attached here.
 
         
         // Setup and Add User Instruction GL Surface View and User Instruction GL Renderer
@@ -164,7 +180,7 @@ public class AndroidActivity extends Activity {
         		new FrameLayout.LayoutParams(
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
-        layout.addView(userInstructionsGLSurfaceView);
+        frameLayout.addView(userInstructionsGLSurfaceView);
         UserInstructionsGLRenderer userInstructionGLRenderer = new UserInstructionsGLRenderer(stateModel);
         userInstructionsGLSurfaceView.setRenderer(userInstructionGLRenderer);
 
@@ -178,7 +194,7 @@ public class AndroidActivity extends Activity {
         		new FrameLayout.LayoutParams(
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
-        layout.addView(pilotGLSurfaceView);
+        frameLayout.addView(pilotGLSurfaceView);
         PilotCubeGLRenderer pilotCubeGlRenderer = new PilotCubeGLRenderer(stateModel);
         pilotGLSurfaceView.setRenderer(pilotCubeGlRenderer);  	
 
@@ -186,6 +202,10 @@ public class AndroidActivity extends Activity {
         MonoChromatic.initOpenCL(getOpenCLProgram());
     }
 
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onPause()
+     */
     @Override
     public void onPause()
     {
@@ -194,8 +214,14 @@ public class AndroidActivity extends Activity {
             mOpenCvCameraView.disableView();
         if(userInstructionsGLSurfaceView != null)
         	userInstructionsGLSurfaceView.onPause();
+        if(pilotGLSurfaceView != null)
+        	pilotGLSurfaceView.onPause();
     }
 
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onResume()
+     */
     @Override
     public void onResume()
     {
@@ -207,6 +233,10 @@ public class AndroidActivity extends Activity {
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
     }
 
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onDestroy()
+     */
     public void onDestroy() {
         super.onDestroy();
         if (mOpenCvCameraView != null)
@@ -216,6 +246,10 @@ public class AndroidActivity extends Activity {
         MonoChromatic.shutdownOpenCL();
     }
 
+    
+    /* (non-Javadoc)
+     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(Constants.TAG, "called onCreateOptionsMenu");
@@ -236,26 +270,12 @@ public class AndroidActivity extends Activity {
     	return MenuAndParams.onOptionsItemSelected(item, this);
     }
 
-
-    
-	/**
-	 *  (non-Javadoc)
-	 * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraViewStarted(int, int)
-	 */
-	public void onCameraViewStarted(int width, int height) {
-    }
-
-	
-    /**
-     *  (non-Javadoc)
-     * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraViewStopped()
-     */
-    public void onCameraViewStopped() {
-    }
-
     
     
     /**
+     * Get OpenCL Program
+     * 
+     * File name is assumed to be "step.cl"
      * 
      * @return
      */
@@ -291,7 +311,6 @@ public class AndroidActivity extends Activity {
         catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
-        
+        return "";   
     }
 }

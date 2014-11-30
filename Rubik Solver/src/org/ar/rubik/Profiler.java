@@ -88,7 +88,7 @@ public class Profiler {
 		renderAndIndex(Event.CONTROLLER, Event.FACE,      image, index++);
 		renderAndIndex(Event.TOTAL,      Event.START,     image, index++);
 		
-		if(scheduleReset) {
+		if(scheduleReset == true) {
 			minEventSet = new HashMap<Event, Long>(32);
 			scheduleReset = false;
 		}
@@ -106,9 +106,15 @@ public class Profiler {
      * @param index
      */
     private void renderAndIndex(Event endEvent, Event startEvent, Mat image, int index) {
+    	
+    	// No measurement yet for this event type.
     	if(eventSet.containsKey(endEvent) == false) {
     		Core.putText(image, endEvent.toString() + ": NA", new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
     	}
+    	
+    	// If total, perform special processing.  Specifically, add up and report all minimums found in 
+    	// has set instead of measuring and recording a minimum total.  Thus, this number should converge
+    	// more quickly to the desired value.
     	else if(endEvent == Event.TOTAL) {
  
     		long endTimeStamp = eventSet.get(endEvent);
@@ -123,6 +129,8 @@ public class Profiler {
 			String string = String.format("%10s: %3dmS %3dmS", endEvent.toString(), elapsedTime, minValue);
     		Core.putText(image, string, new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
     	}
+    	
+    	// Render time and minimum tile for this event type.
     	else {
     		long endTimeStamp = eventSet.get(endEvent);
     		long startTimeStamp = eventSet.get(startEvent);
