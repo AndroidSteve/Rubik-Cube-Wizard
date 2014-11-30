@@ -350,65 +350,6 @@ public class Rhombus {
 	}
 
 	
-	/**
-	 * Render Rhombus Recognition Metrics
-	 * 
-	 * @param image
-	 * @param rhombusList
-	 */
-	public static void deprecatedRenderRhombusRecognitionMetrics(Mat image, List<Rhombus> rhombusList) {
-		
-		DeprecatedRubikFace.drawFlatFaceRepresentation(image, DeprecatedRubikCube.active, 50, 50, 50);
-		
-		int totalNumber = 0;
-		int totalNumberValid = 0;
-		
-		int totalNumberUnknow = 0;
-		int totalNumberNot4Points = 0;
-		int totalNumberNotConvex = 0;
-		int totalNumberBadArea = 0;
-		int totalNumberClockwise = 0;
-		int totalNumberOutlier = 0;
-
-		for(Rhombus rhombus : rhombusList)  {
-
-			switch(rhombus.status) {
-			case NOT_PROCESSED:
-				totalNumberUnknow++;
-				break;
-			case NOT_4_POINTS:
-				totalNumberNot4Points++;
-				break;
-			case NOT_CONVEX:
-				totalNumberNotConvex++;
-				break;
-			case AREA:
-				totalNumberBadArea++;
-				break;
-			case CLOCKWISE:
-				totalNumberClockwise++;
-				break;
-			case OUTLIER:
-				totalNumberOutlier++;
-				break;
-			case VALID:
-				totalNumberValid++;
-				break;
-			default:
-				break;
-			}
-			totalNumber++;
-		}
-		
-		Core.putText(image, "Num Unknown: " + totalNumberUnknow,          new Point(50, 300), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Num Not 4 Points: " + totalNumberNot4Points, new Point(50, 350), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Num Not Convex: " + totalNumberNotConvex,    new Point(50, 400), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Num Bad Area: " + totalNumberBadArea,        new Point(50, 450), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Num Clockwise: " + totalNumberClockwise,     new Point(50, 500), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Num Outlier: " + totalNumberOutlier,         new Point(50, 550), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Num Valid: " + totalNumberValid,             new Point(50, 600), Constants.FontFace, 2, Constants.ColorWhite, 2);
-		Core.putText(image, "Total Num: " + totalNumber,                  new Point(50, 650), Constants.FontFace, 2, Constants.ColorWhite, 2);
-	}
 
 
 	/**

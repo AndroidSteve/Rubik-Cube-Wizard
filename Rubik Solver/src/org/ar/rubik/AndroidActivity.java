@@ -42,17 +42,9 @@ import org.ar.rubik.gl.PilotCubeGLRenderer;
 import org.ar.rubik.gl.UserInstructionsGLRenderer;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
-import org.opencv.core.CvException;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Size;
-
 import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
@@ -66,7 +58,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 
-public class AndroidActivity extends Activity implements CvCameraViewListener2 {
+public class AndroidActivity extends Activity {
 
 	// Camera Object
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -76,9 +68,6 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
 	
     // Surface for rending Pilot (i.e. Direction Arrows)
 	private GLSurfaceView pilotGLSurfaceView;
-	
-	// Top Level Controller of this application
-    public DeprecatedController controller;  // =+= some menu actions need this.
     
     // Primary Image Processor
     public ImageRecognizer imageRecognizer;
@@ -163,7 +152,6 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view); 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);
 
         
@@ -265,44 +253,6 @@ public class AndroidActivity extends Activity implements CvCameraViewListener2 {
     public void onCameraViewStopped() {
     }
 
-    
-    /**
-     * On Camera Frame
-     * 
-     * This is the main event point for the entire application.
-     * 
-     *  (non-Javadoc)
-     * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraFrame(org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame)
-     */
-    public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-    	
-    	Mat rgba = inputFrame.rgba();
-		Size imageSize = rgba.size();
-   	
-    	if(errorImage != null)
-    		return errorImage;
-    	  	
-    	Mat resultImage = null;
-    	// =+= problem: can't make toast in frame thread.
-        try {
-	        resultImage = controller.onCameraFrame(
-	        		inputFrame, 
-	        		MenuAndParams.imageSourceMode, 
-	        		MenuAndParams.imageProcessMode, 
-	        		MenuAndParams.annotationMode);
-	        
-        } catch (CvException e) {
-        	e.printStackTrace();        	
-			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
-        } catch (Exception e) {
-        	e.printStackTrace();        	
-			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
-        }
-    	
-    	return resultImage;
-    }
     
     
     /**
