@@ -382,6 +382,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 				CubeReconstructor cubeReconstructor = new CubeReconstructor();
 				cubeReconstructor.reconstruct(rubikFace);
+//				cubeReconstructor.reconstruct2(rubikFace, image);
 				stateModel.cubeReconstructor = cubeReconstructor;
 			}
 			else

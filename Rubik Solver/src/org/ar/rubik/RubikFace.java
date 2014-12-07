@@ -74,7 +74,7 @@ public class RubikFace implements Serializable {
 
 	// A 3x3 matrix of Rhombus elements.  This array will be sorted to achieve
 	// final correct position arrangement of available Rhombus objects.  Some elements can be null.
-	private transient Rhombus [][] faceRhombusArray = new Rhombus[3][3];
+	public transient Rhombus [][] faceRhombusArray = new Rhombus[3][3];
 	
 	// A 3x3 matrix of Logical Tiles.  All elements must be non-null for an appropriate Face solution.
 	// The rotation of this array is the output of the Face Recognizer as per the current spacial

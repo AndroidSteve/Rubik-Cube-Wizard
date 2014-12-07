@@ -158,6 +158,10 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		if(stateModel.cubeReconstructor == null)
 			return;
 		
+//		
+//		if(true == true)
+//			return;
+		
 		// Perform general scene translation.
 		// This is based on the reconstructed 3D cube position and orientation.
 		float scale = stateModel.cubeReconstructor.scale;

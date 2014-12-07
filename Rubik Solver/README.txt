@@ -11,16 +11,21 @@ Notice:
   If you are interested in working or forking this code, I recommend that 
   you wait until then.  I will be much more willing to answer questions
   at that time.
-
-
-Areas that need improve Robustness.  
-  o  Rubik Cube manufacturer: shape and exact colors.
-  o  Illumination.
-  o  Smart Phone/Glasses cpu and gpu horsepower.
-  o  Smart Phone/Glasses camera pipeline.
-  o  OpenCV, OpenCL, and OpenGL operation of various hardware vendors.
-  o  User gesture style.
   
+  A design document is available here:  ~/doc/Design.docx
+
+
 To Do:
-  o  Move control mode variables out of MainActivity.
+  o  Complete conversion to using OpenCV Pose Estimator.
+  o  Achieve quality overlay cube.
+  o  Make direction arrows occult with respect to physical cube.
+  o  Rework N,M definition: currently backwards from desired.
+  o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
+  o  Time and CPU measurements.
+  o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
+  o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
+  o  Introduce real Pilot Cube that demonstrates requested user activity.
+  o  Sweep through and make screen size independent.
+  o  Custom OpenCL functions?
+  
   
