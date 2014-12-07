@@ -59,6 +59,15 @@ import android.util.Log;
  */
 public class CubeReconstructor {
 	
+	// Translation and Rotation as computed from OpenCV Pose Estimator
+	public float x2;
+	public float y2;
+	public float z2;
+	public float cubeXrotation2;  // degrees
+	public float cubeYrotation2;  // degrees
+	public float cubeZrotation2;  // degrees
+	
+	
 	public float scale;
 	public float x;
 	public float y;
@@ -126,8 +135,9 @@ public class CubeReconstructor {
      * 
      * @param rubikFace
      * @param image 
+     * @param stateModel 
      */
-    public void reconstruct2(RubikFace rubikFace, Mat image) {
+    public void reconstruct2(RubikFace rubikFace, Mat image, StateModel stateModel) {
     	
 		if(rubikFace == null)
 			return;
@@ -187,11 +197,11 @@ public class CubeReconstructor {
 		objectPoints.fromList(objectPointsList);
 
 		Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
-		cameraMatrix.put(0, 0, 100.0);   // =+= need calibration
+		cameraMatrix.put(0, 0, stateModel.cameraParameters.focalLengthPixels);
 		cameraMatrix.put(0, 1, 0.0);
 		cameraMatrix.put(0, 2, 1280.0/2.0);
 		cameraMatrix.put(1, 0, 0.0);
-		cameraMatrix.put(1, 1, 100.0);    // =+=
+		cameraMatrix.put(1, 1, stateModel.cameraParameters.focalLengthPixels);
 		cameraMatrix.put(1, 2, 720.0/2.0);
 		cameraMatrix.put(2, 0, 0.0);
 		cameraMatrix.put(2, 1, 0.0);
@@ -204,15 +214,23 @@ public class CubeReconstructor {
 		Mat tvec                  = new Mat();	
 		
 
-		Log.e(Constants.TAG, "Image Points: " + imagePoints.dump());
-		Log.e(Constants.TAG, "Object Points: " + objectPoints.dump());
+//		Log.e(Constants.TAG, "Image Points: " + imagePoints.dump());
+//		Log.e(Constants.TAG, "Object Points: " + objectPoints.dump());
 		
 		boolean result = Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
+		
+		x2 = (float) tvec.get(0, 0)[0];
+		y2 = (float) tvec.get(1, 0)[0];
+		z2 = (float) tvec.get(2, 0)[0];
+		cubeXrotation2 = (float) rvec.get(0, 0)[0];
+		cubeYrotation2 = (float) rvec.get(1, 0)[0];
+		cubeZrotation2 = (float) rvec.get(2, 0)[0];
+		
     	
-		Log.e(Constants.TAG, "Result: " + result);
-		Log.e(Constants.TAG, "Camera: " + cameraMatrix.dump());
-		Log.e(Constants.TAG, "Rotation: " + rvec.dump());
-		Log.e(Constants.TAG, "Translation: " + tvec.dump());
+//		Log.e(Constants.TAG, "Result: " + result);
+//		Log.e(Constants.TAG, "Camera: " + cameraMatrix.dump());
+//		Log.e(Constants.TAG, "Rotation: " + rvec.dump());
+//		Log.e(Constants.TAG, "Translation: " + tvec.dump());
 		
 		
 		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);

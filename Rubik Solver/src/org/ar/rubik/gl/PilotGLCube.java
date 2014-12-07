@@ -65,12 +65,17 @@ public class PilotGLCube {
 			-1.0f,  -1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f };
 
+//	private float[] leftVertices = { 		
+//			-1.0f,  -1.0f,  +1.0f,
+//			-1.0f,  +1.0f,  +1.0f,
+//			-1.0f,  -1.0f,  -1.0f,
+//			-1.0f,  +1.0f,  -1.0f,};
 	private float[] leftVertices = { 		
-			-1.0f,  -1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f,
-			-1.0f,  -1.0f,  -1.0f,
-			-1.0f,  +1.0f,  -1.0f,};
-
+			-1.0f,  +1.0f,  -1.0f,
+			-1.0f,  -1.0f,  +1.0f,
+			-1.0f,  -1.0f,  -1.0f,};
+	
 	private float[] leftOutlineVertices = { 		
 			-1.0f,  -1.0f,  +1.0f,
 			-1.0f,  +1.0f,  +1.0f,
@@ -139,6 +144,7 @@ public class PilotGLCube {
 		topOutlineVertexBuffer.position(0);
 	}
 
+	
 	// Render the shape
 	public void draw(GL10 gl, boolean active) {
 
@@ -147,27 +153,30 @@ public class PilotGLCube {
 		// Enable vertex-array and define its buffer
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 
-		gl.glColor4f(intensity, 0.0f, 0.0f, 1.0f);
+		gl.glColor4f(intensity, 0.0f, 0.0f, 1.0f);  // Front is red
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, frontVertexBuffer);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, frontVertices.length / 3);
 
-		gl.glColor4f(0.0f, intensity, 0.0f, 1.0f);
+		gl.glColor4f(0.0f, intensity, 0.0f, 1.0f);  // Left is green
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, leftVertexBuffer);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, leftVertices.length / 3);
 
-		gl.glColor4f(intensity, intensity, intensity, 1.0f);
+		gl.glColor4f(intensity, intensity, intensity, 1.0f); // top is white
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, topVertexBuffer);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, topVertices.length / 3);
 
 
 
+		// Thick white lines
 		gl.glLineWidth(10.0f);
 		gl.glColor4f(intensity, intensity, intensity, 1.0f);
 
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, frontOutlineVertexBuffer);
 		gl.glDrawArrays(GL10.GL_LINE_LOOP, 0, frontOutlineVertices.length / 3);
+		
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, topOutlineVertexBuffer);
 		gl.glDrawArrays(GL10.GL_LINE_LOOP, 0, topOutlineVertices.length / 3);
+		
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, leftOutlineVertexBuffer);
 		gl.glDrawArrays(GL10.GL_LINE_LOOP, 0, leftOutlineVertices.length / 3);
 

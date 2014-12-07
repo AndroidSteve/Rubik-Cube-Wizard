@@ -33,7 +33,9 @@ package org.ar.rubik.gl;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
 import org.ar.rubik.StateModel;
+
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 
@@ -89,7 +91,13 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 		// Cube Rotation
 		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of +45
 		gl.glRotatef(cubeYrotation + 25.0f, 0.0f, 1.0f, 0.0f);  // Y rotation of +45
-		
+	
+
+		// Cube Rotation
+//		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation2 * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
+//		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation2 * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
+//		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation2 * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
+
 		pilotGLCube.draw(gl, active);
     }
 

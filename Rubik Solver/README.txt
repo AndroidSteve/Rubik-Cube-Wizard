@@ -18,6 +18,7 @@ Notice:
 To Do:
   o  Complete conversion to using OpenCV Pose Estimator.
   o  Achieve quality overlay cube.
+  o  Clarify definition of Front of Cube: current mixed  
   o  Make direction arrows occult with respect to physical cube.
   o  Rework N,M definition: currently backwards from desired.
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
@@ -27,5 +28,8 @@ To Do:
   o  Introduce real Pilot Cube that demonstrates requested user activity.
   o  Sweep through and make screen size independent.
   o  Custom OpenCL functions?
+  
+Open Issues:
+  o  What if hardware does not provide intrinsic camera calibration parameters? 
   
   

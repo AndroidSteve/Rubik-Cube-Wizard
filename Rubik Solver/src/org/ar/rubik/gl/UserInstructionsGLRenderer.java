@@ -157,10 +157,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		// Check and don't render.
 		if(stateModel.cubeReconstructor == null)
 			return;
-		
-//		
-//		if(true == true)
-//			return;
+
 		
 		// Perform general scene translation.
 		// This is based on the reconstructed 3D cube position and orientation.
@@ -181,10 +178,26 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of ~35
 		gl.glRotatef(cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of ~45
 		
+//		if(true == true)
+//			return;
+
+//		gl.glTranslatef(
+//				stateModel.cubeReconstructor.x2,
+//				stateModel.cubeReconstructor.y2,
+//				-1.0f * stateModel.cubeReconstructor.z2);
+//
+//		// Cube Rotation
+//		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation2 * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
+//		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation2 * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
+//		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation2 * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
+		
 		// If desire, render what we think is the cube location and orientation.
 		if(renderCubeOverlay == true)
 			overlayGLCube.draw(gl);
+
 		
+//		if(true == true)
+//			return;
 		
 		// Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
 		switch(stateModel.appState) {

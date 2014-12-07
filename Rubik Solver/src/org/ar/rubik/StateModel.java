@@ -92,7 +92,9 @@ public class StateModel {
 
 	// Cube Location and Orientation deduced from Face.
 	public CubeReconstructor cubeReconstructor;
-	
+
+	// Intrinsic Camera Calibration Parameters from hardware.
+	public CameraParameters cameraParameters;
 	
 	
 	/**

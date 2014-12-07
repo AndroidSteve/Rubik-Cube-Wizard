@@ -156,6 +156,9 @@ public class AndroidActivity extends Activity {
         Log.i(Constants.TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         
+        // Get Camera Parameters and compute OpenCL Intrinsic Camera Parameters.
+        stateModel.cameraParameters = new CameraParameters();
+        
         // Don't allow screen to go dim or dark.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
