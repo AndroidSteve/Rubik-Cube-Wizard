@@ -160,44 +160,44 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 
 		
 		// Perform general scene translation.
-		// This is based on the reconstructed 3D cube position and orientation.
-		float scale = stateModel.cubeReconstructor.scale;
-		float x = stateModel.cubeReconstructor.x;
-		float y = stateModel.cubeReconstructor.y;
-		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
-		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
+//		// This is based on the reconstructed 3D cube position and orientation.
+//		float scale = stateModel.cubeReconstructor.scale;
+//		float x = stateModel.cubeReconstructor.x;
+//		float y = stateModel.cubeReconstructor.y;
+//		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
+//		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
 		
 		gl.glLoadIdentity();                   // Reset model-view matrix 
 		
 		// Perspective Translate
-		// =+= really, we should just put scale in z-translation param.
-		gl.glTranslatef(x, y, -10.0f);
-		gl.glScalef(scale, scale, scale);
-
-		// Cube Rotation
-		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of ~35
-		gl.glRotatef(cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of ~45
-		
-//		if(true == true)
-//			return;
-
-//		gl.glTranslatef(
-//				stateModel.cubeReconstructor.x2,
-//				stateModel.cubeReconstructor.y2,
-//				-1.0f * stateModel.cubeReconstructor.z2);
+//		// =+= really, we should just put scale in z-translation param.
+//		gl.glTranslatef(x, y, -10.0f);
+//		gl.glScalef(scale, scale, scale);
 //
 //		// Cube Rotation
-//		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation2 * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
-//		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation2 * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
-//		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation2 * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
+//		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of ~35
+//		gl.glRotatef(cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of ~45
+		
+		if(true == true)
+			return;
+
+		gl.glTranslatef(
+				stateModel.cubeReconstructor.x2,
+				stateModel.cubeReconstructor.y2,
+				-1.0f * stateModel.cubeReconstructor.z2);
+//
+//		// Cube Rotation
+		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation2 * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
+		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation2 * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
+		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation2 * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
 		
 		// If desire, render what we think is the cube location and orientation.
 		if(renderCubeOverlay == true)
 			overlayGLCube.draw(gl);
 
 		
-//		if(true == true)
-//			return;
+		if(true == true)
+			return;
 		
 		// Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
 		switch(stateModel.appState) {

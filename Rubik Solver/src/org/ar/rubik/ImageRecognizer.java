@@ -398,7 +398,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 * Will determine when we are on-new-face
 			 * Will change state 
 			 */	
-			appStateMachine.processFace(rubikFace);
+			appStateMachine.onFaceEvent(rubikFace);
 			rubikFace.profiler.markTime(Profiler.Event.CONTROLLER);
 			rubikFace.profiler.markTime(Profiler.Event.TOTAL);
 

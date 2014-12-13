@@ -47,7 +47,6 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point3;
 import org.opencv.core.Point;
-import android.util.Log;
 
 
 
@@ -68,11 +67,11 @@ public class CubeReconstructor {
 	public float cubeZrotation2;  // degrees
 	
 	
-	public float scale;
-	public float x;
-	public float y;
-	public float cubeYrotation;  // degrees
-	public float cubeXrotation;  // degrees
+//	public float scale;
+//	public float x;
+//	public float y;
+//	public float cubeYrotation;  // degrees
+//	public float cubeXrotation;  // degrees
 	
 //	private Point3[][] topFaceTileCentersInGLSpace = {
 //	        { new Point3(+0.666f, +1.0f, +0.666), new Point3(0.000f, +1.0f, +0.666), new Point3(-0.666f, +1.0f, +0.666) },
@@ -91,41 +90,41 @@ public class CubeReconstructor {
 	 */
     public void reconstruct(RubikFace rubikFace) {
     	
-		final float opecnCL2opencvRatio = 100.0f;
-		final float xOffset = 650.0f;
-		final float yOffset = 200.0f;
-		
-		if(rubikFace == null)
-			return;
-		
-		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
-			return;
-		
-		LeastMeansSquare lmsResult = rubikFace.lmsResult;
-		
-		if(lmsResult == null)
-			return;
-		
-				
-		// This is very crude.
-		this.scale = (float) Math.sqrt(Math.abs(rubikFace.alphaLatticLength * rubikFace.betaLatticLength)) / 70.0f;
-		
-		// =+= not necessarily correct, really should use X, Y rotations
-		this.x = (float) ((lmsResult.origin.x - xOffset) / opecnCL2opencvRatio);
-		this.y = (float) (-1 * (lmsResult.origin.y - yOffset) / opecnCL2opencvRatio);
-		
-		float alpha = 90.0f - (float) (rubikFace.alphaAngle * 180.0 / Math.PI);
-		float beta = (float) (rubikFace.betaAngle * 180.0 / Math.PI) - 90.0f;
-		
-		
-		// Very crude estimations of orientation.  These equations and number found empirically.
-		// =+= We require a solution of two non-linear equations and two unknowns to correctly calculate
-		// =+= X and Y 3D rotation values from 2D alpha and beta values.  Probably use of Newton successive
-		// =+= approximation will produce good results.
-		this.cubeYrotation = 45.0f + (alpha - beta) / 2.0f;
-		this.cubeXrotation =  90.0f + ( (alpha - 45.0f) + (beta - 45.0f) )/ -0.5f;
-		
-//		reconstruct2(rubikFace);
+//		final float opecnCL2opencvRatio = 100.0f;
+//		final float xOffset = 650.0f;
+//		final float yOffset = 200.0f;
+//		
+//		if(rubikFace == null)
+//			return;
+//		
+//		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
+//			return;
+//		
+//		LeastMeansSquare lmsResult = rubikFace.lmsResult;
+//		
+//		if(lmsResult == null)
+//			return;
+//		
+//				
+//		// This is very crude.
+//		this.scale = (float) Math.sqrt(Math.abs(rubikFace.alphaLatticLength * rubikFace.betaLatticLength)) / 70.0f;
+//		
+//		// =+= not necessarily correct, really should use X, Y rotations
+//		this.x = (float) ((lmsResult.origin.x - xOffset) / opecnCL2opencvRatio);
+//		this.y = (float) (-1 * (lmsResult.origin.y - yOffset) / opecnCL2opencvRatio);
+//		
+//		float alpha = 90.0f - (float) (rubikFace.alphaAngle * 180.0 / Math.PI);
+//		float beta = (float) (rubikFace.betaAngle * 180.0 / Math.PI) - 90.0f;
+//		
+//		
+//		// Very crude estimations of orientation.  These equations and number found empirically.
+//		// =+= We require a solution of two non-linear equations and two unknowns to correctly calculate
+//		// =+= X and Y 3D rotation values from 2D alpha and beta values.  Probably use of Newton successive
+//		// =+= approximation will produce good results.
+//		this.cubeYrotation = 45.0f + (alpha - beta) / 2.0f;
+//		this.cubeXrotation =  90.0f + ( (alpha - 45.0f) + (beta - 45.0f) )/ -0.5f;
+//		
+////		reconstruct2(rubikFace);
     }
     
     
@@ -222,9 +221,9 @@ public class CubeReconstructor {
 		x2 = (float) tvec.get(0, 0)[0];
 		y2 = (float) tvec.get(1, 0)[0];
 		z2 = (float) tvec.get(2, 0)[0];
-		cubeXrotation2 = (float) rvec.get(0, 0)[0];
-		cubeYrotation2 = (float) rvec.get(1, 0)[0];
-		cubeZrotation2 = (float) rvec.get(2, 0)[0];
+		cubeXrotation2 = (float) (rvec.get(0, 0)[0] * 180.0 / Math.PI);
+		cubeYrotation2 = (float) (rvec.get(1, 0)[0] * 180.0 / Math.PI);
+		cubeZrotation2 = (float) (rvec.get(2, 0)[0] * 180.0 / Math.PI);
 		
     	
 //		Log.e(Constants.TAG, "Result: " + result);
@@ -235,8 +234,7 @@ public class CubeReconstructor {
 		
 		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
 		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", tvec.get(0, 0)[0], tvec.get(1, 0)[0], tvec.get(2, 0)[0]), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
-		double toDeg = 180.0 / Math.PI;
-		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", rvec.get(0, 0)[0] * toDeg, rvec.get(1, 0)[0] * toDeg, rvec.get(2, 0)[0] * toDeg), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
+		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation2, cubeYrotation2, cubeZrotation2), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
 
     }
 

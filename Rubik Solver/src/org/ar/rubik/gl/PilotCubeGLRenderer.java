@@ -34,6 +34,7 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.StateModel;
 
 import android.opengl.GLSurfaceView;
@@ -74,35 +75,59 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 		// Clear color and depth buffers using clear-value set earlier
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
-		if(stateModel.renderPilotCube == false)
-			return;
-		
+//		if(stateModel.renderPilotCube == false)
+//			return;
+//		
 		if(stateModel.cubeReconstructor == null)
 			return;
 		
-		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
-		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
+		CubeReconstructor cr = new CubeReconstructor();
+		cr.cubeXrotation2 = 45.0f;
+		cr.cubeYrotation2 = 45.0f;
+		cr.cubeZrotation2 = 0.0f;
 		
-		gl.glLoadIdentity();                   // Reset model-view matrix 
+		// =+= Attempt rotational mapping
+        cr.cubeYrotation2 = -1.0f * stateModel.cubeReconstructor.cubeZrotation2 + 90.0f;
+        cr.cubeXrotation2 = +1.0f * stateModel.cubeReconstructor.cubeXrotation2 + 180.0f;
+        cr.cubeZrotation2 = +1.0f * stateModel.cubeReconstructor.cubeYrotation2 + 0.0f;
 		
-		// Perspective Translate
-		gl.glTranslatef(-6.0f, 0.0f, -10.0f);
 		
-		// Cube Rotation
-		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of +45
-		gl.glRotatef(cubeYrotation + 25.0f, 0.0f, 1.0f, 0.0f);  // Y rotation of +45
+        // Set GL_MODELVIEW transformation mode
+        gl.glMatrixMode(GL10.GL_MODELVIEW);
+        gl.glLoadIdentity();   // reset the matrix to its default state
+
+        // When using GL_MODELVIEW, you must set the view point
+        GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
+		
+		// =+= Funny bug, this shouldn't happen.  Hmm.  Asynchronous threads somewhere?
+		if(stateModel.cubeReconstructor == null)
+			return;
 	
+		// Translate cube to the right.
+//		gl.glTranslatef(-6.0f, 0.0f, 0.0f);
+		
+		// =+= Attempt translational mapping.
+		// Translate per Pose Estimator
+		gl.glTranslatef(
+		        stateModel.cubeReconstructor.x2, 
+		        -1.0f * stateModel.cubeReconstructor.y2, 
+		        -1.0f * stateModel.cubeReconstructor.z2 + 10.0f);
+		
 
 		// Cube Rotation
-//		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation2 * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
-//		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation2 * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
-//		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation2 * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
+		gl.glRotatef(cr.cubeXrotation2, 1.0f, 0.0f, 0.0f);  // X rotation of
+		gl.glRotatef(cr.cubeYrotation2, 0.0f, 1.0f, 0.0f);  // Y rotation of
+		gl.glRotatef(cr.cubeZrotation2, 0.0f, 0.0f, 1.0f);  // Z rotation of 
 
-		pilotGLCube.draw(gl, active);
+		pilotGLCube.draw(gl, true); // active);
     }
 
     
 	/**
+	 * 
+	 * Projection matrix - Create a projection matrix using the geometry of the device screen in order to 
+	 * recalculate object coordinates so they are drawn with correct proportions. 
+	 * 
 	 *  (non-Javadoc)
 	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceChanged(javax.microedition.khronos.opengles.GL10, int, int)
 	 */
@@ -110,20 +135,34 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
 
 		if (height == 0) height = 1;   // To prevent divide by zero
-		float aspect = (float)width / height;
 
-		// Set the viewport (display area) to cover the entire window
-		gl.glViewport(0, 0, width, height);
+        // Adjust the viewport based on geometry changes
+        // such as screen rotations
+        gl.glViewport(0, 0, width, height);
 
-		// Setup perspective projection, with aspect ratio matches viewport
-		gl.glMatrixMode(GL10.GL_PROJECTION); // Select projection matrix
-		gl.glLoadIdentity();                 // Reset projection matrix
-		
-		// Use perspective projection
-		GLU.gluPerspective(gl, 45, aspect, 0.1f, 100.f);
-
-		gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix =+=
-		gl.glLoadIdentity();                 // Reset
+        // make adjustments for screen ratio
+        float ratio = (float) width / height;
+        gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
+        gl.glLoadIdentity();                        // reset the matrix to its default state
+        gl.glFrustumf(-ratio, ratio, -1, 1, 2, 15);  // apply the projection matrix
+    	
+    	
+    	
+    	
+//		float aspect = (float)width / height;
+//
+//		// Set the viewport (display area) to cover the entire window
+//		gl.glViewport(0, 0, width, height);
+//
+//		// Setup perspective projection, with aspect ratio matches viewport
+//		gl.glMatrixMode(GL10.GL_PROJECTION); // Select projection matrix
+//		gl.glLoadIdentity();                 // Reset projection matrix
+//		
+//		// Use perspective projection
+//		GLU.gluPerspective(gl, 45, aspect, 0.1f, 100.f);
+//
+//		gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix =+=
+//		gl.glLoadIdentity();                 // Reset
 	}
 
     
@@ -133,14 +172,17 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 	 */
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    	
+        // Set the background frame color
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set color's clear-value to black and transparent.
-		gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
-		gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
-		gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
-		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);  // nice perspective view
-		gl.glShadeModel(GL10.GL_SMOOTH);   // Enable smooth shading of color
-		gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
+//		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set color's clear-value to black and transparent.
+//		gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
+//		gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
+//		gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
+//		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);  // nice perspective view
+//		gl.glShadeModel(GL10.GL_SMOOTH);   // Enable smooth shading of color
+//		gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
 	}
 
 

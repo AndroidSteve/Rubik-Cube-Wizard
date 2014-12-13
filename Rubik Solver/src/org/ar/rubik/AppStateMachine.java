@@ -99,7 +99,7 @@ public class AppStateMachine {
 	 * @param rubikFace 
 	 * 
 	 */
-	public void processFace(RubikFace rubikFace) {
+	public void onFaceEvent(RubikFace rubikFace) {
 
 		// Threshold for the number of times a face must be seen in order to declare it stable.
 		final int consecutiveCandidateCountThreashold = 3;	
@@ -132,7 +132,7 @@ public class AppStateMachine {
 
 
 		// Sometimes, we want state to change simply on frame events.
-		onFrameStateChanges();
+		onFrameEvent();
 
 		switch(stateModel.faceRecogniztionState) {
 
@@ -154,7 +154,7 @@ public class AppStateMachine {
 
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
 						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
-						onStableRubikFaceRecognition(candidateRubikFace);
+						onStableFaceEvent(candidateRubikFace);
 					}
 					else 
 						consecutiveCandiateRubikFaceCount++;
@@ -198,7 +198,7 @@ public class AppStateMachine {
 				else {
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
 						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
-						offStableRubikFaceRecognition();
+						offStableFaceEvent();
 					}
 					else 
 						consecutiveCandiateRubikFaceCount++; // stay in partial state
@@ -207,7 +207,7 @@ public class AppStateMachine {
 			else {
 				if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
 					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
-					offStableRubikFaceRecognition();
+					offStableFaceEvent();
 				}
 				else 
 					consecutiveCandiateRubikFaceCount++; // stay in partial state
@@ -227,12 +227,12 @@ public class AppStateMachine {
 	 * @param hashCode 
 	 * 
 	 */
-	private void onStableRubikFaceRecognition(RubikFace rubikFace) {
+	private void onStableFaceEvent(RubikFace rubikFace) {
 
 		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + rubikFace.hashCode);
 		if(lastStableRubikFace == null || rubikFace.hashCode != lastStableRubikFace.hashCode) {
 			lastStableRubikFace = rubikFace;
-			onNewStableRubikFaceRecognized(rubikFace);
+			onNewStableFaceEvent(rubikFace);
 		}
 
 
@@ -249,10 +249,10 @@ public class AppStateMachine {
 			break;
 		}
 	}
-	public void offStableRubikFaceRecognition() {
+	public void offStableFaceEvent() {
 
 		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.hashCode);
-		offNewStableRubikFaceRecognition();
+		offNewStableFaceEvent();
 
 		switch (stateModel.appState) {
 
@@ -277,7 +277,7 @@ public class AppStateMachine {
 	 * 
 	 * @param rubikFaceHashCode
 	 */
-	private void onNewStableRubikFaceRecognized(RubikFace candidateRubikFace2) {
+	private void onNewStableFaceEvent(RubikFace candidateRubikFace2) {
 
 		Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel.appState);
 
@@ -318,7 +318,7 @@ public class AppStateMachine {
 			break;
 		}
 	}
-	private void offNewStableRubikFaceRecognition() {
+	private void offNewStableFaceEvent() {
 
 		Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
 
@@ -341,7 +341,7 @@ public class AppStateMachine {
 	 * Unfortunately, the rate that is function is called is dependent upon the bulk of opencv
 	 * processing which can vary with the background.
 	 */
-	private void onFrameStateChanges() {
+	private void onFrameEvent() {
 
 		switch(stateModel.appState) {
 
