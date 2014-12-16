@@ -72,21 +72,36 @@ public class CameraParameters {
 	/**
 	 * Get OpenCV Camera Matrix
 	 * 
+	 * =+= note, should elements 00 and 11 differ by aspect ratio?
+	 * 
+	 * =+= Also, use of Android Camera Size not working correct here.  hmm.
+	 * 
 	 * @return
 	 */
 	public Mat getOpenCVCameraMatrix () {
 	    
-      Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
+//      Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
+//      cameraMatrix.put(0, 0, focalLengthPixels);
+//      cameraMatrix.put(0, 1, 0.0);
+//      cameraMatrix.put(0, 2, widthPixels * 0.5f);
+//      cameraMatrix.put(1, 0, 0.0);
+//      cameraMatrix.put(1, 1, focalLengthPixels);
+//      cameraMatrix.put(1, 2, heightPixels * 0.5f);
+//      cameraMatrix.put(2, 0, 0.0);
+//      cameraMatrix.put(2, 1, 0.0);
+//      cameraMatrix.put(2, 2, 1.0);
       
-      cameraMatrix.put(0, 0, focalLengthPixels);
-      cameraMatrix.put(0, 1, 0.0);
-      cameraMatrix.put(0, 2, widthPixels * 0.5f);
-      cameraMatrix.put(1, 0, 0.0);
-      cameraMatrix.put(1, 1, focalLengthPixels);
-      cameraMatrix.put(1, 2, heightPixels * 0.5f);
-      cameraMatrix.put(2, 0, 0.0);
-      cameraMatrix.put(2, 1, 0.0);
-      cameraMatrix.put(2, 2, 1.0);
+      
+	    Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
+	    cameraMatrix.put(0, 0, focalLengthPixels);
+	    cameraMatrix.put(0, 1, 0.0);
+	    cameraMatrix.put(0, 2, 1280.0/2.0);
+	    cameraMatrix.put(1, 0, 0.0);
+	    cameraMatrix.put(1, 1, focalLengthPixels);
+	    cameraMatrix.put(1, 2, 720.0/2.0);
+	    cameraMatrix.put(2, 0, 0.0);
+	    cameraMatrix.put(2, 1, 0.0);
+	    cameraMatrix.put(2, 2, 1.0);
       
       return cameraMatrix;
 	}

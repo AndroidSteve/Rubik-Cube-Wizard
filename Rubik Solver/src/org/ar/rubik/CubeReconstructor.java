@@ -37,7 +37,6 @@ import java.util.List;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.MatOfPoint2f;
@@ -141,20 +140,7 @@ public class CubeReconstructor {
 		MatOfPoint3f objectPoints = new MatOfPoint3f();
 		objectPoints.fromList(objectPointsList);
 
-		// =+= note, should elements 00 and 11 differ by aspect ratio?
-		Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
-		cameraMatrix.put(0, 0, stateModel.cameraParameters.focalLengthPixels);
-		cameraMatrix.put(0, 1, 0.0);
-		cameraMatrix.put(0, 2, 1280.0/2.0);
-		cameraMatrix.put(1, 0, 0.0);
-		cameraMatrix.put(1, 1, stateModel.cameraParameters.focalLengthPixels);
-		cameraMatrix.put(1, 2, 720.0/2.0);
-		cameraMatrix.put(2, 0, 0.0);
-		cameraMatrix.put(2, 1, 0.0);
-		cameraMatrix.put(2, 2, 1.0);
-
-				
-				
+		Mat cameraMatrix          = stateModel.cameraParameters.getOpenCVCameraMatrix();
 		MatOfDouble distCoeffs    = new MatOfDouble();
 		Mat rvec                  = new Mat();
 		Mat tvec                  = new Mat();	
@@ -163,7 +149,8 @@ public class CubeReconstructor {
 //		Log.e(Constants.TAG, "Image Points: " + imagePoints.dump());
 //		Log.e(Constants.TAG, "Object Points: " + objectPoints.dump());
 		
-		boolean result = Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
+//		boolean result = 
+		Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
 		
 		// Also convert from OpenCV to OpenGL World Coordinates
 		x = +1.0f * (float) tvec.get(0, 0)[0];
@@ -183,7 +170,6 @@ public class CubeReconstructor {
 		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
 		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", tvec.get(0, 0)[0], tvec.get(1, 0)[0], tvec.get(2, 0)[0]), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
 		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
-
     }
 
 }
