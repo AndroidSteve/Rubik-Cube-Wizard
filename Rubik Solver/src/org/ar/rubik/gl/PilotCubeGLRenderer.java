@@ -64,55 +64,7 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
     }
 
     
-	/**
-	 *  (non-Javadoc)
-	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
-	 */
-    @Override
-    public void onDrawFrame(GL10 gl) {
-    	
-//    	Log.e(Constants.TAG, "GL Thread ID = " + Thread.currentThread().getId());
-    	
-		// Clear color and depth buffers using clear-value set earlier
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-		
-//		if(stateModel.renderPilotCube == false)
-//			return;
-//		
-		if(stateModel.cubeReconstructor == null)
-			return;
-		
-		
-        // Set GL_MODELVIEW transformation mode
-        gl.glMatrixMode(GL10.GL_MODELVIEW);
-        gl.glLoadIdentity();   // reset the matrix to its default state
 
-        // When using GL_MODELVIEW, you must set the view point
-        // Sets the location, direction, and orientation of camera, but not zoom
-        GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
-		
-		// =+= Funny bug, this shouldn't happen.  Hmm.  Asynchronous threads somewhere?
-		if(stateModel.cubeReconstructor == null)
-			return;
-	
-		// Translate cube to the right.
-//		gl.glTranslatef(-6.0f, 0.0f, 0.0f);
-		
-
-		// Translate Model per Pose Estimator
-		gl.glTranslatef(
-		        stateModel.cubeReconstructor.x, 
-		        stateModel.cubeReconstructor.y, 
-		        stateModel.cubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
-		
-
-		// Cube Rotation
-		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
-		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
-		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
-
-		pilotGLCube.draw(gl, true); // active);
-    }
 
     
 	/**
@@ -180,6 +132,56 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 //		gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
 	}
 
+    
+    /**
+     *  (non-Javadoc)
+     * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
+     */
+    @Override
+    public void onDrawFrame(GL10 gl) {
+        
+//      Log.e(Constants.TAG, "GL Thread ID = " + Thread.currentThread().getId());
+        
+        // Clear color and depth buffers using clear-value set earlier
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
+//      if(stateModel.renderPilotCube == false)
+//          return;
+//      
+        if(stateModel.cubeReconstructor == null)
+            return;
+        
+        
+        // Set GL_MODELVIEW transformation mode
+        gl.glMatrixMode(GL10.GL_MODELVIEW);
+        gl.glLoadIdentity();   // reset the matrix to its default state
+
+        // When using GL_MODELVIEW, you must set the view point
+        // Sets the location, direction, and orientation of camera, but not zoom
+        GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
+        
+        // =+= Funny bug, this shouldn't happen.  Hmm.  Asynchronous threads somewhere?
+        if(stateModel.cubeReconstructor == null)
+            return;
+    
+        // Translate cube to the right.
+//        gl.glTranslatef(-6.0f, 0.0f, 0.0f);
+        
+
+        // Translate Model per Pose Estimator
+        gl.glTranslatef(
+                stateModel.cubeReconstructor.x, 
+                stateModel.cubeReconstructor.y, 
+                stateModel.cubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
+        
+
+        // Cube Rotation
+        gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
+        gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
+        gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
+
+        pilotGLCube.draw(gl, true); // active);
+    }
 
     
 	/** =+= delete this
