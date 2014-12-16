@@ -65,7 +65,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	// GL Object that can be rendered
 	private GLArrow arrowQuarterTurn;
 	private GLArrow arrowHalfTurn;
-	private OverlayGLCube overlayGLCube;
+	private CubeGL overlayGLCube;
 
 
 
@@ -80,7 +80,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		this.stateModel = stateModel;
 		
 		// Create the GL overlay cube
-		overlayGLCube = new OverlayGLCube();
+		overlayGLCube = new CubeGL();
 		
 		// Create two arrows: one half turn, one quarter turn.
 		arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
@@ -98,12 +98,12 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set color's clear-value to black and transparent.
-		gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
-		gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
-		gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
-		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);  // nice perspective view
-		gl.glShadeModel(GL10.GL_SMOOTH);   // Enable smooth shading of color
-		gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
+//		gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
+//		gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
+//		gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
+//		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);  // nice perspective view
+//		gl.glShadeModel(GL10.GL_SMOOTH);   // Enable smooth shading of color
+//		gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
 	}
 
 
@@ -115,22 +115,36 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	 */
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
+	    
+	       if (height == 0) height = 1;   // To prevent divide by zero
 
-		if (height == 0) height = 1;   // To prevent divide by zero
-		float aspect = (float)width / height;
+	        // Adjust the viewport based on geometry changes
+	        // such as screen rotations
+	        gl.glViewport(0, 0, width, height);
 
-		// Set the viewport (display area) to cover the entire window
-		gl.glViewport(0, 0, width, height);
+	        // make adjustments for screen ratio
+//	        float ratio = (float) width / height;
 
-		// Setup perspective projection, with aspect ratio matches viewport
-		gl.glMatrixMode(GL10.GL_PROJECTION); // Select projection matrix
-		gl.glLoadIdentity();                 // Reset projection matrix
-		
-		// Use perspective projection
-		GLU.gluPerspective(gl, 45, aspect, 0.1f, 100.f);
+	        gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
+	        gl.glLoadIdentity();                        // reset the matrix to its default state
+	        
+	        stateModel.cameraParameters.setFrustum(gl);
 
-		gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix =+=
-		gl.glLoadIdentity();                 // Reset
+//		if (height == 0) height = 1;   // To prevent divide by zero
+//		float aspect = (float)width / height;
+//
+//		// Set the viewport (display area) to cover the entire window
+//		gl.glViewport(0, 0, width, height);
+//
+//		// Setup perspective projection, with aspect ratio matches viewport
+//		gl.glMatrixMode(GL10.GL_PROJECTION); // Select projection matrix
+//		gl.glLoadIdentity();                 // Reset projection matrix
+//		
+//		// Use perspective projection
+//		GLU.gluPerspective(gl, 45, aspect, 0.1f, 100.f);
+//
+//		gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix =+=
+//		gl.glLoadIdentity();                 // Reset
 	}
 	
 	
@@ -151,49 +165,40 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
 		// Check and don't render.
-		if(stateModel.appState != AppStateEnum.ROTATE && stateModel.appState != AppStateEnum.DO_MOVE)
-			return;
+//		if(stateModel.appState != AppStateEnum.ROTATE && stateModel.appState != AppStateEnum.DO_MOVE)
+//			return;
 
 		// Check and don't render.
 		if(stateModel.cubeReconstructor == null)
 			return;
+		
+        // Set GL_MODELVIEW transformation mode
+        gl.glMatrixMode(GL10.GL_MODELVIEW);
+        gl.glLoadIdentity();   // reset the matrix to its default state
 
-		
-		// Perform general scene translation.
-//		// This is based on the reconstructed 3D cube position and orientation.
-//		float scale = stateModel.cubeReconstructor.scale;
-//		float x = stateModel.cubeReconstructor.x;
-//		float y = stateModel.cubeReconstructor.y;
-//		float cubeXrotation = stateModel.cubeReconstructor.cubeXrotation;
-//		float cubeYrotation = stateModel.cubeReconstructor.cubeYrotation;
-		
-		gl.glLoadIdentity();                   // Reset model-view matrix 
-		
-		// Perspective Translate
-//		// =+= really, we should just put scale in z-translation param.
-//		gl.glTranslatef(x, y, -10.0f);
-//		gl.glScalef(scale, scale, scale);
-//
-//		// Cube Rotation
-//		gl.glRotatef(cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of ~35
-//		gl.glRotatef(cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of ~45
-		
-		if(true == true)
-			return;
+        // When using GL_MODELVIEW, you must set the view point
+        // Sets the location, direction, and orientation of camera, but not zoom
+        GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
+        
+        // =+= Funny bug, this shouldn't happen.  Hmm.  Asynchronous threads somewhere?
+        if(stateModel.cubeReconstructor == null)
+            return;
+        
+        // Translate Model per Pose Estimator
+        gl.glTranslatef(
+                stateModel.cubeReconstructor.x, 
+                stateModel.cubeReconstructor.y, 
+                stateModel.cubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
+        
+        // Cube Rotation
+        gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
+        gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
+        gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
 
-		gl.glTranslatef(
-				stateModel.cubeReconstructor.x,
-				stateModel.cubeReconstructor.y,
-				-1.0f * stateModel.cubeReconstructor.z);
-//
-//		// Cube Rotation
-		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
-		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
-		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
 		
 		// If desire, render what we think is the cube location and orientation.
 		if(renderCubeOverlay == true)
-			overlayGLCube.draw(gl);
+		    overlayGLCube.draw(gl, true);
 
 		
 		if(true == true)

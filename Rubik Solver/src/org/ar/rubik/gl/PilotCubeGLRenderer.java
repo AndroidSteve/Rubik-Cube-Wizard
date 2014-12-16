@@ -34,8 +34,6 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.ar.rubik.CameraParameters;
-import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.StateModel;
 
 import android.opengl.GLSurfaceView;
@@ -48,10 +46,7 @@ import android.opengl.GLU;
 public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 
     private StateModel stateModel;
-	private PilotGLCube pilotGLCube;
-	
-	// True if we are actively tracking the cube (i.e. solve or partially solved)
-	private boolean active = false;
+	private CubeGL pilotGLCube;
 	
 
 	/**
@@ -60,10 +55,28 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
     public PilotCubeGLRenderer(StateModel stateModel) {
 		this.stateModel = stateModel;
 		
-		pilotGLCube = new PilotGLCube();
+		pilotGLCube = new CubeGL();
     }
 
     
+    /**
+     *  (non-Javadoc)
+     * @see android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition.khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
+     */
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        
+        // Set the background frame color
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+//      gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set color's clear-value to black and transparent.
+//      gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
+//      gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
+//      gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
+//      gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);  // nice perspective view
+//      gl.glShadeModel(GL10.GL_SMOOTH);   // Enable smooth shading of color
+//      gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
+    }
 
 
     
@@ -85,7 +98,7 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         gl.glViewport(0, 0, width, height);
 
         // make adjustments for screen ratio
-        float ratio = (float) width / height;
+//        float ratio = (float) width / height;
 
         gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
         gl.glLoadIdentity();                        // reset the matrix to its default state
@@ -110,26 +123,6 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 //
 //		gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix =+=
 //		gl.glLoadIdentity();                 // Reset
-	}
-
-    
-	/**
-	 *  (non-Javadoc)
-	 * @see android.opengl.GLSurfaceView.Renderer#onSurfaceCreated(javax.microedition.khronos.opengles.GL10, javax.microedition.khronos.egl.EGLConfig)
-	 */
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-    	
-        // Set the background frame color
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-//		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set color's clear-value to black and transparent.
-//		gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
-//		gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
-//		gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
-//		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);  // nice perspective view
-//		gl.glShadeModel(GL10.GL_SMOOTH);   // Enable smooth shading of color
-//		gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
 	}
 
     
@@ -165,14 +158,14 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
             return;
     
         // Translate cube to the right.
-//        gl.glTranslatef(-6.0f, 0.0f, 0.0f);
+        gl.glTranslatef(-4.0f, 0.0f, 0.0f);
         
 
         // Translate Model per Pose Estimator
         gl.glTranslatef(
-                stateModel.cubeReconstructor.x, 
-                stateModel.cubeReconstructor.y, 
-                stateModel.cubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
+                0.0f, // stateModel.cubeReconstructor.x, 
+                0.0f, //stateModel.cubeReconstructor.y, 
+                stateModel.cubeReconstructor.z + 10.0f);  // =+= something weird, cannot eliminate this.
         
 
         // Cube Rotation
@@ -180,15 +173,15 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
         gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
 
-        pilotGLCube.draw(gl, true); // active);
+        pilotGLCube.draw(gl, false);
     }
 
     
-	/** =+= delete this
-	 * @param renderState
-	 */
-    public void setRenderState(boolean renderState) {
-//    	this.renderState = renderState;
-    }
+//	/** =+= delete this
+//	 * @param renderState
+//	 */
+//    public void setRenderState(boolean renderState) {
+////    	this.renderState = renderState;
+//    }
 
 }

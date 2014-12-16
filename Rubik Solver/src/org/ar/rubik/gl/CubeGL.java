@@ -34,7 +34,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
-public class PilotGLCube {
+public class CubeGL {
 
     private FloatBuffer vertexBuffer;  // Buffer for vertex-array
     private int numFaces = 6;
@@ -85,7 +85,7 @@ public class PilotGLCube {
     /**
      *  Constructor - Set up the buffers
      */
-    public PilotGLCube() {
+    public CubeGL() {
         // Setup vertex-array buffer. Vertices in float. An float has 4 bytes
         ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
         vbb.order(ByteOrder.nativeOrder()); // Use native byte order
@@ -99,9 +99,9 @@ public class PilotGLCube {
      * Draw the shape
      *  
      * @param gl
-     * @param b
+     * @param isTransparent
      */
-    public void draw(GL10 gl, boolean b) {
+    public void draw(GL10 gl, boolean isTransparent) {
         
         gl.glFrontFace(GL10.GL_CCW);    // Front face in counter-clockwise orientation
         gl.glEnable(GL10.GL_CULL_FACE); // Enable cull face
@@ -113,7 +113,7 @@ public class PilotGLCube {
         // Render all the faces
         for (int face = 0; face < numFaces; face++) {
             // Set the color for each of the faces
-            gl.glColor4f(colors[face][0], colors[face][1], colors[face][2], colors[face][3]);
+            gl.glColor4f(colors[face][0], colors[face][1], colors[face][2], (isTransparent ? 0.2f : 1.0f) );
             // Draw the primitive from the vertex-array directly
             gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, face*4, 4);
         }
