@@ -19,7 +19,7 @@ import android.opengl.Matrix;
  * =+= Important Issue: viewing angle has a factor of 2 w.r.t. trig functions.
  *
  */
-public class CameraParameters {
+public class CameraCalibration {
 	
 	public double focalLengthPixels;
 	
@@ -44,7 +44,7 @@ public class CameraParameters {
 	/**
 	 * Camera Parameters Constructor
 	 */
-	public CameraParameters() {
+	public CameraCalibration() {
 		
 		Camera camera = Camera.open();
 		parameters = camera.getParameters();

@@ -94,7 +94,7 @@ public class StateModel {
 	public CubeReconstructor cubeReconstructor;
 
 	// Intrinsic Camera Calibration Parameters from hardware.
-	public CameraParameters cameraParameters;
+	public CameraCalibration cameraParameters;
 	
 	
 	/**
