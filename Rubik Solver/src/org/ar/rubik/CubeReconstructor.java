@@ -10,10 +10,7 @@
  *   
  * File Description:
  *   Cube location and orientation in GL space coordinates are reconstructed from Face information.
- *   
- *   The Rubik Cube is defined as a cube centered a the origin
- *   
- *   This class implements the OpenCV Frame Listener. 
+ *   The Rubik Cube is defined as a cube centered a the origin with edge length of 2.0 units.
  * 
  * License:
  * 
@@ -59,73 +56,12 @@ import org.opencv.core.Point;
 public class CubeReconstructor {
 	
 	// Translation and Rotation as computed from OpenCV Pose Estimator
-	public float x2;
-	public float y2;
-	public float z2;
-	public float cubeXrotation2;  // degrees
-	public float cubeYrotation2;  // degrees
-	public float cubeZrotation2;  // degrees
-	
-	
-//	public float scale;
-//	public float x;
-//	public float y;
-//	public float cubeYrotation;  // degrees
-//	public float cubeXrotation;  // degrees
-	
-//	private Point3[][] topFaceTileCentersInGLSpace = {
-//	        { new Point3(+0.666f, +1.0f, +0.666), new Point3(0.000f, +1.0f, +0.666), new Point3(-0.666f, +1.0f, +0.666) },
-//	        { new Point3(+0.666f, +1.0f, +0.000), new Point3(0.000f, +1.0f, +0.000), new Point3(-0.666f, +1.0f, +0.000) },
-//	        { new Point3(+0.666f, +1.0f, -0.666), new Point3(0.000f, +1.0f, -0.666), new Point3(-0.666f, +1.0f, -0.666) } };
-
-
-	/**
-	 * =+= this is temporary code
-	 * 
-	 * This function actually calculates, currently rather crudely, a 2D to 3D translation.
-	 * That is, information from the Rubik Face object is used to deduce the 
-	 * true location in OpenGL space of the cube and it's orientation.  
-	 * 
-	 * @param rubikFace
-	 */
-    public void reconstruct(RubikFace rubikFace) {
-    	
-//		final float opecnCL2opencvRatio = 100.0f;
-//		final float xOffset = 650.0f;
-//		final float yOffset = 200.0f;
-//		
-//		if(rubikFace == null)
-//			return;
-//		
-//		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
-//			return;
-//		
-//		LeastMeansSquare lmsResult = rubikFace.lmsResult;
-//		
-//		if(lmsResult == null)
-//			return;
-//		
-//				
-//		// This is very crude.
-//		this.scale = (float) Math.sqrt(Math.abs(rubikFace.alphaLatticLength * rubikFace.betaLatticLength)) / 70.0f;
-//		
-//		// =+= not necessarily correct, really should use X, Y rotations
-//		this.x = (float) ((lmsResult.origin.x - xOffset) / opecnCL2opencvRatio);
-//		this.y = (float) (-1 * (lmsResult.origin.y - yOffset) / opecnCL2opencvRatio);
-//		
-//		float alpha = 90.0f - (float) (rubikFace.alphaAngle * 180.0 / Math.PI);
-//		float beta = (float) (rubikFace.betaAngle * 180.0 / Math.PI) - 90.0f;
-//		
-//		
-//		// Very crude estimations of orientation.  These equations and number found empirically.
-//		// =+= We require a solution of two non-linear equations and two unknowns to correctly calculate
-//		// =+= X and Y 3D rotation values from 2D alpha and beta values.  Probably use of Newton successive
-//		// =+= approximation will produce good results.
-//		this.cubeYrotation = 45.0f + (alpha - beta) / 2.0f;
-//		this.cubeXrotation =  90.0f + ( (alpha - 45.0f) + (beta - 45.0f) )/ -0.5f;
-//		
-////		reconstruct2(rubikFace);
-    }
+	public float x;
+	public float y;
+	public float z;
+	public float cubeXrotation;  // degrees
+	public float cubeYrotation;  // degrees
+	public float cubeZrotation;  // degrees
     
     
     /**
@@ -136,7 +72,7 @@ public class CubeReconstructor {
      * @param image 
      * @param stateModel 
      */
-    public void reconstruct2(RubikFace rubikFace, Mat image, StateModel stateModel) {
+    public void poseEstimation(RubikFace rubikFace, Mat image, StateModel stateModel) {
     	
 		if(rubikFace == null)
 			return;
@@ -169,6 +105,9 @@ public class CubeReconstructor {
     			if(rhombus != null) {
 
     				// Obtain center of Rhombus in screen image coordinates
+    			    // Convention:
+    			    //  o X is zero on the left, and increases to the right.
+    			    //  o Y is zero on the top and increases downward.
     				Point imagePoint = new Point( rhombus.center.x, rhombus.center.y);
     				imagePointsList.add(imagePoint);
     				
@@ -176,11 +115,18 @@ public class CubeReconstructor {
     				int mm = 2 - n;
     				int nn = 2 - m;
     				// above now matches design doc.
+    				// that is:
+    				//  o the nn vector is to the right and upwards.
+    				//  o the mm vector is to the left and upwards.
     				
-    				// Calculate center of Tile in OpenGL World Space Coordinates
+    				// Calculate center of Tile in OpenCV World Space Coordinates
+    				// Convention:
+                    //  o X is zero in the center, and increases to the left.
+                    //  o Y is zero in the center and increases downward.
+    				//  o Z is zero (at the world coordinate origin) and increase away for the camera.
     				float x  = (1 - mm) * 0.66666f;
-    				float y  = +1.0f;
-    				float z  = (1 - nn) * 0.666666f;
+    				float y  = -1.0f;
+    				float z  = -1.0f * (1 - nn) * 0.666666f;
     				Point3 objectPoint = new Point3(x, y, z);
     				objectPointsList.add(objectPoint);
     			}
@@ -195,6 +141,7 @@ public class CubeReconstructor {
 		MatOfPoint3f objectPoints = new MatOfPoint3f();
 		objectPoints.fromList(objectPointsList);
 
+		// =+= note, should elements 00 and 11 differ by aspect ratio?
 		Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
 		cameraMatrix.put(0, 0, stateModel.cameraParameters.focalLengthPixels);
 		cameraMatrix.put(0, 1, 0.0);
@@ -218,12 +165,13 @@ public class CubeReconstructor {
 		
 		boolean result = Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
 		
-		x2 = (float) tvec.get(0, 0)[0];
-		y2 = (float) tvec.get(1, 0)[0];
-		z2 = (float) tvec.get(2, 0)[0];
-		cubeXrotation2 = (float) (rvec.get(0, 0)[0] * 180.0 / Math.PI);
-		cubeYrotation2 = (float) (rvec.get(1, 0)[0] * 180.0 / Math.PI);
-		cubeZrotation2 = (float) (rvec.get(2, 0)[0] * 180.0 / Math.PI);
+		// Also convert from OpenCV to OpenGL World Coordinates
+		x = +1.0f * (float) tvec.get(0, 0)[0];
+		y = -1.0f * (float) tvec.get(1, 0)[0];
+		z = -1.0f * (float) tvec.get(2, 0)[0];
+		cubeXrotation = +1.0f * (float) (rvec.get(0, 0)[0] * 180.0 / Math.PI);
+		cubeYrotation = -1.0f * (float) (rvec.get(1, 0)[0] * 180.0 / Math.PI);
+		cubeZrotation = -1.0f * (float) (rvec.get(2, 0)[0] * 180.0 / Math.PI);
 		
     	
 //		Log.e(Constants.TAG, "Result: " + result);
@@ -234,7 +182,7 @@ public class CubeReconstructor {
 		
 		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
 		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", tvec.get(0, 0)[0], tvec.get(1, 0)[0], tvec.get(2, 0)[0]), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
-		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation2, cubeYrotation2, cubeZrotation2), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
+		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
 
     }
 

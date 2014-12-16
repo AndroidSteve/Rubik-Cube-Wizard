@@ -22,12 +22,13 @@ To Do:
   o  Make direction arrows occult with respect to physical cube.
   o  Rework N,M definition: currently backwards from desired.
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
-  o  Time and CPU measurements.
+  o  Time and CPU measurements.  Possible use of DDMS
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
   o  Introduce real Pilot Cube that demonstrates requested user activity.
   o  Sweep through and make screen size independent.
   o  Custom OpenCL functions?
+  o  Switch to Android Studio
   
 Open Issues:
   o  What if hardware does not provide intrinsic camera calibration parameters? 

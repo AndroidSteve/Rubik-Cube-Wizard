@@ -34,6 +34,7 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.ar.rubik.CameraParameters;
 import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.StateModel;
 
@@ -81,22 +82,13 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 		if(stateModel.cubeReconstructor == null)
 			return;
 		
-		CubeReconstructor cr = new CubeReconstructor();
-		cr.cubeXrotation2 = 45.0f;
-		cr.cubeYrotation2 = 45.0f;
-		cr.cubeZrotation2 = 0.0f;
-		
-		// =+= Attempt rotational mapping
-        cr.cubeYrotation2 = -1.0f * stateModel.cubeReconstructor.cubeZrotation2 + 90.0f;
-        cr.cubeXrotation2 = +1.0f * stateModel.cubeReconstructor.cubeXrotation2 + 180.0f;
-        cr.cubeZrotation2 = +1.0f * stateModel.cubeReconstructor.cubeYrotation2 + 0.0f;
-		
 		
         // Set GL_MODELVIEW transformation mode
         gl.glMatrixMode(GL10.GL_MODELVIEW);
         gl.glLoadIdentity();   // reset the matrix to its default state
 
         // When using GL_MODELVIEW, you must set the view point
+        // Sets the location, direction, and orientation of camera, but not zoom
         GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
 		
 		// =+= Funny bug, this shouldn't happen.  Hmm.  Asynchronous threads somewhere?
@@ -106,18 +98,18 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 		// Translate cube to the right.
 //		gl.glTranslatef(-6.0f, 0.0f, 0.0f);
 		
-		// =+= Attempt translational mapping.
-		// Translate per Pose Estimator
+
+		// Translate Model per Pose Estimator
 		gl.glTranslatef(
-		        stateModel.cubeReconstructor.x2, 
-		        -1.0f * stateModel.cubeReconstructor.y2, 
-		        -1.0f * stateModel.cubeReconstructor.z2 + 10.0f);
+		        stateModel.cubeReconstructor.x, 
+		        stateModel.cubeReconstructor.y, 
+		        stateModel.cubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
 		
 
 		// Cube Rotation
-		gl.glRotatef(cr.cubeXrotation2, 1.0f, 0.0f, 0.0f);  // X rotation of
-		gl.glRotatef(cr.cubeYrotation2, 0.0f, 1.0f, 0.0f);  // Y rotation of
-		gl.glRotatef(cr.cubeZrotation2, 0.0f, 0.0f, 1.0f);  // Z rotation of 
+		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
+		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
+		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
 
 		pilotGLCube.draw(gl, true); // active);
     }
@@ -142,9 +134,12 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 
         // make adjustments for screen ratio
         float ratio = (float) width / height;
+
         gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
         gl.glLoadIdentity();                        // reset the matrix to its default state
-        gl.glFrustumf(-ratio, ratio, -1, 1, 2, 15);  // apply the projection matrix
+        
+        
+        stateModel.cameraParameters.setFrustum(gl);
     	
     	
     	

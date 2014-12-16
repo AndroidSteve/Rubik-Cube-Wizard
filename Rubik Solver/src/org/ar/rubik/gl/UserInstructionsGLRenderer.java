@@ -182,14 +182,14 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 			return;
 
 		gl.glTranslatef(
-				stateModel.cubeReconstructor.x2,
-				stateModel.cubeReconstructor.y2,
-				-1.0f * stateModel.cubeReconstructor.z2);
+				stateModel.cubeReconstructor.x,
+				stateModel.cubeReconstructor.y,
+				-1.0f * stateModel.cubeReconstructor.z);
 //
 //		// Cube Rotation
-		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation2 * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
-		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation2 * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
-		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation2 * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
+		gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation * (float)(180.0 / Math.PI), 1.0f, 0.0f, 0.0f);  // X rotation of
+		gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation * (float)(180.0 / Math.PI), 0.0f, 1.0f, 0.0f);  // Y rotation of
+		gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation * (float)(180.0 / Math.PI), 0.0f, 0.0f, 1.0f);  // Z rotation of 
 		
 		// If desire, render what we think is the cube location and orientation.
 		if(renderCubeOverlay == true)
