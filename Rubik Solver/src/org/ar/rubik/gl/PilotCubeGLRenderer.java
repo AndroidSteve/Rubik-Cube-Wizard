@@ -159,16 +159,15 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 
         // When using GL_MODELVIEW, you must set the view point
         // Sets the location, direction, and orientation of camera, but not zoom
-        GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
+        GLU.gluLookAt(gl,  
+                0,    0,    0,    // Camera Location
+                0f,   0f,  -1f,   // Camera points down Z axis.
+                0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
     
-        // Translate cube to the right.
-        gl.glTranslatef(-4.0f, 0.0f, 0.0f);
+        // Instead of using pose esitmator coordinates, instead position cube at
+        // fix location.  We really just desire to observe rotation.
+        gl.glTranslatef(-4.0f, 0.0f, -10.0f);
 
-        // Translate Model per Pose Estimator
-        gl.glTranslatef(
-                0.0f, // stateModel.cubeReconstructor.x, 
-                0.0f, //stateModel.cubeReconstructor.y, 
-                myCubeReconstructor.z + 10.0f);  // =+= something weird, cannot eliminate this.
 
         // Cube Rotation
         gl.glRotatef(myCubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of

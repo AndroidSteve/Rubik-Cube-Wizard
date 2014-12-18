@@ -184,15 +184,15 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
         // When using GL_MODELVIEW, you must set the view point
         // Sets the location, direction, and orientation of camera, but not zoom
         GLU.gluLookAt(gl,  
-                0,    0,  +10,    // Camera Location
-                0f,   0f,   0f,   // Camera pointed towards this point: origin in this case.
+                0,    0,    0,    // Camera Location
+                0f,   0f,  -1f,   // Camera points down Z axis.
                 0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
         
         // Translate Model per Pose Estimator
         gl.glTranslatef(
                 myCubeReconstructor.x, 
                 myCubeReconstructor.y, 
-                myCubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
+                myCubeReconstructor.z);
         
         // Cube Rotation
         gl.glRotatef(myCubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
