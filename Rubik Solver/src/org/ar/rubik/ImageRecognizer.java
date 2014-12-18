@@ -365,6 +365,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 * initial color for all nine tiles. 
 			 */	 
 			rubikFace.processRhombuses(rhombusList, image);
+			Log.i(Constants.TAG, "Face Solution = " + rubikFace.faceRecognitionStatus);
 			rubikFace.profiler.markTime(Profiler.Event.FACE);
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.FACE_DETECT) {
 				stateModel.activeRubikFace = rubikFace;

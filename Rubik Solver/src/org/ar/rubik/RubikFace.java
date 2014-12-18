@@ -44,6 +44,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 
 import android.util.Log;
 
@@ -578,20 +579,31 @@ public class RubikFace implements Serializable {
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
 
-				Point tileCenter = getTileCenterInPixels(n, m);
-				try {
-					Mat mat = image.submat((int)(tileCenter.y - 10), (int)(tileCenter.y + 10), (int)(tileCenter.x - 10), (int)(tileCenter.x + 10));
-					
-					Scalar mean = Core.mean(mat);
-					double [] actualTileColor = mean.val;
-					measuredColorArray[n][m] = actualTileColor;
-				}
+			    Point tileCenter = getTileCenterInPixels(n, m);
+			    Size size = image.size();
+			    double width = size.width;
+			    double height = size.height;
+			    if( tileCenter.x < 10 || tileCenter.x > width - 10 || tileCenter.y < 10 || tileCenter.y > height - 10) {
+			        Log.w(Constants.TAG, String.format("Tile at [%1d,%1d] has coordinates x=%5.1f y=%5.1f too close to edge to assign color.", n, m, tileCenter.x, tileCenter.y));
+			        measuredColorArray[n][m] = new double[4];  // This will default to back.  
+			    }
 
-				// Probably LMS calculations produced bogus tile location.
-				catch(CvException cvException) {
-					Log.e(Constants.TAG, "ERROR: x=" + tileCenter.x + " y=" + tileCenter.y + " img=" + image + " :" + cvException);
-					measuredColorArray[n][m] = new double[4];				
-				}
+			    else {
+
+			        try {
+			            Mat mat = image.submat((int)(tileCenter.y - 10), (int)(tileCenter.y + 10), (int)(tileCenter.x - 10), (int)(tileCenter.x + 10));
+
+			            Scalar mean = Core.mean(mat);
+			            double [] actualTileColor = mean.val;
+			            measuredColorArray[n][m] = actualTileColor;
+			        }
+
+			        // Probably LMS calculations produced bogus tile location.
+			        catch(CvException cvException) {
+			            Log.e(Constants.TAG, "ERROR findClosestLogicalTiles(): x=" + tileCenter.x + " y=" + tileCenter.y + " img=" + image + " :" + cvException);
+			            measuredColorArray[n][m] = new double[4];				
+			        }
+			    }
 			}
 		}
 

@@ -394,7 +394,7 @@ public class Rhombus {
 					(Math.abs(rhombus.betaAngle - medianBetaAngle) > angleOutlierTolerance) ) {
 				rhombus.status = StatusEnum.OUTLIER;
 				rhombusItr.remove();
-				Log.w(Constants.TAG, String.format( "Removed Outlier Rhombus with alphaAngle=%6.0f betaAngle=%6.0f", rhombus.alphaAngle, rhombus.betaAngle));
+				Log.i(Constants.TAG, String.format( "Removed Outlier Rhombus with alphaAngle=%6.0f betaAngle=%6.0f", rhombus.alphaAngle, rhombus.betaAngle));
 			}
 		}
 	}

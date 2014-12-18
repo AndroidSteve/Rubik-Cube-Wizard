@@ -9,6 +9,8 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
+ *   Renders a six sided cube in Object Coordinates centered at the origin with
+ *   edge length of 2.0 units.
  * 
  * License:
  * 
@@ -34,6 +36,21 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
+/**
+ * Class CubeGL
+ * 
+ * Coordinates of cube are described by an floating point array of (6x4x3) 72 elements.
+ * 
+ * =+= TODO: How to evolve this such that:
+ *   0)  How to get colors from global Constants
+ *   1)  Color can be assigned per face name.
+ *   2)  Only the center tile of a face is colored.
+ *   3)  Orientation is set able (i.e., xxxxxxxxxx)
+ *   4)  Or should we consider Rubik Cube Animator
+ * 
+ * @author android.steve@testlens.com
+ *
+ */
 public class CubeGL {
 
     private FloatBuffer vertexBuffer;  // Buffer for vertex-array
@@ -86,6 +103,7 @@ public class CubeGL {
      *  Constructor - Set up the buffers
      */
     public CubeGL() {
+
         // Setup vertex-array buffer. Vertices in float. An float has 4 bytes
         ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
         vbb.order(ByteOrder.nativeOrder()); // Use native byte order
@@ -94,7 +112,7 @@ public class CubeGL {
         vertexBuffer.position(0);           // Rewind
     }
 
-    
+
     /**
      * Draw the shape
      *  
@@ -102,7 +120,7 @@ public class CubeGL {
      * @param isTransparent
      */
     public void draw(GL10 gl, boolean isTransparent) {
-        
+
         gl.glFrontFace(GL10.GL_CCW);    // Front face in counter-clockwise orientation
         gl.glEnable(GL10.GL_CULL_FACE); // Enable cull face
         gl.glCullFace(GL10.GL_BACK);    // Cull the back face (don't display)
@@ -117,7 +135,7 @@ public class CubeGL {
             // Draw the primitive from the vertex-array directly
             gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, face*4, 4);
         }
-        
+
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         gl.glDisable(GL10.GL_CULL_FACE);
     }

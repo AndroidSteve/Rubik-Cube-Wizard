@@ -47,7 +47,10 @@ import org.opencv.core.Point;
 
 
 /**
+ * Class Cube Reconstructor
  * 
+ *   Cube location and orientation in GL space coordinates are reconstructed from Face information.
+ *   The Rubik Cube is defined as a cube centered a the origin with edge length of 2.0 units.
  * 
  * @author android.steve@testlens.com
  *
@@ -55,17 +58,18 @@ import org.opencv.core.Point;
 public class CubeReconstructor {
 	
 	// Translation and Rotation as computed from OpenCV Pose Estimator
-	public float x;
-	public float y;
-	public float z;
+	public float x;  // real world units
+	public float y;  // real world units
+	public float z;  // real world units
 	public float cubeXrotation;  // degrees
 	public float cubeYrotation;  // degrees
 	public float cubeZrotation;  // degrees
     
     
     /**
+     * Pose Estimation
      * 
-     * 
+     * Deduce real world cube coordinates and rotation
      * 
      * @param rubikFace
      * @param image 
@@ -160,15 +164,13 @@ public class CubeReconstructor {
 		cubeYrotation = -1.0f * (float) (rvec.get(1, 0)[0] * 180.0 / Math.PI);
 		cubeZrotation = -1.0f * (float) (rvec.get(2, 0)[0] * 180.0 / Math.PI);
 		
-    	
 //		Log.e(Constants.TAG, "Result: " + result);
 //		Log.e(Constants.TAG, "Camera: " + cameraMatrix.dump());
 //		Log.e(Constants.TAG, "Rotation: " + rvec.dump());
 //		Log.e(Constants.TAG, "Translation: " + tvec.dump());
 		
-		
 		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
-		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", tvec.get(0, 0)[0], tvec.get(1, 0)[0], tvec.get(2, 0)[0]), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
+		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
 		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
     }
 

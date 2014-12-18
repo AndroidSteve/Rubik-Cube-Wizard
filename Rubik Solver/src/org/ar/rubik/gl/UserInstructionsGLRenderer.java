@@ -35,6 +35,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants;
+import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
@@ -62,7 +63,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	// Control Flags
 	private boolean renderCubeOverlay   = true;
 	
-	// GL Object that can be rendered
+	// GL Objects that can be rendered
 	private GLArrow arrowQuarterTurn;
 	private GLArrow arrowHalfTurn;
 	private CubeGL overlayGLCube;
@@ -167,9 +168,13 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		// Check and don't render.
 //		if(stateModel.appState != AppStateEnum.ROTATE && stateModel.appState != AppStateEnum.DO_MOVE)
 //			return;
+		
+		// Make copy reference to Cube Reconstructor.
+		// This is to avoid asynchronous OpenGL and OpenCV problems. 
+		CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
 
-		// Check and don't render.
-		if(stateModel.cubeReconstructor == null)
+		// Check and if null don't render.
+		if(myCubeReconstructor == null)
 			return;
 		
         // Set GL_MODELVIEW transformation mode
@@ -178,29 +183,27 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 
         // When using GL_MODELVIEW, you must set the view point
         // Sets the location, direction, and orientation of camera, but not zoom
-        GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
-        
-        // =+= Funny bug, this shouldn't happen.  Hmm.  Asynchronous threads somewhere?
-        if(stateModel.cubeReconstructor == null)
-            return;
+        GLU.gluLookAt(gl,  
+                0,    0,  +10,    // Camera Location
+                0f,   0f,   0f,   // Camera pointed towards this point: origin in this case.
+                0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
         
         // Translate Model per Pose Estimator
         gl.glTranslatef(
-                stateModel.cubeReconstructor.x, 
-                stateModel.cubeReconstructor.y, 
-                stateModel.cubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
+                myCubeReconstructor.x, 
+                myCubeReconstructor.y, 
+                myCubeReconstructor.z + 10.0f);  // =+= can we eliminate the constant 10.0 ?
         
         // Cube Rotation
-        gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
-        gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
-        gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
-
+        gl.glRotatef(myCubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
+        gl.glRotatef(myCubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
+        gl.glRotatef(myCubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
 		
 		// If desire, render what we think is the cube location and orientation.
 		if(renderCubeOverlay == true)
 		    overlayGLCube.draw(gl, true);
 
-		
+		// =+=
 		if(true == true)
 			return;
 		
@@ -256,7 +259,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		Scalar color = null;
 		Direction direction = null;
 		
-		// Obtain details of arrow to be rendered.
+		// Rotate and Translate Arrow as required by Rubik Logic Solution algorithm. 
 		switch(moveNumonic.charAt(0)) {
 		case 'U':
 			color = stateModel.getFaceByName(FaceNameEnum.UP).observedTileArray[1][1].color;
@@ -298,7 +301,6 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 			break;
 		}
 
-		
 		// Specify direction of arrow
 		if(direction == Direction.NEGATIVE)  {
 			gl.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90

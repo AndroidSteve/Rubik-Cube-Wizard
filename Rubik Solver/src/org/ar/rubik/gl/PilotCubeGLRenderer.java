@@ -34,12 +34,15 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.StateModel;
 
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 
 /**
+ * Class Pilot Cube GL Renderer
+ * 
  * @author stevep
  *
  */
@@ -50,6 +53,7 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 	
 
 	/**
+	 * Pilot Cube GL Renderer Constructor
 	 * @param mainActivity
 	 */
     public PilotCubeGLRenderer(StateModel stateModel) {
@@ -103,7 +107,6 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
         gl.glLoadIdentity();                        // reset the matrix to its default state
         
-        
         stateModel.cameraParameters.setFrustum(gl);
     	
     	
@@ -141,7 +144,12 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 //      if(stateModel.renderPilotCube == false)
 //          return;
 //      
-        if(stateModel.cubeReconstructor == null)
+        // Make copy reference to Cube Reconstructor.
+        // This is to avoid asynchronous OpenGL and OpenCV problems. 
+        CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
+
+        // Check and if null don't render.
+        if(myCubeReconstructor == null)
             return;
         
         
@@ -152,26 +160,20 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         // When using GL_MODELVIEW, you must set the view point
         // Sets the location, direction, and orientation of camera, but not zoom
         GLU.gluLookAt(gl,  0, 0, +10,  0f, 0f, 0f,  0f, 1.0f, 0.0f);
-        
-        // =+= Funny bug, this shouldn't happen.  Hmm.  Asynchronous threads somewhere?
-        if(stateModel.cubeReconstructor == null)
-            return;
     
         // Translate cube to the right.
         gl.glTranslatef(-4.0f, 0.0f, 0.0f);
-        
 
         // Translate Model per Pose Estimator
         gl.glTranslatef(
                 0.0f, // stateModel.cubeReconstructor.x, 
                 0.0f, //stateModel.cubeReconstructor.y, 
-                stateModel.cubeReconstructor.z + 10.0f);  // =+= something weird, cannot eliminate this.
-        
+                myCubeReconstructor.z + 10.0f);  // =+= something weird, cannot eliminate this.
 
         // Cube Rotation
-        gl.glRotatef(stateModel.cubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
-        gl.glRotatef(stateModel.cubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
-        gl.glRotatef(stateModel.cubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
+        gl.glRotatef(myCubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
+        gl.glRotatef(myCubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
+        gl.glRotatef(myCubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
 
         pilotGLCube.draw(gl, false);
     }
