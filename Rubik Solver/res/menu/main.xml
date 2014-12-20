@@ -162,8 +162,14 @@
         			android:id="@+id/toggleUserTextMenuItem"
         			android:title="Toggle User Text"/>   
     			<item
+        			android:id="@+id/toggleFaceOverlayMenuItem"
+        			android:title="Toggle Face Overlay"/>
+    			<item
         			android:id="@+id/toggleCubeOverlayMenuItem"
-        			android:title="Toggle Cube Overlay"/>  
+        			android:title="Toggle Cube Overlay"/>
+    			<item
+        			android:id="@+id/togglePilotCubeMenuItem"
+        			android:title="Toggle Pilot Cube"/>
             </group>   
         </menu>
     </item>

@@ -35,6 +35,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.CubeReconstructor;
+import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.StateModel;
 
 import android.opengl.GLSurfaceView;
@@ -141,6 +142,10 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         // Clear color and depth buffers using clear-value set earlier
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
+        
+        if(MenuAndParams.pilotCubeDisplay == false)
+            return;
+        
 //      if(stateModel.renderPilotCube == false)
 //          return;
 //      
@@ -168,11 +173,8 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         // fix location.  We really just desire to observe rotation.
         gl.glTranslatef(-4.0f, 0.0f, -10.0f);
 
-
-        // Cube Rotation
-        gl.glRotatef(myCubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
-        gl.glRotatef(myCubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
-        gl.glRotatef(myCubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
+        // Rotation Cube per Pose Estimator 
+        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
 
         pilotGLCube.draw(gl, false);
     }

@@ -38,6 +38,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants;
 import org.ar.rubik.CubeReconstructor;
+import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
@@ -62,9 +63,6 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 
 	// Main State Model
 	private StateModel stateModel;
-	
-	// Control Flags
-	private boolean renderCubeOverlay   = true;
 	
 	// GL Objects that can be rendered
 	private GLArrow arrowQuarterTurn;
@@ -191,17 +189,17 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
                 0f,   0f,  -1f,   // Camera points down Z axis.
                 0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
         
-        // Translate Model per Pose Estimator
+        // Translate Cube per Pose Estimator
         gl.glTranslatef(
                 myCubeReconstructor.x, 
                 myCubeReconstructor.y, 
                 myCubeReconstructor.z);
 
-        // Cube Rotation
+        // Rotation Cube per Pose Estimator 
         gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
 		
 		// If desire, render what we think is the cube location and orientation.
-		if(renderCubeOverlay == true)
+		if(MenuAndParams.cubeOverlayDisplay == true)
 		    overlayGLCube.draw(gl, true);
 
 		// =+=

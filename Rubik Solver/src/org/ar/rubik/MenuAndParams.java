@@ -63,8 +63,14 @@ public class MenuAndParams {
 	// Toggles User Text Interface
 	public static boolean userTextDisplay = true;
 	
-	// Toggle Cube Overlay Display
-	public static boolean cubeOverlayDisplay = false;
+    // Toggle Cube Overlay
+    public static boolean cubeOverlayDisplay = true;
+
+    // Toggle Face Overlay
+    public static boolean faceOverlayDisplay = true;
+
+    // Toggle Face Overlay
+    public static boolean pilotCubeDisplay = true;
         
     // Specifies where image comes from
     public static ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
@@ -338,9 +344,17 @@ public class MenuAndParams {
 			userTextDisplay ^= true;
 			break;
 
-		case R.id.toggleCubeOverlayMenuItem:
-			cubeOverlayDisplay ^= true;
-			break;
+        case R.id.toggleFaceOverlayMenuItem:
+            faceOverlayDisplay ^= true;
+            break;
+
+        case R.id.toggleCubeOverlayMenuItem:
+            cubeOverlayDisplay ^= true;
+            break;
+
+        case R.id.togglePilotCubeMenuItem:
+            pilotCubeDisplay ^= true;
+            break;
 		}
 
 		return true;

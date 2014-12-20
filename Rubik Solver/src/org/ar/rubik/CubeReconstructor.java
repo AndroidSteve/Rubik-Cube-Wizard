@@ -46,7 +46,6 @@ import java.util.List;
 
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.calib3d.Calib3d;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
@@ -75,10 +74,6 @@ public class CubeReconstructor {
 	public float x;  // real world units
 	public float y;  // real world units
 	public float z;  // real world units
-	
-	public float cubeXrotation;  // degrees
-	public float cubeYrotation;  // degrees
-	public float cubeZrotation;  // degrees
 	
 	// Open GL Rotation Matrix that expresses object to world rotation
     public float[] rotationMatrix = new float[16];
@@ -110,8 +105,8 @@ public class CubeReconstructor {
 		if(rubikFace.rhombusList.size() <= 4)
 			return;
 		
-
-    	List<Point3> objectPointsList     = new ArrayList<Point3>(9);
+		// List of real world point and screen points that correspond.
+    	List<Point3> objectPointsList    = new ArrayList<Point3>(9);
 		List<Point> imagePointsList      = new ArrayList<Point>(9);
 		
 		
@@ -180,9 +175,11 @@ public class CubeReconstructor {
 		x = +1.0f * (float) tvec.get(0, 0)[0];
 		y = -1.0f * (float) tvec.get(1, 0)[0];
 		z = -1.0f * (float) tvec.get(2, 0)[0];
-		cubeXrotation = +1.0f * (float) (rvec.get(0, 0)[0] * 180.0 / Math.PI);
-		cubeYrotation = -1.0f * (float) (rvec.get(1, 0)[0] * 180.0 / Math.PI);
-		cubeZrotation = -1.0f * (float) (rvec.get(2, 0)[0] * 180.0 / Math.PI);
+		
+        // =+= Add manual offset correction to translation  
+        x += MenuAndParams.xTranslationOffsetParam.value;
+        y += MenuAndParams.yTranslationOffsetParam.value;
+        z += MenuAndParams.zTranslationOffsetParam.value;		
 		
 		
 	    // Convert Rotation Vector from OpenCL polarity axes definition to OpenGL definition
@@ -216,11 +213,10 @@ public class CubeReconstructor {
 
         // Copy OpenCV matrix to OpenGL matrix element by element.
         for(int r=0; r<3; r++)
-            for(int c=0; c<3; c++) {
-                float f = (float)(rMatrix.get(r, c)[0]);
-                rotationMatrix[r + c*4] = f;
-            }
+            for(int c=0; c<3; c++)
+                rotationMatrix[r + c*4] = (float)(rMatrix.get(r, c)[0]);
         
+        // Diagnostics
         for(int r=0; r<4; r++)
             Log.v(Constants.TAG, String.format("Rotation Matrix  r=%d  [%5.2f  %5.2f  %5.2f  %5.2f]", r, rotationMatrix[r + 0], rotationMatrix[r+4], rotationMatrix[r+8], rotationMatrix[r+12]));
 
@@ -230,15 +226,10 @@ public class CubeReconstructor {
 //		Log.e(Constants.TAG, "Rotation: " + rvec.dump());
 //		Log.e(Constants.TAG, "Translation: " + tvec.dump());
 		
-		// Reporting in OpenGL World Coordinates
-		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
-		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
-		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
-		
-		// =+= Add manual offset correctionto translation  
-        x += MenuAndParams.xTranslationOffsetParam.value;
-        y += MenuAndParams.yTranslationOffsetParam.value;
-        z += MenuAndParams.zTranslationOffsetParam.value;
+//		// Reporting in OpenGL World Coordinates
+//		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
+//		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
+//		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
     }
 
 }

@@ -227,6 +227,9 @@ public class Annotation {
     	
     	RubikFace face = stateModel.activeRubikFace;
     	
+    	if(MenuAndParams.faceOverlayDisplay == false)
+    	    return;
+    	
     	if(face == null)
     		return;
     	
