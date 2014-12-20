@@ -200,7 +200,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 
 			/* **********************************************************************
 			 * **********************************************************************
-			 * Canny Edge Detection 
+			 * Canny Edge Detection
+			 * =+= sometimes a std:bad_alloc exception occurs here.
 			 */
 			Mat canny_image = new Mat();    	    
 			Imgproc.Canny(
@@ -406,9 +407,10 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			stateModel.activeRubikFace = rubikFace;
 			return annotation.drawAnnotation(image);
 
+	    // =+= Issue: how to get stdio to print as error and not warning in logcat?
 		} catch (CvException e) {
 			Log.e(Constants.TAG, "CvException: " + e.getMessage());
-			e.printStackTrace();        	
+			e.printStackTrace();  	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
 			Core.putText(errorImage, "CvException: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
 			int i = 1;
@@ -416,7 +418,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		} catch (Exception e) {
 			Log.e(Constants.TAG, "Exception: " + e.getMessage());
-			e.printStackTrace();        	
+			e.printStackTrace();
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
 			Core.putText(errorImage, "Exception: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
 			int i = 1;
@@ -424,7 +426,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
 		} catch (Error e) {
 			Log.e(Constants.TAG, "Error: " + e.getMessage());
-			e.printStackTrace();        	
+			e.printStackTrace();
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
 			Core.putText(errorImage, "Error: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
 			int i = 1;

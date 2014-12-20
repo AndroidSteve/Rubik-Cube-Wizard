@@ -61,7 +61,7 @@ public class CubeGL {
             {1.0f, 0.5f, 0.0f, 1.0f},  // 1. Back is Orange
             {0.0f, 1.0f, 0.0f, 1.0f},  // 2. Left is Green
             {0.0f, 0.0f, 1.0f, 1.0f},  // 3. Right is Blue
-            {1.0f, 1.0f, 1.0f, 1.0f},  // 4. Up is White
+            {0.8f, 0.8f, 0.8f, 1.0f},  // 4. Up is White
             {1.0f, 1.0f, 0.0f, 1.0f}   // 5. Down is Yellow
     };
 
@@ -104,7 +104,8 @@ public class CubeGL {
      */
     public CubeGL() {
 
-        // Setup vertex-array buffer. Vertices in float. An float has 4 bytes
+        // Setup vertex-array buffer. Vertices in float. A float has 4 bytes
+        // This reserves memory that GPU has direct access to (correct?).
         ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
         vbb.order(ByteOrder.nativeOrder()); // Use native byte order
         vertexBuffer = vbb.asFloatBuffer(); // Convert from byte to float

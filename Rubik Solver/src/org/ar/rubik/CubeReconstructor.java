@@ -11,6 +11,16 @@
  * File Description:
  *   Cube location and orientation in GL space coordinates are reconstructed from Face information.
  *   The Rubik Cube is defined as a cube centered a the origin with edge length of 2.0 units.
+ *   
+ * Accuracy
+ *   Despite code seeming to be correct, we still observe some perceived error in the cube 
+ *   overlay rending to actual rubik cube.   Six parameters (3 rotation and 3 translation) 
+ *   fudge factors allows offsets to be applied to Pose Estimator solution.  Possible
+ *   root causes of this error are:
+ *   o  Intrinsic camera calibration parameters not accurate: these are being obtained from Android.
+ *   o  Assumption that camera distortion can be ignored.
+ *   o  Center of tile calculations: perhaps use first-order momentum on curve.
+ *   o  Camera Perspective and/or Rendering Perspective not in agreement.
  * 
  * License:
  * 
@@ -37,12 +47,15 @@ import java.util.List;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point3;
 import org.opencv.core.Point;
+
+import android.util.Log;
 
 
 
@@ -58,12 +71,17 @@ import org.opencv.core.Point;
 public class CubeReconstructor {
 	
 	// Translation and Rotation as computed from OpenCV Pose Estimator
+    // but expressed in OpenGL World Coordinate System.
 	public float x;  // real world units
 	public float y;  // real world units
 	public float z;  // real world units
+	
 	public float cubeXrotation;  // degrees
 	public float cubeYrotation;  // degrees
 	public float cubeZrotation;  // degrees
+	
+	// Open GL Rotation Matrix that expresses object to world rotation
+    public float[] rotationMatrix = new float[16];
     
     
     /**
@@ -156,7 +174,9 @@ public class CubeReconstructor {
 //		boolean result = 
 		Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
 		
-		// Also convert from OpenCV to OpenGL World Coordinates
+	    Log.v(Constants.TAG, String.format("Open CV Rotation Vector x=%4.2f y=%4.2f z=%4.2f", rvec.get(0, 0)[0], rvec.get(1, 0)[0], rvec.get(2, 0)[0] ));
+		
+		// Convert from OpenCV to OpenGL World Coordinates
 		x = +1.0f * (float) tvec.get(0, 0)[0];
 		y = -1.0f * (float) tvec.get(1, 0)[0];
 		z = -1.0f * (float) tvec.get(2, 0)[0];
@@ -164,14 +184,61 @@ public class CubeReconstructor {
 		cubeYrotation = -1.0f * (float) (rvec.get(1, 0)[0] * 180.0 / Math.PI);
 		cubeZrotation = -1.0f * (float) (rvec.get(2, 0)[0] * 180.0 / Math.PI);
 		
+		
+	    // Convert Rotation Vector from OpenCL polarity axes definition to OpenGL definition
+        rvec.put(1, 0, -1.0f * rvec.get(1, 0)[0]);
+        rvec.put(2, 0, -1.0f * rvec.get(2, 0)[0]);
+ 
+        // =+= Add manual offset correction to Rotation
+        rvec.put(0, 0, rvec.get(0, 0)[0] + MenuAndParams.xRotationOffsetParam.value * Math.PI / 180.0);  // X rotation
+        rvec.put(1, 0, rvec.get(1, 0)[0] + MenuAndParams.yRotationOffsetParam.value * Math.PI / 180.0);  // Y rotation
+        rvec.put(2, 0, rvec.get(2, 0)[0] + MenuAndParams.zRotationOffsetParam.value * Math.PI / 180.0);  // Z rotation
+        
+		// Create an OpenCV Rotation Matrix from a Rotation Vector
+		Mat rMatrix = new Mat(4, 4, CvType.CV_32FC2);
+		Calib3d.Rodrigues(rvec, rMatrix);
+		Log.v(Constants.TAG, "Rodrigues Matrix: " + rMatrix.dump());
+
+
+		/*
+		 * Create an OpenGL Rotation Matrix
+		 * Notes:
+		 *   o  OpenGL is in column-row order (correct?).
+		 *   o  OpenCV Rodrigues Rotation Matrix is 3x3 where OpenGL Rotation Matrix is 4x4.
+		 */
+
+        // Initialize all Rotational Matrix elements to zero.
+		for(int i=0; i<16; i++)
+		    rotationMatrix[i] = 0.0f; // Initialize to zero
+
+		// Initialize element [3,3] to 1.0: i.e., "w" component in homogenous coordinates
+        rotationMatrix[3*4 + 3] = 1.0f;
+
+        // Copy OpenCV matrix to OpenGL matrix element by element.
+        for(int r=0; r<3; r++)
+            for(int c=0; c<3; c++) {
+                float f = (float)(rMatrix.get(r, c)[0]);
+                rotationMatrix[r + c*4] = f;
+            }
+        
+        for(int r=0; r<4; r++)
+            Log.v(Constants.TAG, String.format("Rotation Matrix  r=%d  [%5.2f  %5.2f  %5.2f  %5.2f]", r, rotationMatrix[r + 0], rotationMatrix[r+4], rotationMatrix[r+8], rotationMatrix[r+12]));
+
+		
 //		Log.e(Constants.TAG, "Result: " + result);
 //		Log.e(Constants.TAG, "Camera: " + cameraMatrix.dump());
 //		Log.e(Constants.TAG, "Rotation: " + rvec.dump());
 //		Log.e(Constants.TAG, "Translation: " + tvec.dump());
 		
+		// Reporting in OpenGL World Coordinates
 		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
 		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
 		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
+		
+		// =+= Add manual offset correctionto translation  
+        x += MenuAndParams.xTranslationOffsetParam.value;
+        y += MenuAndParams.yTranslationOffsetParam.value;
+        z += MenuAndParams.zTranslationOffsetParam.value;
     }
 
 }

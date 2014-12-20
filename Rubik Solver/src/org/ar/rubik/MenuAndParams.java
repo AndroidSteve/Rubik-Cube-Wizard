@@ -82,7 +82,15 @@ public class MenuAndParams {
 	 * 
 	 * These typically have been found empirically with respect to what works best.
 	 */
-	
+    
+    // Manual offset to Pose Estimator (i.e., opencv solvepnp()) results.
+    public static RubikMenuParam xRotationOffsetParam        = new RubikMenuParam("X Rotation Offset",         -20.0,  +20.0,   +4.2);
+    public static RubikMenuParam yRotationOffsetParam        = new RubikMenuParam("Y Rotation Offset",         -20.0,  +20.0,   +0.0);
+    public static RubikMenuParam zRotationOffsetParam        = new RubikMenuParam("Z Rotation Offset",         -20.0,  +20.0,   +1.8);
+    public static RubikMenuParam xTranslationOffsetParam     = new RubikMenuParam("X Translation Offset",      -2.0,  +2.0,   +0.0);
+    public static RubikMenuParam yTranslationOffsetParam     = new RubikMenuParam("Y Translation Offset",      -2.0,  +2.0,   +0.1);
+    public static RubikMenuParam zTranslationOffsetParam     = new RubikMenuParam("Z Translation Offset",      -2.0,  +2.0,   +1.0);
+    
 	// Gaussian Blur Kernal Size
 	public static RubikMenuParam gaussianBlurKernelSizeParam = new RubikMenuParam("Gaussian Blur Kernel Size",  +3.0,  +20.0,   +7.0);
 		
@@ -243,6 +251,30 @@ public class MenuAndParams {
 
 
 			// Adjustable Parameters
+		case R.id.xRotationOffsetMenuItem:
+		    seekerDialogNew(xRotationOffsetParam, ma);
+		    break;
+
+		case R.id.yRotationOffsetMenuItem:
+		    seekerDialogNew(yRotationOffsetParam, ma);
+		    break;
+
+		case R.id.zRotationOffsetMenuItem:
+		    seekerDialogNew(zRotationOffsetParam, ma);
+		    break;
+
+		case R.id.xTranslationOffsetMenuItem:
+		    seekerDialogNew(xTranslationOffsetParam, ma);
+		    break;
+
+		case R.id.yTranslationOffsetMenuItem:
+		    seekerDialogNew(yTranslationOffsetParam, ma);
+		    break;
+
+		case R.id.zTranslationOffsetMenuItem:
+		    seekerDialogNew(zTranslationOffsetParam, ma);
+		    break;
+
 		case R.id.boxBlurKernelSizeMenuItem:
 			seekerDialogNew(gaussianBlurKernelSizeParam, ma);
 			break;

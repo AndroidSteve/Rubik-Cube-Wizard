@@ -80,6 +80,24 @@
             <group 
                 android:id="@+id/paramMenuGroup">
                 <item 
+                    android:id="@+id/xRotationOffsetMenuItem" 
+                    android:title="X Rotation Offset" />
+                <item 
+                    android:id="@+id/yRotationOffsetMenuItem" 
+                    android:title="Y Rotation Offset" />
+                <item 
+                    android:id="@+id/zRotationOffsetMenuItem" 
+                    android:title="Z Rotation Offset" />
+                <item 
+                    android:id="@+id/xTranslationOffsetMenuItem" 
+                    android:title="X Translation Offset" />
+                <item 
+                    android:id="@+id/yTranslationOffsetMenuItem" 
+                    android:title="Y Translation Offset" />
+                <item 
+                    android:id="@+id/zTranslationOffsetMenuItem" 
+                    android:title="Z Translation Offset" />
+                <item 
                     android:id="@+id/boxBlurKernelSizeMenuItem" 
                     android:title="Gaussian Blur Kernel Size" />
                 <item 

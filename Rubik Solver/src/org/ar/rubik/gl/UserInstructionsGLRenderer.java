@@ -31,6 +31,8 @@
  */
 package org.ar.rubik.gl;
 
+import java.nio.FloatBuffer;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -44,6 +46,7 @@ import org.opencv.core.Scalar;
 
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
+import android.util.Log;
 
 
 /**
@@ -193,11 +196,9 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
                 myCubeReconstructor.x, 
                 myCubeReconstructor.y, 
                 myCubeReconstructor.z);
-        
+
         // Cube Rotation
-        gl.glRotatef(myCubeReconstructor.cubeXrotation, 1.0f, 0.0f, 0.0f);  // X rotation of
-        gl.glRotatef(myCubeReconstructor.cubeYrotation, 0.0f, 1.0f, 0.0f);  // Y rotation of
-        gl.glRotatef(myCubeReconstructor.cubeZrotation, 0.0f, 0.0f, 1.0f);  // Z rotation of 
+        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
 		
 		// If desire, render what we think is the cube location and orientation.
 		if(renderCubeOverlay == true)
