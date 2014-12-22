@@ -167,8 +167,9 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
 		// Check and don't render.
-//		if(stateModel.appState != AppStateEnum.ROTATE && stateModel.appState != AppStateEnum.DO_MOVE)
-//			return;
+		if( (MenuAndParams.cubeOverlayDisplay == false) &&
+		    (stateModel.appState != AppStateEnum.ROTATE && stateModel.appState != AppStateEnum.DO_MOVE) )
+		    return;
 		
 		// Make copy reference to Cube Reconstructor.
 		// This is to avoid asynchronous OpenGL and OpenCV problems. 
@@ -201,12 +202,8 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		// If desire, render what we think is the cube location and orientation.
 		if(MenuAndParams.cubeOverlayDisplay == true)
 		    overlayGLCube.draw(gl, true);
-
-		// =+=
-		if(true == true)
-			return;
 		
-		// Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
+		// Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
 		switch(stateModel.appState) {
 		
 		case ROTATE:
