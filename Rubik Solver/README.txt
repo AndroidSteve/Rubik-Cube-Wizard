@@ -16,8 +16,7 @@ Notice:
 
 
 To Do:
-  o  Complete conversion to using OpenCV Pose Estimator.
-  o  Achieve quality overlay cube.
+
   o  Clarify definition of Front of Cube: current mixed  
   o  Make direction arrows occult with respect to physical cube.
   o  Rework N,M definition: currently backwards from desired.

@@ -80,6 +80,7 @@ public class TileLayoutAlgorithm {
 		alphaAngle = _alphaAngle;
 		betaAngle = _betaAngle;
 		
+		// Sort Rhombi into three sets along alpha axis.
 		List<Collection<Rhombus>> alphaListOfSets = createOptimizedListOfRhombiSets(
 				new Comparator<Rhombus>() {
 					@Override
@@ -87,6 +88,7 @@ public class TileLayoutAlgorithm {
 						return (getAlpha(rhombus0) - getAlpha(rhombus1));
 					} } );
 			
+		// Sort Rhombi into three sets along beta axis.
 		List<Collection<Rhombus>> betaListOfSets = createOptimizedListOfRhombiSets(
 				new Comparator<Rhombus>() {
 					@Override
@@ -96,12 +98,15 @@ public class TileLayoutAlgorithm {
 		
 
 		// Fill Rhombus Face Array
+		// Loop over N and M indicies.
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
 				
+			    // Get candidate Rhombi that have the M and N indices. 
 				Collection<Rhombus> alphaSet = alphaListOfSets.get(n);
 				Collection<Rhombus> betaSet = betaListOfSets.get(m);
 				
+				// Find Rhmobi that have both the desired M and N indices.
 				List<Rhombus> commonElements = findCommonElements(alphaSet, betaSet);
 				
 				if(commonElements.size() == 0)
