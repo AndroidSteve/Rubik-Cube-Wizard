@@ -322,17 +322,14 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	private void renderCubeFullRotationArrow(GL10 gl) {		
 		
 		// Render Front Face to Top Face Arrow Rotation
-		if(stateModel.getNumObservedFaces() % 2 != 0) {
+		if(stateModel.getNumObservedFaces() % 2 == 0) {
 			gl.glTranslatef(0.0f, +1.5f, +1.5f);
 			gl.glRotatef(-90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
-			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better		
 		}
 		
-		// Render Left Face to Top Face Arrow Rotation
+		// Render Right Face to Top Face Arrow Rotation
 		else {
-			gl.glTranslatef(-1.5f, +1.5f, 0.0f);
-			gl.glRotatef(180f, 0.0f, 1.0f, 0.0f);  // Y rotation of 180
-			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			gl.glTranslatef(+1.5f, +1.5f, 0.0f);
 		}
 		
 		
@@ -340,7 +337,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		gl.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
 		gl.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
 
-		// Make Arrow Wide
+		// Make Arrow Wider than normal by a factor of three.
 		gl.glScalef(1.0f, 1.0f, 3.0f);
 		
 		// Render Quarter Turn Arrow

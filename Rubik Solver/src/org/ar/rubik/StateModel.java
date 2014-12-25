@@ -124,26 +124,26 @@ public class StateModel {
     	
     	case 0:
     		rubikFace.faceNameEnum = FaceNameEnum.UP;
-    		rubikFace.transformedTileArray =  Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
+    		rubikFace.transformedTileArray =  rubikFace.observedTileArray.clone();
     		break;
     	case 1:
-    		rubikFace.faceNameEnum = FaceNameEnum.FRONT;
+    		rubikFace.faceNameEnum = FaceNameEnum.RIGHT;
     		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 2:
-    		rubikFace.faceNameEnum = FaceNameEnum.LEFT;
+    		rubikFace.faceNameEnum = FaceNameEnum.FRONT;
     		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 3:
     		rubikFace.faceNameEnum = FaceNameEnum.DOWN;
-    		rubikFace.transformedTileArray = rubikFace.observedTileArray.clone();
+    		rubikFace.transformedTileArray = Util.getTileArrayRotatedClockwise(rubikFace.observedTileArray);
     		break;
     	case 4:
-    		rubikFace.faceNameEnum = FaceNameEnum.BACK;
+    		rubikFace.faceNameEnum = FaceNameEnum.LEFT;
     		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     	case 5:
-    		rubikFace.faceNameEnum = FaceNameEnum.RIGHT;
+    		rubikFace.faceNameEnum = FaceNameEnum.BACK;
     		rubikFace.transformedTileArray = Util.getTileArrayRotated180(rubikFace.observedTileArray);
     		break;
     		

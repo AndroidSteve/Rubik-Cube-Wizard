@@ -9,6 +9,14 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
+ *   An Arrow in 3D space made up of 180 separate triangles, two triangles in 
+ *   each degree and each flat segment every one degree is drawn.  The arrow
+ *   is drawn in a quarter true in the X-Y plane in quadrant I at a radius of 1.0 with the head
+ *   pointed at the X axis.  The width of the arrow is in the Z axis (+/- 0.3) with the 
+ *   head having maximum Z axis dimensions of +/- 0.6.
+ *   
+ *   Optionally, an arrow can be constructed that spans two quadrants (I and II) 
+ *   thus conveying a full 180 degrees instead of 90 degrees.
  * 
  * License:
  * 
@@ -123,6 +131,12 @@ public class GLArrow {
 	}
 
 	/**
+	 * Calculate Width
+	 * 
+	 * The width of the arrow is dependent upon the angle with the X axis.  For the 
+	 * first 20 degrees, the arrow width increases to 0.6 to form the head, there after
+	 * the arrow width is constant at a width of 0.3.
+	 * 
 	 * @param angleRads
 	 * @return
 	 */

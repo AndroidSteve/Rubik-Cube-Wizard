@@ -104,7 +104,7 @@ public class AppStateMachine {
 		// Threshold for the number of times a face must be seen in order to declare it stable.
 		final int consecutiveCandidateCountThreashold = 3;	
 
-		Log.d(Constants.TAG_CNTRL, "processFace() AppState=" + stateModel.appState + " FaceState=" + stateModel.faceRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
+		Log.d(Constants.TAG_CNTRL, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.faceRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
 
 		// Reset Application State.  All past is forgotten.
 		if(scheduleReset == true) {
@@ -385,7 +385,7 @@ public class AppStateMachine {
 			String cubeString2 = stateModel.getStringRepresentationOfCube();
 
 			// Returns 0 if solution computed
-			stateModel.solutionResults = Search.solution(cubeString2, 25, 2, false);
+			stateModel.solutionResults = Search.solution(cubeString2, 25, 5, false);
 			Log.i(Constants.TAG_CNTRL, "Solution Results: " + stateModel.solutionResults);
 			if (stateModel.solutionResults.contains("Error")) {
 				char solutionCode = stateModel.solutionResults.charAt(stateModel.solutionResults.length() - 1);
