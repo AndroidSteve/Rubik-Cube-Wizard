@@ -17,12 +17,13 @@ Notice:
 
 To Do:
 
-  o  Clarify definition of Front of Cube: current mixed  
-  o  Make direction arrows occult with respect to physical cube.
-  o  Rework N,M definition: currently backwards from desired.
+  o  Introduce functional coloring to Pilot cube.
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
+  o  Merge the two separate OpenGL renders into one.
   o  Time and CPU measurements.  Possible use of DDMS
+  o  Make direction arrows occult with respect to physical cube.
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
+  o  Review near-far definitions in CameraCalibration.getOpenGLProjectionMatrix(). Is this responsible for Overlay Cube errors? 
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
   o  Introduce real Pilot Cube that demonstrates requested user activity.
   o  Sweep through and make screen size independent.
