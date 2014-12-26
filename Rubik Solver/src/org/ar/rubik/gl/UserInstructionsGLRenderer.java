@@ -31,8 +31,6 @@
  */
 package org.ar.rubik.gl;
 
-import java.nio.FloatBuffer;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -47,7 +45,6 @@ import org.opencv.core.Scalar;
 
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
-import android.util.Log;
 
 
 /**
@@ -166,13 +163,14 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 		// Clear color and depth buffers using clear-value set earlier
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
-		// Check and don't render.
-		if( (MenuAndParams.cubeOverlayDisplay == false) &&
-		    (stateModel.appState != AppStateEnum.ROTATE && stateModel.appState != AppStateEnum.DO_MOVE) )
+		// Unless one of these conditions is true, we don't need to render anything.
+		if( (MenuAndParams.cubeOverlayDisplay == false)  &&
+		    (stateModel.appState != AppStateEnum.ROTATE) && 
+		    (stateModel.appState != AppStateEnum.DO_MOVE) )
 		    return;
 		
 		// Make copy reference to Cube Reconstructor.
-		// This is to avoid asynchronous OpenGL and OpenCV problems. 
+		// This is to avoid asynchronous OpenGL and OpenCV thread problems. 
 		CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
 
 		// Check and if null don't render.
