@@ -104,7 +104,7 @@ public class AppStateMachine {
 		// Threshold for the number of times a face must be seen in order to declare it stable.
 		final int consecutiveCandidateCountThreashold = 3;	
 
-		Log.d(Constants.TAG_CNTRL, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.faceRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.hashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.hashCode) );   	 
+		Log.d(Constants.TAG_CNTRL, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.faceRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.myHashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.myHashCode) );   	 
 
 		// Reset Application State.  All past is forgotten.
 		if(scheduleReset == true) {
@@ -131,7 +131,8 @@ public class AppStateMachine {
 		}
 
 
-		// Sometimes, we want state to change simply on frame events.
+		// Sometimes, we want state to change simply on frame events.  This has
+		// the exact same event model as onFaceEvent().
 		onFrameEvent();
 
 		switch(stateModel.faceRecogniztionState) {
@@ -150,7 +151,7 @@ public class AppStateMachine {
 		case PENDING:
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
-				if(rubikFace.hashCode == candidateRubikFace.hashCode) {
+				if(rubikFace.myHashCode == candidateRubikFace.myHashCode) {
 
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
 						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
@@ -172,7 +173,7 @@ public class AppStateMachine {
 		case STABLE:
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
-				if(rubikFace.hashCode == candidateRubikFace.hashCode) 
+				if(rubikFace.myHashCode == candidateRubikFace.myHashCode) 
 					; // Just stay in this state
 				//        			else if(false)
 				//        				; // =+= add partial match here
@@ -191,7 +192,7 @@ public class AppStateMachine {
 		case PARTIAL:
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
-				if(rubikFace.hashCode == candidateRubikFace.hashCode)
+				if(rubikFace.myHashCode == candidateRubikFace.myHashCode)
 					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
 				//        			else if(false)
 				//        				; // =+= add partial match here
@@ -224,13 +225,13 @@ public class AppStateMachine {
 	 * 
 	 * This function is called ever frame when a valid and stable Rubik Face is recognized.
 	 * 
-	 * @param hashCode 
+	 * @param myHashCode 
 	 * 
 	 */
 	private void onStableFaceEvent(RubikFace rubikFace) {
 
-		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.hashCode) + " new=" + rubikFace.hashCode);
-		if(lastStableRubikFace == null || rubikFace.hashCode != lastStableRubikFace.hashCode) {
+		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.myHashCode) + " new=" + rubikFace.myHashCode);
+		if(lastStableRubikFace == null || rubikFace.myHashCode != lastStableRubikFace.myHashCode) {
 			lastStableRubikFace = rubikFace;
 			onNewStableFaceEvent(rubikFace);
 		}
@@ -251,7 +252,7 @@ public class AppStateMachine {
 	}
 	public void offStableFaceEvent() {
 
-		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.hashCode);
+		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.myHashCode);
 		offNewStableFaceEvent();
 
 		switch (stateModel.appState) {
@@ -336,6 +337,9 @@ public class AppStateMachine {
 
 	/**
 	 * On Frame State Changes
+	 * 
+	 * This function is call every time function onFaceEvent() is called, and thus has
+	 * the identical event model.
 	 * 
 	 * It appears handy to have some controller state changes advanced on the periodic frame rate.
 	 * Unfortunately, the rate that is function is called is dependent upon the bulk of opencv

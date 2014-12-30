@@ -78,7 +78,7 @@ public class RubikFace implements Serializable {
 	public transient Rhombus [][] faceRhombusArray = new Rhombus[3][3];
 	
 	// A 3x3 matrix of Logical Tiles.  All elements must be non-null for an appropriate Face solution.
-	// The rotation of this array is the output of the Face Recognizer as per the current spacial
+	// The rotation of this array is the output of the Face Recognizer as per the current spatial
 	// rotation of the cube.
 	public ConstantTile [][] observedTileArray = new ConstantTile[3][3];
 	
@@ -121,10 +121,15 @@ public class RubikFace implements Serializable {
 	
 	// Number of rhombus that were moved in order to obtain better LMS fit.
 	public int numRhombusMoves = 0;
-
-	// Exclusive-Or of logical tile hash codes.  This is (intended) to be unique of a given 
-	// set of tiles (possible in their unique locations)
-	public int hashCode = 0;
+	
+	// This is a proprietary hash code and NOT that of function hashCode().  This hash code is 
+	// intended to be unique and repeatable for any given set of colored tiles in a specified set 
+	// of locations on a Rubik Face.  It is used to determine if an identical Rubik Face is being
+	// observed multiple times. Note, if a tiles color designation is changed due to a change in 
+	// lighting conditions, the calculated hash code will be different.  A more robust strategy 
+	// would be to require that only 8 or 9 tiles match in order to determine if an 
+	// identical face is being presented.
+	public int myHashCode = 0;
 
 	// Sum of Color Error before Luminous correction
 	public double colorErrorBeforeCorrection;
@@ -234,11 +239,11 @@ public class RubikFace implements Serializable {
 		findClosestLogicalTiles(image);
 
 		// Calculate a hash code that is unique for the given collection of Logical Tiles.
-		// Added right rotation because not that hard for duplicates.
-		hashCode = 0;
+		// Added right rotation to obtain unique number with respect to locations.
+		myHashCode = 0;
 		for(int n=0; n<3; n++)
 			for(int m=0; m<3; m++)
-				hashCode = observedTileArray[n][m].hashCode() ^ Integer.rotateRight(hashCode, 1);
+				myHashCode = observedTileArray[n][m].hashCode() ^ Integer.rotateRight(myHashCode, 1);
 		
 		faceRecognitionStatus =  FaceRecognitionStatusEnum.SOLVED;
     }
