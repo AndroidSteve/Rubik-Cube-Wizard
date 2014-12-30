@@ -278,7 +278,7 @@ public class AppStateMachine {
 	 * 
 	 * @param rubikFaceHashCode
 	 */
-	private void onNewStableFaceEvent(RubikFace candidateRubikFace2) {
+	private void onNewStableFaceEvent(RubikFace candidateRubikFace) {
 
 		Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel.appState);
 
@@ -286,12 +286,12 @@ public class AppStateMachine {
 		switch(stateModel.appState) {
 
 		case START:
-			stateModel.adopt(candidateRubikFace2);
+			stateModel.adopt(candidateRubikFace);
 			stateModel.appState = AppStateEnum.GOT_IT;
 			break;
 
 		case SEARCHING:
-			stateModel.adopt(candidateRubikFace2);
+			stateModel.adopt(candidateRubikFace);
 
 			// Have not yet seen all six sides.
 			if(stateModel.isThereAfullSetOfFaces() == false) {
