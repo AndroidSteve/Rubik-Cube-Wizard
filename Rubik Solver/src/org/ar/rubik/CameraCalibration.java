@@ -3,8 +3,6 @@
  */
 package org.ar.rubik;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
@@ -112,7 +110,6 @@ public class CameraCalibration {
 	 * Get OpenGL Projection Matrix
 	 * 
 	 * This is derived from the Android Camera Parameters.
-	 * =+= not yet tested.
 	 * 
 	 * @return
 	 */
@@ -126,28 +123,10 @@ public class CameraCalibration {
 	    float top =   (float)Math.tan(fovX * 0.5f) * near;
 	    float right = (float)Math.tan(fovY * 0.5f) * near;
 
-	    float [] glProjectionMatrix = null;
+	    float [] glProjectionMatrix = new float[16];
 	    
         Matrix.frustumM( glProjectionMatrix, 0, -right, right, -top, top, near, far);
 
         return glProjectionMatrix;
 	}
-	
-	
-	/**
-	 * =+= Deprecated this.
-	 * @param gl 
-	 * 
-	 */
-	public void setFrustum(GL10 gl) {      
-	    
-	    float near = 1.0f;
-	    float far  = 100.0f;
-
-	    float top =   (float)Math.tan(fovX * 0.5f) * near;
-	    float right = (float)Math.tan(fovY * 0.5f) * near;
-	    
-	    gl.glFrustumf(-right, right, -top, top, near, far);  // apply the projection matrix
-	}
-
 }

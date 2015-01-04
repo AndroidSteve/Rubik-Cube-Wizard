@@ -17,6 +17,8 @@ Notice:
 
 To Do:
 
+  o  Refactor and clean up state machines.
+  o  Migrate from JME to android.opengl 
   o  Introduce functional coloring to Pilot cube.
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
   o  Merge the two separate OpenGL renders into one.

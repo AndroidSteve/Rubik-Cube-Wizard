@@ -73,14 +73,6 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         
         // Set the background frame color
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-//      gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  // Set color's clear-value to black and transparent.
-//      gl.glClearDepthf(1.0f);            // Set depth's clear-value to farthest
-//      gl.glEnable(GL10.GL_DEPTH_TEST);   // Enables depth-buffer for hidden surface removal
-//      gl.glDepthFunc(GL10.GL_LEQUAL);    // The type of depth testing to do
-//      gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);  // nice perspective view
-//      gl.glShadeModel(GL10.GL_SMOOTH);   // Enable smooth shading of color
-//      gl.glDisable(GL10.GL_DITHER);      // Disable dithering for better performance
     }
 
 
@@ -108,25 +100,7 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
         gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
         gl.glLoadIdentity();                        // reset the matrix to its default state
         
-        stateModel.cameraParameters.setFrustum(gl);
-    	
-    	
-    	
-    	
-//		float aspect = (float)width / height;
-//
-//		// Set the viewport (display area) to cover the entire window
-//		gl.glViewport(0, 0, width, height);
-//
-//		// Setup perspective projection, with aspect ratio matches viewport
-//		gl.glMatrixMode(GL10.GL_PROJECTION); // Select projection matrix
-//		gl.glLoadIdentity();                 // Reset projection matrix
-//		
-//		// Use perspective projection
-//		GLU.gluPerspective(gl, 45, aspect, 0.1f, 100.f);
-//
-//		gl.glMatrixMode(GL10.GL_MODELVIEW);  // Select model-view matrix =+=
-//		gl.glLoadIdentity();                 // Reset
+        gl.glMultMatrixf(stateModel.cameraParameters.getOpenGLProjectionMatrix(), 0);
 	}
 
     
@@ -178,13 +152,4 @@ public class PilotCubeGLRenderer implements GLSurfaceView.Renderer {
 
         pilotGLCube.draw(gl, false);
     }
-
-    
-//	/** =+= delete this
-//	 * @param renderState
-//	 */
-//    public void setRenderState(boolean renderState) {
-////    	this.renderState = renderState;
-//    }
-
 }
