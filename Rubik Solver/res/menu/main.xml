@@ -98,6 +98,9 @@
                     android:id="@+id/zTranslationOffsetMenuItem" 
                     android:title="Z Translation Offset" />
                 <item 
+                    android:id="@+id/scaleOffsetMenuItem" 
+                    android:title="Scale Offset" />
+                <item 
                     android:id="@+id/boxBlurKernelSizeMenuItem" 
                     android:title="Gaussian Blur Kernel Size" />
                 <item 

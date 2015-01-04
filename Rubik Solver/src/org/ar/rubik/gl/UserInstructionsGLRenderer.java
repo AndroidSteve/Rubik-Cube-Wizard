@@ -174,6 +174,11 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 
         // Rotation Cube per Pose Estimator 
         gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
+        
+        // Scale
+        // =+= I believe the need for this has something to do with the difference between camera and screen dimentions.
+        float scale = (float) MenuAndParams.scaleOffsetParam.value;
+        gl.glScalef(scale, scale, scale);
 		
 		// If desire, render what we think is the cube location and orientation.
 		if(MenuAndParams.cubeOverlayDisplay == true)

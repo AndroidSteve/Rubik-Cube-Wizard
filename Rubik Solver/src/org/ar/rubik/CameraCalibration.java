@@ -39,6 +39,10 @@ public class CameraCalibration {
     // Field of vertical axis view in radians
     private float fovY;
 
+//    private float projectionFieldOfView;
+
+//    private int projectionAspect;
+
 	/**
 	 * Camera Parameters Constructor
 	 */
@@ -49,20 +53,31 @@ public class CameraCalibration {
 		camera.release();
 		
 		size = parameters.getPictureSize();
-		widthPixels = size.width;
-		heightPixels = size.height;
+        widthPixels = size.width;
+        heightPixels = size.height;
+        
+        // =+= above produces camera dimensions.  Below is screen dimensions.
+        // =+= we have some confusions as to when to use which.
+        widthPixels = 1280;
+        heightPixels = 720;
 
-		fovX = parameters.getVerticalViewAngle() * (float)(Math.PI / 180.0);
-		fovY = parameters.getHorizontalViewAngle() * (float)(Math.PI / 180.0);
+		// Will be in radians
+		fovY = parameters.getVerticalViewAngle() * (float)(Math.PI / 180.0);
+		fovX = parameters.getHorizontalViewAngle() * (float)(Math.PI / 180.0);
+		
+//		// Will be in degrees
+//		projectionFieldOfView = parameters.getVerticalViewAngle();
+//		projectionAspect = widthPixels / heightPixels;
 
-		// Make calculations across diagonal
-		double diagonalPixels = Math.sqrt( widthPixels * widthPixels + heightPixels * heightPixels);
-		double diagnoalFOV = Math.sqrt(fovX * fovX + fovY * fovY);
-		
-		// =+= Why?  The formula obtained from "Android Applications Programming with OpenCV" book.
-		focalLengthPixels = diagonalPixels / ( 2.0 * Math.tan(0.5 * diagnoalFOV));
-		
-//		Log.e(Constants.TAG, "dPOV=" + diagnoalFOV + " dPx=" + diagonalPixels);
+//		// Make calculations across diagonal
+//		double diagonalPixels = Math.sqrt( widthPixels * widthPixels + heightPixels * heightPixels);
+//		double diagnoalFOV = Math.sqrt(fovX * fovX + fovY * fovY);
+//		
+//		// =+= Why?  The formula obtained from "Android Applications Programming with OpenCV" book.
+//		focalLengthPixels = diagonalPixels / ( 2.0 * Math.tan(0.5 * diagnoalFOV));
+
+//      Log.e(Constants.TAG, "Width = " + widthPixels + " Height = " + heightPixels);  // 1920 by 1080 reported.
+//      Log.e(Constants.TAG, "dPOV=" + diagnoalFOV + " dPx=" + diagonalPixels);
 //		Log.e(Constants.TAG, "Camera Focal Length in Pixels Calibration: " + focalLengthPixels);
 	}
 	
@@ -70,63 +85,75 @@ public class CameraCalibration {
 	/**
 	 * Get OpenCV Camera Matrix
 	 * 
-	 * =+= note, should elements 00 and 11 differ by aspect ratio?
-	 * 
-	 * =+= Also, use of Android Camera Size not working correct here.  hmm.
+	 * =+= NOTE: Screen dimensions used below.  However, 
 	 * 
 	 * @return
 	 */
 	public Mat getOpenCVCameraMatrix () {
-	    
-//      Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
-//      cameraMatrix.put(0, 0, focalLengthPixels);
-//      cameraMatrix.put(0, 1, 0.0);
-//      cameraMatrix.put(0, 2, widthPixels * 0.5f);
-//      cameraMatrix.put(1, 0, 0.0);
-//      cameraMatrix.put(1, 1, focalLengthPixels);
-//      cameraMatrix.put(1, 2, heightPixels * 0.5f);
-//      cameraMatrix.put(2, 0, 0.0);
-//      cameraMatrix.put(2, 1, 0.0);
-//      cameraMatrix.put(2, 2, 1.0);
-      
-      
+
+	    double focalLengthXPixels = widthPixels / ( 2.0 * Math.tan(0.5 * fovX));
+	    double focalLengthYPixels = heightPixels / ( 2.0 * Math.tan(0.5 * fovY));
+
 	    Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
-	    cameraMatrix.put(0, 0, focalLengthPixels);
+	    cameraMatrix.put(0, 0, focalLengthXPixels);   // should be X focal length in pixels.
 	    cameraMatrix.put(0, 1, 0.0);
-	    cameraMatrix.put(0, 2, 1280.0/2.0);
+	    cameraMatrix.put(0, 2, widthPixels/2.0);
 	    cameraMatrix.put(1, 0, 0.0);
-	    cameraMatrix.put(1, 1, focalLengthPixels);
-	    cameraMatrix.put(1, 2, 720.0/2.0);
+	    cameraMatrix.put(1, 1, focalLengthYPixels);  // should be Y focal length in pixels.
+	    cameraMatrix.put(1, 2, heightPixels/2.0);
 	    cameraMatrix.put(2, 0, 0.0);
 	    cameraMatrix.put(2, 1, 0.0);
 	    cameraMatrix.put(2, 2, 1.0);
-      
-      return cameraMatrix;
+
+	    return cameraMatrix;
 	}
 
+    /**
+     * Get OpenGL Projection Matrix
+     * 
+     * This is derived from the Android Camera Parameters.
+     * 
+     * @return
+     */
+    public float[] getOpenGLProjectionMatrix() {
 
-	
-	/**
-	 * Get OpenGL Projection Matrix
-	 * 
-	 * This is derived from the Android Camera Parameters.
-	 * 
-	 * @return
-	 */
-	public float[] getOpenGLProjectionMatrix() {
+        float near = 1.0f;
+        float far  = 100.0f;
+        
+        float top =   (float)Math.tan(fovY * 0.5f);
+        float right = (float)Math.tan(fovX * 0.5f);
 
-	    // =+= How should these numbers be determined?  In particular, near is used in calculations below.
-	    // =+= Seems that that number should be the "image z axis".
-	    float near = 1.0f;
-	    float far  = 100.0f;
-	    
-	    float top =   (float)Math.tan(fovX * 0.5f) * near;
-	    float right = (float)Math.tan(fovY * 0.5f) * near;
-
-	    float [] glProjectionMatrix = new float[16];
-	    
+        float [] glProjectionMatrix = new float[16];
+        
         Matrix.frustumM( glProjectionMatrix, 0, -right, right, -top, top, near, far);
 
         return glProjectionMatrix;
-	}
+    }
+	
+//	/**
+//	 * Get OpenGL Projection Matrix
+//	 * 
+//	 * This is derived from the Android Camera Parameters.
+//	 * 
+//	 * @return
+//	 */
+//	public float[] getOpenGLProjectionMatrix2() {
+//
+//	    // =+= How should these numbers be determined?  In particular, near is used in calculations below.
+//	    // =+= Seems that that number should be the "image z axis".
+//        float projectionNearClipping = 1.0f;
+//        float projectionFarClipping = 100.0f;
+//
+//	    float [] projectionMatrix          = new float[16];
+//
+//	    Matrix.perspectiveM(
+//	            projectionMatrix,           // projection matrix array
+//	            0,                          // array offset
+//	            projectionFieldOfView,      // FOV [deg]            = 47.1 deg
+//	            projectionAspect,           // aspect ratio         = 1.667
+//	            projectionNearClipping,     // Near clipping plane  = 1
+//	            projectionFarClipping );    // Far clipping plane   = 3000
+//
+//	    return projectionMatrix;
+//	}
 }
