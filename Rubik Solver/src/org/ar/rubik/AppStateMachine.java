@@ -52,15 +52,11 @@ public class AppStateMachine {
 
 	private StateModel stateModel;
 
-	// 12 tables need to be generated.  When count is 12, tables are valid.
-	// =+= used by prune table loader.  
+	// 12 tables need to be generated.  When count is 12, tables are valid.  Used by prune table loader.  
 	public int pruneTableLoaderCount = 0;
 
 	// Allows for more pleasing user interface
 	private int gotItCount = 0;
-
-	// Set when we want to reset state, but do it synchronously in the frame thread.
-	private boolean scheduleReset = false;
 
 	// Candidate Rubik Face to be possible adopted by Stable Face Recognizer state machine.
 	private RubikFace candidateRubikFace = null;
@@ -68,17 +64,22 @@ public class AppStateMachine {
 	// Consecutive counts use by Stable Face Recognizer state machine.
 	private int consecutiveCandiateRubikFaceCount = 0;
 	
-	// Use by "New Stable Face Recognizer" state machine.
-	private RubikFace lastStableRubikFace = null;
+	// Use to determine a New Stable Face.
+	private RubikFace lastNewStableRubikFace = null;
 	
 	// After all six faces have been seen, allow one more rotation to return cube to original orientation.
 	private boolean allowOneMoreRotation = false;
+
+    // Set when we want to reset state, but do it synchronously in the frame thread.
+    private boolean scheduleReset = false;
 
 	// Set when we want to recall a state from file, but do it synchronously in the frame thread.
 	private boolean scheduleRecall = false;
 
 
 	/**
+	 * Application State Machine Constructor
+	 * 
 	 * @param stateModel
 	 */
 	public AppStateMachine(StateModel stateModel) {
@@ -87,7 +88,7 @@ public class AppStateMachine {
 
 
 	/**
-	 * On Rubik Face Recognized
+	 * On Face Event
 	 * 
 	 * This function is called any time a Rubik Face is recognized, even if it may be 
 	 * inaccurate.  Further filtering is perform in this function.  The purpose
@@ -110,7 +111,7 @@ public class AppStateMachine {
 			scheduleReset = false;
 			candidateRubikFace = null;
 			consecutiveCandiateRubikFaceCount = 0;
-			lastStableRubikFace = null;
+			lastNewStableRubikFace = null;
 			allowOneMoreRotation = false;
 			stateModel.reset();
 		}
@@ -121,7 +122,7 @@ public class AppStateMachine {
 			scheduleRecall = false;
 			candidateRubikFace = null;
 			consecutiveCandiateRubikFaceCount = 0;
-			lastStableRubikFace = null;
+			lastNewStableRubikFace = null;
 			allowOneMoreRotation = false;
 			stateModel.reset();
 			stateModel.recallState();
@@ -153,8 +154,8 @@ public class AppStateMachine {
 
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
 					    
-					    if(lastStableRubikFace == null || rubikFace.myHashCode != lastStableRubikFace.myHashCode) {
-					        lastStableRubikFace = rubikFace;
+					    if(lastNewStableRubikFace == null || rubikFace.myHashCode != lastNewStableRubikFace.myHashCode) {
+					        lastNewStableRubikFace = rubikFace;
 					        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.NEW_STABLE;
 					        onNewStableFaceEvent(rubikFace);
                             onStableFaceEvent(candidateRubikFace);
@@ -202,7 +203,7 @@ public class AppStateMachine {
 
 				if(rubikFace.myHashCode == candidateRubikFace.myHashCode) {
 				    
-				    if(lastStableRubikFace != null && rubikFace.myHashCode == lastStableRubikFace.myHashCode) {
+				    if(lastNewStableRubikFace != null && rubikFace.myHashCode == lastNewStableRubikFace.myHashCode) {
 				        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.NEW_STABLE;
 				    }
 				    else
@@ -230,6 +231,7 @@ public class AppStateMachine {
 					consecutiveCandiateRubikFaceCount++; // stay in partial state
 			}
 			break;
+			
 			
         case NEW_STABLE:
             if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
@@ -263,7 +265,7 @@ public class AppStateMachine {
 	 */
 	private void onStableFaceEvent(RubikFace rubikFace) {
 
-		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.myHashCode) + " new=" + rubikFace.myHashCode);
+		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastNewStableRubikFace == null ? 0 : lastNewStableRubikFace.myHashCode) + " new=" + rubikFace.myHashCode);
 
 		switch (stateModel.appState) {
 
@@ -278,9 +280,19 @@ public class AppStateMachine {
 			break;
 		}
 	}
+	
+	
+	/**
+     * Off Stable Rubik Face Recognized
+     * 
+     * This function is called ever frame when there is no longer a stable face.
+     * 
+     * @param myHashCode 
+     * 
+     */
 	public void offStableFaceEvent() {
 
-		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.myHashCode);
+		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastNewStableRubikFace.myHashCode);
 		
 		switch (stateModel.appState) {
 
@@ -292,7 +304,6 @@ public class AppStateMachine {
 			break;
 		}
 	}
-
 
 
 	/**
@@ -349,6 +360,15 @@ public class AppStateMachine {
 			break;
 		}
 	}
+	
+	
+	/**
+     * Off New Stable Rubik Face Recognized
+     * 
+     * This is called when the new stable face is gone.
+     * 
+     * @param rubikFaceHashCode
+     */
 	private void offNewStableFaceEvent() {
 
 		Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
@@ -445,7 +465,6 @@ public class AppStateMachine {
 			break;
 		}
 	}
-
 
 
 	/**
