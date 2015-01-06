@@ -61,6 +61,7 @@ public class Constants {
 		UNKNOWN, // No face recognition
 		PENDING, // A particular face seems to becoming stable.
 		STABLE,  // A particular face is stable.
+		NEW_STABLE, // A new face is stable.
 		PARTIAL  // A particular face seems to becoming unstable.
 	};
 

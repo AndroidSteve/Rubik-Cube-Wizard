@@ -29,6 +29,10 @@ To Do:
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
   o  Introduce real Pilot Cube that demonstrates requested user activity.
   o  Sweep through and make screen size independent.
+  o  Improve Camera Calibration:
+     - Evaluate openCV checkboard calibration.
+     - Determine how to handle screen size != camera image size issue.
+     - Goal is accurate rendering without any need for corrections.
   o  Custom OpenCL functions?
   o  Switch to Android Studio
   

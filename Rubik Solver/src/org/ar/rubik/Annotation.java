@@ -248,8 +248,11 @@ public class Annotation {
 			color = Constants.ColorOrange;
 			break;
 		case SOLVED:
-			color = stateModel.faceRecogniztionState == FaceRecogniztionStateEnum.STABLE ? Constants.ColorGreen : Constants.ColorYellow;
-			break;
+		    if (stateModel.faceRecogniztionState == FaceRecogniztionStateEnum.STABLE || stateModel.faceRecogniztionState == FaceRecogniztionStateEnum.NEW_STABLE)
+		        color = Constants.ColorGreen;
+		    else
+		        color = Constants.ColorYellow;
+		    break;
 		}
 		
 		// Adjust drawing grid to start at edge of cube and not center of a tile.

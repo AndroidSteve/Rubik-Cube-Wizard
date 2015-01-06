@@ -154,8 +154,23 @@ public class AppStateMachine {
 				if(rubikFace.myHashCode == candidateRubikFace.myHashCode) {
 
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
-						onStableFaceEvent(candidateRubikFace);
+					    
+					    if(lastStableRubikFace == null || rubikFace.myHashCode != lastStableRubikFace.myHashCode) {
+					        lastStableRubikFace = rubikFace;
+					        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.NEW_STABLE;
+					        onNewStableFaceEvent(rubikFace);
+                            onStableFaceEvent(candidateRubikFace);
+					    }
+					    
+					    else {
+	                      stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
+	                      onStableFaceEvent(candidateRubikFace);	        
+					    }
+					    
+					    
+					    
+//						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
+//						onStableFaceEvent(candidateRubikFace);
 					}
 					else 
 						consecutiveCandiateRubikFaceCount++;
@@ -193,13 +208,27 @@ public class AppStateMachine {
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
 				if(rubikFace.myHashCode == candidateRubikFace.myHashCode)
-					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
+//					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
+				{
+				    
+				    if(lastStableRubikFace != null && rubikFace.myHashCode == lastStableRubikFace.myHashCode) {
+				        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.NEW_STABLE;
+				    }
+				    else
+				        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
+				}
+				
+				
+				
+				
+				
 				//        			else if(false)
 				//        				; // =+= add partial match here
 				else {
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
 						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
-						offStableFaceEvent();
+				        offNewStableFaceEvent();
+                        offStableFaceEvent();
 					}
 					else 
 						consecutiveCandiateRubikFaceCount++; // stay in partial state
@@ -208,13 +237,31 @@ public class AppStateMachine {
 			else {
 				if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
 					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
-					offStableFaceEvent();
+			        offNewStableFaceEvent();
+                    offStableFaceEvent();
 				}
 				else 
 					consecutiveCandiateRubikFaceCount++; // stay in partial state
 			}
 			break;
+			
+        case NEW_STABLE:
+            if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
+                if(rubikFace.myHashCode == candidateRubikFace.myHashCode) 
+                    ; // Just stay in this state
+                //                  else if(false)
+                //                      ; // =+= add partial match here
+                else {
+                    stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
+                    consecutiveCandiateRubikFaceCount = 0;
+                }
+            }
+            else {
+                stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
+                consecutiveCandiateRubikFaceCount = 0;
+            }            
+            break;
 		}
 	}
 
@@ -231,10 +278,10 @@ public class AppStateMachine {
 	private void onStableFaceEvent(RubikFace rubikFace) {
 
 		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.myHashCode) + " new=" + rubikFace.myHashCode);
-		if(lastStableRubikFace == null || rubikFace.myHashCode != lastStableRubikFace.myHashCode) {
-			lastStableRubikFace = rubikFace;
-			onNewStableFaceEvent(rubikFace);
-		}
+//		if(lastStableRubikFace == null || rubikFace.myHashCode != lastStableRubikFace.myHashCode) {
+//			lastStableRubikFace = rubikFace;
+//			onNewStableFaceEvent(rubikFace);
+//		}
 
 
 		switch (stateModel.appState) {
@@ -253,7 +300,7 @@ public class AppStateMachine {
 	public void offStableFaceEvent() {
 
 		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.myHashCode);
-		offNewStableFaceEvent();
+//		offNewStableFaceEvent();
 
 		switch (stateModel.appState) {
 
