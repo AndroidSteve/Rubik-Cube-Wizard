@@ -37,8 +37,6 @@ package org.ar.rubik;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.FaceRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
-//import org.ar.rubik.gl.UserInstructionsGLRenderer.FaceType;
-//import org.ar.rubik.gl.UserInstructionsGLRenderer.Rotation;
 import org.kociemba.twophase.Search;
 import org.kociemba.twophase.Tools;
 
@@ -166,11 +164,6 @@ public class AppStateMachine {
 	                      stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
 	                      onStableFaceEvent(candidateRubikFace);	        
 					    }
-					    
-					    
-					    
-//						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
-//						onStableFaceEvent(candidateRubikFace);
 					}
 					else 
 						consecutiveCandiateRubikFaceCount++;
@@ -207,9 +200,7 @@ public class AppStateMachine {
 		case PARTIAL:
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 
-				if(rubikFace.myHashCode == candidateRubikFace.myHashCode)
-//					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
-				{
+				if(rubikFace.myHashCode == candidateRubikFace.myHashCode) {
 				    
 				    if(lastStableRubikFace != null && rubikFace.myHashCode == lastStableRubikFace.myHashCode) {
 				        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.NEW_STABLE;
@@ -217,11 +208,6 @@ public class AppStateMachine {
 				    else
 				        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
 				}
-				
-				
-				
-				
-				
 				//        			else if(false)
 				//        				; // =+= add partial match here
 				else {
@@ -278,15 +264,10 @@ public class AppStateMachine {
 	private void onStableFaceEvent(RubikFace rubikFace) {
 
 		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastStableRubikFace == null ? 0 : lastStableRubikFace.myHashCode) + " new=" + rubikFace.myHashCode);
-//		if(lastStableRubikFace == null || rubikFace.myHashCode != lastStableRubikFace.myHashCode) {
-//			lastStableRubikFace = rubikFace;
-//			onNewStableFaceEvent(rubikFace);
-//		}
-
 
 		switch (stateModel.appState) {
 
-		case WAITING_FOR_MOVE_COMPLETE:
+		case WAITING_MOVE:
 			stateModel.appState = AppStateEnum.DO_MOVE;
 			stateModel.solutionResultIndex++;
 			if(stateModel.solutionResultIndex == stateModel.solutionResultsArray.length)
@@ -300,12 +281,11 @@ public class AppStateMachine {
 	public void offStableFaceEvent() {
 
 		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastStableRubikFace.myHashCode);
-//		offNewStableFaceEvent();
-
+		
 		switch (stateModel.appState) {
 
 		case DO_MOVE:		
-			stateModel.appState = AppStateEnum.WAITING_FOR_MOVE_COMPLETE;
+			stateModel.appState = AppStateEnum.WAITING_MOVE;
 			break;
 
 		default:
@@ -335,6 +315,7 @@ public class AppStateMachine {
 		case START:
 			stateModel.adopt(candidateRubikFace);
 			stateModel.appState = AppStateEnum.GOT_IT;
+            gotItCount = 0;
 			break;
 
 		case SEARCHING:
@@ -344,12 +325,14 @@ public class AppStateMachine {
 			if(stateModel.isThereAfullSetOfFaces() == false) {
 				stateModel.appState = AppStateEnum.GOT_IT;
 				allowOneMoreRotation = true;
+	            gotItCount = 0;
 			}
 
 			// Do one more turn so cube returns to original orientation.
 			else if(allowOneMoreRotation == true) {
 				stateModel.appState = AppStateEnum.GOT_IT;
 				allowOneMoreRotation = false;
+	            gotItCount = 0;
 			}
 
 			// Begin processing of cube: first check that there are exactly 9 tiles of each color.
@@ -396,7 +379,7 @@ public class AppStateMachine {
 
 		switch(stateModel.appState) {
 
-		case WAITING:
+		case WAIT_TABLES:
 			if(pruneTableLoaderCount == 12) {
 				stateModel.appState = AppStateEnum.VERIFIED;
 			}
@@ -420,7 +403,7 @@ public class AppStateMachine {
 			stateModel.verificationResults = Tools.verify(cubeString);
 
 			if(stateModel.verificationResults == 0) {
-				stateModel.appState = AppStateEnum.WAITING;
+				stateModel.appState = AppStateEnum.WAIT_TABLES;
 			}
 			else
 				stateModel.appState = AppStateEnum.INCORRECT;
@@ -442,7 +425,7 @@ public class AppStateMachine {
 				char solutionCode = stateModel.solutionResults.charAt(stateModel.solutionResults.length() - 1);
 				stateModel.verificationResults = solutionCode - '0';
 				Log.i(Constants.TAG_CNTRL, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
-				stateModel.appState = AppStateEnum.INCORRECT;
+				stateModel.appState = AppStateEnum.ERROR;
 			}
 			else {
 				stateModel.appState = AppStateEnum.SOLVED;

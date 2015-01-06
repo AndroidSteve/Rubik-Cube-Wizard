@@ -572,7 +572,7 @@ public class Annotation {
    				Core.putText(image, "Cube is Complete and has Good Colors", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
-   		case WAITING:
+   		case WAIT_TABLES:
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Waiting - Preload Next: " + appStateMachine.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, Constants.ColorWhite, 5);
    			break;
@@ -586,11 +586,15 @@ public class Annotation {
    				Core.putText(image, "Cube is Complete and Verified", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;
 
-   		case INCORRECT:
-   				Core.putText(image, "Cube is Complete but Incorrect: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
-   			break;
+        case INCORRECT:
+            Core.putText(image, "Cube is Complete but Incorrect: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+        break;
 
-   		case SOLVED:
+        case ERROR:
+            Core.putText(image, "Cube Solution Error: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
+        break;
+
+  		case SOLVED:
    			if(MenuAndParams.userTextDisplay == true) {
    				Core.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    				Core.rectangle(image, new Point(0, 60), new Point(1270, 120), Constants.ColorBlack, -1);
@@ -624,7 +628,7 @@ public class Annotation {
 
    			break;
 
-   		case WAITING_FOR_MOVE_COMPLETE:
+   		case WAITING_MOVE:
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Waiting for move to be completed", new Point(0, 60), Constants.FontFace, 4, Constants.ColorWhite, 4);
    			break;

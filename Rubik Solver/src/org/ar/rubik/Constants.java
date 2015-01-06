@@ -49,11 +49,12 @@ public class Constants {
 		COMPLETE,  // All six faces have been captured, and we seem to have valid color.
 		BAD_COLORS,// All six faces have been captured, but we do not have properly nine tiles of each color.
 		VERIFIED,  // Two Phase solution has verified that the cube tile/colors/positions are a valid cube.
-		WAITING,   // Waiting for TwoPhase Prune Tree generation to complete.
-		INCORRECT, // Two Phase solution has analyzed the cube and found it to be invalid.
+		WAIT_TABLES,   // Waiting for TwoPhase Prune Tree generation to complete.
+		INCORRECT, // Two Phase solution could not produce a solution; see error code.
+		ERROR,     // Two Phase solution has analyzed the cube and found it to be invalid.
 		SOLVED,    // Two Phase solution has analyzed the cube and found a solution.
 		DO_MOVE,   // Inform user to perform a face rotation
-		WAITING_FOR_MOVE_COMPLETE, // Wait for face rotation to complete
+		WAITING_MOVE, // Wait for face rotation to complete
 		DONE       // Cube should be completely physically solved.
 	};
 
