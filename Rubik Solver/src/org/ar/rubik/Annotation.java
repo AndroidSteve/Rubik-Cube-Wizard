@@ -40,7 +40,7 @@ import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ConstantTile;
 import org.ar.rubik.Constants.ConstantTileColorEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
-import org.ar.rubik.Constants.FaceRecogniztionStateEnum;
+import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -248,7 +248,7 @@ public class Annotation {
 			color = Constants.ColorOrange;
 			break;
 		case SOLVED:
-		    if (stateModel.faceRecogniztionState == FaceRecogniztionStateEnum.STABLE || stateModel.faceRecogniztionState == FaceRecogniztionStateEnum.NEW_STABLE)
+		    if (stateModel.gestureRecogniztionState == GestureRecogniztionStateEnum.STABLE || stateModel.gestureRecogniztionState == GestureRecogniztionStateEnum.NEW_STABLE)
 		        color = Constants.ColorGreen;
 		    else
 		        color = Constants.ColorYellow;

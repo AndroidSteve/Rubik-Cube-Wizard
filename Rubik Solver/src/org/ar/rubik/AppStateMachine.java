@@ -35,7 +35,7 @@ package org.ar.rubik;
 
 
 import org.ar.rubik.Constants.AppStateEnum;
-import org.ar.rubik.Constants.FaceRecogniztionStateEnum;
+import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.kociemba.twophase.Search;
 import org.kociemba.twophase.Tools;
@@ -103,7 +103,7 @@ public class AppStateMachine {
 		// Threshold for the number of times a face must be seen in order to declare it stable.
 		final int consecutiveCandidateCountThreashold = 3;	
 
-		Log.d(Constants.TAG_CNTRL, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.faceRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.myHashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.myHashCode) );   	 
+		Log.d(Constants.TAG_CNTRL, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.gestureRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.myHashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.myHashCode) );   	 
 
 		// Reset Application State.  All past is forgotten.
 		if(scheduleReset == true) {
@@ -134,11 +134,11 @@ public class AppStateMachine {
 		// the exact same event model as onFaceEvent().
 		onFrameEvent();
 
-		switch(stateModel.faceRecogniztionState) {
+		switch(stateModel.gestureRecogniztionState) {
 
 		case UNKNOWN:
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
-				stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PENDING;
+				stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.PENDING;
 				candidateRubikFace = rubikFace;
 				consecutiveCandiateRubikFaceCount = 0;
 			}
@@ -156,13 +156,13 @@ public class AppStateMachine {
 					    
 					    if(lastNewStableRubikFace == null || rubikFace.myHashCode != lastNewStableRubikFace.myHashCode) {
 					        lastNewStableRubikFace = rubikFace;
-					        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.NEW_STABLE;
+					        stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.NEW_STABLE;
 					        onNewStableFaceEvent(rubikFace);
                             onStableFaceEvent(candidateRubikFace);
 					    }
 					    
 					    else {
-	                      stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
+	                      stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.STABLE;
 	                      onStableFaceEvent(candidateRubikFace);	        
 					    }
 					}
@@ -172,10 +172,10 @@ public class AppStateMachine {
 				//        			else if(false)
 					//        				;// =+= add partial match here
 				else
-					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
+					stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.UNKNOWN;
 			}
 			else
-				stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;	
+				stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.UNKNOWN;	
 			break;
 
 
@@ -187,12 +187,12 @@ public class AppStateMachine {
 				//        			else if(false)
 				//        				; // =+= add partial match here
 				else {
-					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
+					stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.PARTIAL;
 					consecutiveCandiateRubikFaceCount = 0;
 				}
 			}
 			else {
-				stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
+				stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.PARTIAL;
 				consecutiveCandiateRubikFaceCount = 0;
 			}
 			break;
@@ -204,16 +204,16 @@ public class AppStateMachine {
 				if(rubikFace.myHashCode == candidateRubikFace.myHashCode) {
 				    
 				    if(lastNewStableRubikFace != null && rubikFace.myHashCode == lastNewStableRubikFace.myHashCode) {
-				        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.NEW_STABLE;
+				        stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.NEW_STABLE;
 				    }
 				    else
-				        stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.STABLE;
+				        stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.STABLE;
 				}
 				//        			else if(false)
 				//        				; // =+= add partial match here
 				else {
 					if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-						stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
+						stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.UNKNOWN;
 				        offNewStableFaceEvent();
                         offStableFaceEvent();
 					}
@@ -223,7 +223,7 @@ public class AppStateMachine {
 			}
 			else {
 				if(consecutiveCandiateRubikFaceCount > consecutiveCandidateCountThreashold) {
-					stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.UNKNOWN;
+					stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.UNKNOWN;
 			        offNewStableFaceEvent();
                     offStableFaceEvent();
 				}
@@ -241,12 +241,12 @@ public class AppStateMachine {
                 //                  else if(false)
                 //                      ; // =+= add partial match here
                 else {
-                    stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
+                    stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.PARTIAL;
                     consecutiveCandiateRubikFaceCount = 0;
                 }
             }
             else {
-                stateModel.faceRecogniztionState = FaceRecogniztionStateEnum.PARTIAL;
+                stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.PARTIAL;
                 consecutiveCandiateRubikFaceCount = 0;
             }            
             break;

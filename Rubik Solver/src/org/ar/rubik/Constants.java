@@ -58,7 +58,7 @@ public class Constants {
 		DONE       // Cube should be completely physically solved.
 	};
 
-	public enum FaceRecogniztionStateEnum { 
+	public enum GestureRecogniztionStateEnum { 
 		UNKNOWN, // No face recognition
 		PENDING, // A particular face seems to becoming stable.
 		STABLE,  // A particular face is stable.
