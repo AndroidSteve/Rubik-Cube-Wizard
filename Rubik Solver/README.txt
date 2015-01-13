@@ -17,12 +17,15 @@ Notice:
 
 To Do:
 
-  o  Refactor and clean up state machines.
-  o  Migrate from JME to android.opengl 
-  o  Introduce functional coloring to Pilot cube.
-  o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
   o  Merge the two separate OpenGL renders into one.
   o  Time and CPU measurements.  Possible use of DDMS
+  o  Refactor and clean up state machines.
+  o  Move to GLES 2.0
+     - Study example code.
+     - Some kronous required.
+     - Shaders required.
+  o  Introduce functional coloring to Pilot cube.
+  o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
   o  Make direction arrows occult with respect to physical cube.
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Review near-far definitions in CameraCalibration.getOpenGLProjectionMatrix(). Is this responsible for Overlay Cube errors? 

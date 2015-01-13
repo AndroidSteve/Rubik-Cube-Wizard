@@ -44,10 +44,16 @@ import org.opencv.core.Point;
  */
 public class Profiler {
 	
-	public enum Event { START, GREYSCALE, GAUSSIAN, EDGE, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE, CONTROLLER, TOTAL };
+	public enum Event { START, GREYSCALE, GAUSSIAN, EDGE, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE, POSE, CONTROLLER, TOTAL};
 	
+	// Store time stamps of various events.
 	private Map<Event,Long> eventSet = new HashMap<Event,Long>(32);
+	
+	// Store minimum event times so far observed.
 	private static Map<Event,Long> minEventSet = new HashMap<Event, Long>(32);
+	
+	// Store time stamp for Frames Per Second
+	private static long framesPerSecondTimeStamp = 0;
 	
 	private boolean scheduleReset = false;
 	
@@ -74,8 +80,17 @@ public class Profiler {
     	Core.rectangle(image, new Point(0, 0), new Point(500, 720), Constants.ColorBlack, -1);
 		int index = 0;
 		
+        long newTimeStamp = System.currentTimeMillis();
+		if(framesPerSecondTimeStamp > 0)  {
+		    long frameTime = newTimeStamp - framesPerSecondTimeStamp;
+		    double framesPerSecond = 1000.0 / frameTime;
+		    String string = String.format("Frames Per Second: %4.1f", framesPerSecond);
+		    Core.putText(image, string, new Point(50, 100), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		}
+        framesPerSecondTimeStamp = newTimeStamp;
 
-		Core.putText(image, "Event    Time  Min", new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+
+		Core.putText(image, "Event    Time  Min", new Point(50, 150), Constants.FontFace, 2, Constants.ColorWhite, 2);
 				
 		renderAndIndex(Event.GREYSCALE,  Event.START,     image, index++);
 		renderAndIndex(Event.GAUSSIAN,   Event.GREYSCALE, image, index++);
@@ -84,8 +99,9 @@ public class Profiler {
 		renderAndIndex(Event.CONTOUR,    Event.DILATION,  image, index++);
 		renderAndIndex(Event.POLYGON,    Event.CONTOUR,   image, index++);
 		renderAndIndex(Event.RHOMBUS,    Event.POLYGON,   image, index++);
-		renderAndIndex(Event.FACE,       Event.RHOMBUS,   image, index++);
-		renderAndIndex(Event.CONTROLLER, Event.FACE,      image, index++);
+        renderAndIndex(Event.FACE,       Event.RHOMBUS,   image, index++);
+        renderAndIndex(Event.POSE,       Event.FACE,      image, index++);
+		renderAndIndex(Event.CONTROLLER, Event.POSE,      image, index++);
 		renderAndIndex(Event.TOTAL,      Event.START,     image, index++);
 		
 		if(scheduleReset == true) {
@@ -109,7 +125,7 @@ public class Profiler {
     	
     	// No measurement yet for this event type.
     	if(eventSet.containsKey(endEvent) == false) {
-    		Core.putText(image, endEvent.toString() + ": NA", new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    		Core.putText(image, endEvent.toString() + ": NA", new Point(50, 200 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
     	}
     	
     	// If total, perform special processing.  Specifically, add up and report all minimums found in 
@@ -127,7 +143,7 @@ public class Profiler {
     			minValue += minEventTime;
 
 			String string = String.format("%10s: %3dmS %3dmS", endEvent.toString(), elapsedTime, minValue);
-    		Core.putText(image, string, new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    		Core.putText(image, string, new Point(50, 200 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
     	}
     	
     	// Render time and minimum tile for this event type.
@@ -143,7 +159,7 @@ public class Profiler {
     		}
 
 			String string = String.format("%10s: %3dmS %3dmS", endEvent.toString(), elapsedTime, minValue);
-    		Core.putText(image, string, new Point(50, 100 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    		Core.putText(image, string, new Point(50, 200 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
     	}
     }
 

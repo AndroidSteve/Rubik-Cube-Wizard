@@ -67,6 +67,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 	// Once an exception or error is encountered, display message from thence forth.
 	// We cannot use Toast; it must be used on the UI thread and we are executing on the Frame thread.
 	private Mat errorImage = null;
+	
+    private long framesPerSecondTimeStamp;
 
 	
 	/**
@@ -137,6 +139,16 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 		default:
 			break;
 		}
+		
+		// Calculate and display Frames Per Second
+        long newTimeStamp = System.currentTimeMillis();
+        if(framesPerSecondTimeStamp > 0)  {
+            long frameTime = newTimeStamp - framesPerSecondTimeStamp;
+            double framesPerSecond = 1000.0 / frameTime;
+            String string = String.format("%4.1f FPS", framesPerSecond);
+            Core.putText(image, string, new Point(50, 700), Constants.FontFace, 2, Constants.ColorWhite, 2);
+        }
+        framesPerSecondTimeStamp = newTimeStamp;
 
 		
 		try {
@@ -388,6 +400,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			}
 			else
 				stateModel.cubeReconstructor = null;
+            rubikFace.profiler.markTime(Profiler.Event.POSE);
 			
 			
 			/* **********************************************************************
