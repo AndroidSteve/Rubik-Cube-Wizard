@@ -148,22 +148,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         // Clear color and depth buffers using clear-value set earlier
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
-	    onDrawFrameUserInstructions(gl);
-	    onDrawFramePilotCube(gl);
-	}
-	
-    /**
-     *  (non-Javadoc)
-     * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
-     */
-    private void onDrawFramePilotCube(GL10 gl) {
-
-        if(MenuAndParams.pilotCubeDisplay == false)
+        // Unless one of these conditions is true, we don't need to render anything.
+        if( (MenuAndParams.pilotCubeDisplay == false) &&
+            (MenuAndParams.cubeOverlayDisplay == false)  &&
+            (stateModel.appState != AppStateEnum.ROTATE) && 
+            (stateModel.appState != AppStateEnum.DO_MOVE) )
             return;
         
-//      if(stateModel.renderPilotCube == false)
-//          return;
-//      
         // Make copy reference to Cube Reconstructor.
         // This is to avoid asynchronous OpenGL and OpenCV problems. 
         CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
@@ -171,6 +162,24 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         // Check and if null don't render.
         if(myCubeReconstructor == null)
             return;
+        
+	    onDrawFrameUserInstructions(gl, myCubeReconstructor);
+	    onDrawFramePilotCube(gl, myCubeReconstructor);
+	}
+	
+    /**
+     *  (non-Javadoc)
+     * @param myCubeReconstructor 
+     * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
+     */
+    private void onDrawFramePilotCube(GL10 gl, CubeReconstructor myCubeReconstructor) {
+
+        if(MenuAndParams.pilotCubeDisplay == false)
+            return;
+        
+//      if(stateModel.renderPilotCube == false)
+//          return;
+
         
         
         // Set GL_MODELVIEW transformation mode
@@ -204,22 +213,16 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	 *  3) Nothing is rendered.
 	 * 
 	 * @param gl
+	 * @param myCubeReconstructor 
 	 */
-	private void onDrawFrameUserInstructions(GL10 gl) {
+	private void onDrawFrameUserInstructions(GL10 gl, CubeReconstructor myCubeReconstructor) {
 		
 		// Unless one of these conditions is true, we don't need to render anything.
 		if( (MenuAndParams.cubeOverlayDisplay == false)  &&
 		    (stateModel.appState != AppStateEnum.ROTATE) && 
 		    (stateModel.appState != AppStateEnum.DO_MOVE) )
 		    return;
-		
-		// Make copy reference to Cube Reconstructor.
-		// This is to avoid asynchronous OpenGL and OpenCV thread problems. 
-		CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
 
-		// Check and if null don't render.
-		if(myCubeReconstructor == null)
-			return;
 		
         // Set GL_MODELVIEW transformation mode
         gl.glMatrixMode(GL10.GL_MODELVIEW);
