@@ -51,7 +51,7 @@ import javax.microedition.khronos.opengles.GL10;
  * @author android.steve@testlens.com
  *
  */
-public class CubeGL {
+public class GLCube {
 
     private FloatBuffer vertexBuffer;  // Buffer for vertex-array
     private int numFaces = 6;
@@ -102,7 +102,7 @@ public class CubeGL {
     /**
      *  Constructor - Set up the buffers
      */
-    public CubeGL() {
+    public GLCube() {
 
         // Setup vertex-array buffer. Vertices in float. A float has 4 bytes
         // This reserves memory that GPU has direct access to (correct?).

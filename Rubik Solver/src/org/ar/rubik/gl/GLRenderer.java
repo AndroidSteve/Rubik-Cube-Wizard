@@ -11,6 +11,9 @@
  * File Description:
  *   Renders user instruction graphics; in particular wide white arrows to rotate entire
  *   cube or narrower colored arrows to rotate cube edges on a GL Surface.
+ *   
+ *   Also renders the "Pilot Cube" which appears on the right hand side in
+ *   normal mode.  It tracks rotation of the cube, but not translation.
  * 
  * License:
  * 
@@ -50,7 +53,7 @@ import android.opengl.GLU;
 /**
  *  OpenGL Custom renderer used with GLSurfaceView 
  */
-public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
+public class GLRenderer implements GLSurfaceView.Renderer {
 	
 	// Requested Rotation Type
 	public enum Rotation { CLOCKWISE, COUNTER_CLOCKWISE, ONE_HUNDRED_EIGHTY };
@@ -64,7 +67,8 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	// GL Objects that can be rendered
 	private GLArrow arrowQuarterTurn;
 	private GLArrow arrowHalfTurn;
-	private CubeGL overlayGLCube;
+	private GLCube  overlayGLCube;
+    private GLCube  pilotGLCube;
 
 
 
@@ -74,12 +78,15 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	 * 
 	 * @param stateModel
 	 */
-	public UserInstructionsGLRenderer(StateModel stateModel) {
+	public GLRenderer(StateModel stateModel) {
 		
 		this.stateModel = stateModel;
 		
+		// Create the GL pilot cube
+		pilotGLCube = new GLCube();
+		
 		// Create the GL overlay cube
-		overlayGLCube = new CubeGL();
+		overlayGLCube = new GLCube();
 		
 		// Create two arrows: one half turn, one quarter turn.
 		arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
@@ -123,9 +130,71 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	        
 	        gl.glMultMatrixf(stateModel.cameraParameters.getOpenGLProjectionMatrix(), 0);
 	}
+
 	
+
+    /**
+     *  On Draw Frame
+     *  
+     *  
+     *  (non-Javadoc)
+     * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
+     */
+    @Override
+	public void onDrawFrame(GL10 gl) {
+        
+//      Log.e(Constants.TAG, "GL Thread ID = " + Thread.currentThread().getId());
+        
+        // Clear color and depth buffers using clear-value set earlier
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
+	    onDrawFrameUserInstructions(gl);
+	    onDrawFramePilotCube(gl);
+	}
 	
-	
+    /**
+     *  (non-Javadoc)
+     * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
+     */
+    private void onDrawFramePilotCube(GL10 gl) {
+
+        if(MenuAndParams.pilotCubeDisplay == false)
+            return;
+        
+//      if(stateModel.renderPilotCube == false)
+//          return;
+//      
+        // Make copy reference to Cube Reconstructor.
+        // This is to avoid asynchronous OpenGL and OpenCV problems. 
+        CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
+
+        // Check and if null don't render.
+        if(myCubeReconstructor == null)
+            return;
+        
+        
+        // Set GL_MODELVIEW transformation mode
+        gl.glMatrixMode(GL10.GL_MODELVIEW);
+        gl.glLoadIdentity();   // reset the matrix to its default state
+
+        // When using GL_MODELVIEW, you must set the view point
+        // Sets the location, direction, and orientation of camera, but not zoom
+        GLU.gluLookAt(gl,  
+                0,    0,    0,    // Camera Location
+                0f,   0f,  -1f,   // Camera points down Z axis.
+                0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
+    
+        // Instead of using pose esitmator coordinates, instead position cube at
+        // fix location.  We really just desire to observe rotation.
+        gl.glTranslatef(-4.0f, 0.0f, -10.0f);
+
+        // Rotation Cube per Pose Estimator 
+        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
+
+        pilotGLCube.draw(gl, false);
+    }
+
+    
 	/**
 	 * On Draw Frame
 	 * 
@@ -136,10 +205,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
 	 * 
 	 * @param gl
 	 */
-	public void onDrawFrame(GL10 gl) {
-		
-		// Clear color and depth buffers using clear-value set earlier
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+	private void onDrawFrameUserInstructions(GL10 gl) {
 		
 		// Unless one of these conditions is true, we don't need to render anything.
 		if( (MenuAndParams.cubeOverlayDisplay == false)  &&
@@ -176,7 +242,7 @@ public class UserInstructionsGLRenderer implements GLSurfaceView.Renderer {
         gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
         
         // Scale
-        // =+= I believe the need for this has something to do with the difference between camera and screen dimentions.
+        // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
         float scale = (float) MenuAndParams.scaleOffsetParam.value;
         gl.glScalef(scale, scale, scale);
 		

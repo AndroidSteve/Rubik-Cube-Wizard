@@ -43,8 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.ar.rubik.gl.PilotCubeGLRenderer;
-import org.ar.rubik.gl.UserInstructionsGLRenderer;
+import org.ar.rubik.gl.GLRenderer;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -68,11 +67,8 @@ public class AndroidActivity extends Activity {
 	// Camera Object
     private CameraBridgeViewBase mOpenCvCameraView;
 
-    // Surface for rendering graphic annotations
- 	private GLSurfaceView userInstructionsGLSurfaceView;
-	
-    // Surface for rending Pilot (i.e. Direction Arrows)
-	private GLSurfaceView pilotGLSurfaceView;
+    // Surface for rendering graphics: arrows, pilot cube, overlay cube, etc...
+ 	private GLSurfaceView gLSurfaceView;
     
     // Primary Image Processor
     public ImageRecognizer imageRecognizer;
@@ -174,32 +170,18 @@ public class AndroidActivity extends Activity {
         mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);  // Image Recognizer is attached here.
 
         
-        // Setup and Add User Instruction GL Surface View and User Instruction GL Renderer
-        userInstructionsGLSurfaceView = new GLSurfaceView(this);
-        userInstructionsGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-        userInstructionsGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-        userInstructionsGLSurfaceView.setZOrderOnTop(true);
-        userInstructionsGLSurfaceView.setLayoutParams(
+        // Setup and Add GL Surface View and GL Renderer
+        gLSurfaceView = new GLSurfaceView(this);
+        gLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+        gLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+        gLSurfaceView.setZOrderOnTop(true);
+        gLSurfaceView.setLayoutParams(
         		new FrameLayout.LayoutParams(
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
-        frameLayout.addView(userInstructionsGLSurfaceView);
-        UserInstructionsGLRenderer userInstructionGLRenderer = new UserInstructionsGLRenderer(stateModel);
-        userInstructionsGLSurfaceView.setRenderer(userInstructionGLRenderer);
-
-        
-        // Setup and Add Pilot GL Surface View and Pilot GL Renderer
-        pilotGLSurfaceView = new GLSurfaceView(this);
-        pilotGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-        pilotGLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
-        pilotGLSurfaceView.setZOrderOnTop(true);
-        pilotGLSurfaceView.setLayoutParams(
-        		new FrameLayout.LayoutParams(
-        				FrameLayout.LayoutParams.MATCH_PARENT,
-        				FrameLayout.LayoutParams.MATCH_PARENT));
-        frameLayout.addView(pilotGLSurfaceView);
-        PilotCubeGLRenderer pilotCubeGlRenderer = new PilotCubeGLRenderer(stateModel);
-        pilotGLSurfaceView.setRenderer(pilotCubeGlRenderer);  	
+        frameLayout.addView(gLSurfaceView);
+        GLRenderer gLRenderer = new GLRenderer(stateModel);
+        gLSurfaceView.setRenderer(gLRenderer); 	
 
         // =+= Currently not in use, but is used to support OpenCL
         MonoChromatic.initOpenCL(getOpenCLProgram());
@@ -215,10 +197,8 @@ public class AndroidActivity extends Activity {
         super.onPause();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
-        if(userInstructionsGLSurfaceView != null)
-        	userInstructionsGLSurfaceView.onPause();
-        if(pilotGLSurfaceView != null)
-        	pilotGLSurfaceView.onPause();
+        if(gLSurfaceView != null)
+        	gLSurfaceView.onPause();
     }
 
     
@@ -229,10 +209,8 @@ public class AndroidActivity extends Activity {
     public void onResume()
     {
         super.onResume();
-        if(userInstructionsGLSurfaceView != null)
-        	userInstructionsGLSurfaceView.onResume();
-        if(pilotGLSurfaceView != null)
-        	pilotGLSurfaceView.onResume();
+        if(gLSurfaceView != null)
+        	gLSurfaceView.onResume();
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
     }
 
