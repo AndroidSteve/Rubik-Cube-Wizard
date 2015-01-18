@@ -28,10 +28,10 @@ To Do:
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
   o  Make direction arrows occult with respect to physical cube.
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
-  o  Review near-far definitions in CameraCalibration.getOpenGLProjectionMatrix(). Is this responsible for Overlay Cube errors? 
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
   o  Introduce real Pilot Cube that demonstrates requested user activity.
   o  Sweep through and make screen size independent.
+  o  Edge detection on 3 colors instead of just greyscale?
   o  Improve Camera Calibration:
      - Evaluate openCV checkboard calibration.
      - Determine how to handle screen size != camera image size issue.
