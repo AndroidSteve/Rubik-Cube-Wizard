@@ -40,6 +40,7 @@ import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.kociemba.twophase.Search;
 import org.kociemba.twophase.Tools;
 
+import android.opengl.Matrix;
 import android.util.Log;
 
 
@@ -382,6 +383,26 @@ public class AppStateMachine {
 		default:
 			break;
 		}
+		
+		// Rotate Cube Model so that it matches physical model as user is requested to rotate cube.
+		if(stateModel.adoptFaceCount < 6) {
+		    
+		    float [] result = new float[16];
+		    
+		    if(stateModel.adoptFaceCount % 2 == 0) {
+	            // Rotate cube -90 degrees along X axis
+                Matrix.multiplyMM(result, 0, Constants.xRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+                Matrix.multiplyMM(result, 0, Constants.xRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+                Matrix.multiplyMM(result, 0, Constants.xRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+		    }
+		    else {
+		        // Rotate cube +90 degrees along Z axis.
+		        Matrix.multiplyMM(result, 0, Constants.zRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+		    }
+		    
+		    stateModel.additionalGLCubeRotation = result;
+		}
+
 	}   
 
 

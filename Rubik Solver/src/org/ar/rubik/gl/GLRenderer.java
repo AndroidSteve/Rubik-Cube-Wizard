@@ -197,6 +197,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 	        // Rotation Cube per Pose Estimator 
 	        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
+	        
+            // Rotation Cube per additional requests 
+            gl.glMultMatrixf(stateModel.additionalGLCubeRotation, 0);
 
 	        // Scale
 	        // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
@@ -235,6 +238,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 	        // Rotation Cube per Pose Estimator 
 	        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
+
+	        // Rotation Cube per additional requests 
+            gl.glMultMatrixf(stateModel.additionalGLCubeRotation, 0);
 
 	        pilotGLCube.draw(gl, false);
 	    }

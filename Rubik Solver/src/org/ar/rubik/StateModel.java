@@ -44,6 +44,7 @@ import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 
+import android.opengl.Matrix;
 import android.os.Environment;
 import android.util.Log;
 
@@ -59,11 +60,11 @@ public class StateModel {
 	
 	/*
 	 * This is "Rubik Cube State" or "Rubik Cube Model" in model-veiw-controller vernacular.
-	 * Array of above rubik face objects index by FaceNameEnum
+	 * Map of above rubik face objects index by FaceNameEnum
 	 */
 	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
 	
-	// Array of above rubik face objects index by TileColorEnum.
+	// Map of above rubik face objects index by TileColorEnum.
 	public HashMap<ConstantTileColorEnum, RubikFace> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);
 
 	// Application State; see AppStateEnum.
@@ -85,9 +86,12 @@ public class StateModel {
 	public int solutionResultIndex;
 	
 	// We assume that faces will be explored in a particular sequence.
-	private int adoptFaceCount = 0;
+	public int adoptFaceCount = 0;
+	
+	// Additional Cube Rotation: initially set to Identity Rotation Matrix
+	public float[] additionalGLCubeRotation = new float[16];
 
-	// True if we are to render GL Pilot Cube
+	// True if it is OK to render GL Pilot Cube
 	public boolean renderPilotCube = true;
 
 	// Cube Location and Orientation deduced from Face.
@@ -391,5 +395,8 @@ public class StateModel {
 
 		// Cube Location and Orientation deduced from Face.
 		cubeReconstructor = null;
+
+        // Set additional GL cube rotation to Identity Rotation Matrix
+        Matrix.setIdentityM(additionalGLCubeRotation, 0);
 	}
 }

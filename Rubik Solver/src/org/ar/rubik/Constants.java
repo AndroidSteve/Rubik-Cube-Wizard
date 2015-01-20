@@ -34,6 +34,8 @@ import java.io.Serializable;
 import org.opencv.core.Core;
 import org.opencv.core.Scalar;
 
+import android.opengl.Matrix;
+
 
 public class Constants {
 
@@ -131,6 +133,19 @@ public class Constants {
 		new ConstantTile(ConstantTileColorEnum.BLUE,    RubikBlue,   'B'),
 		new ConstantTile(ConstantTileColorEnum.WHITE,   RubikWhite,  'W')
 	};
+
+	// Open GL positive 90 degree rotation matrix per axis
+    public static float [] xRotationMatrix = new float[16];
+    public static float [] yRotationMatrix = new float[16];
+    public static float [] zRotationMatrix = new float[16];
+	static {
+        Matrix.setIdentityM(xRotationMatrix, 0);
+        Matrix.rotateM(xRotationMatrix, 0, 90.0f, 1.0f, 0.0f, 0.0f);
+        Matrix.setIdentityM(yRotationMatrix, 0);    
+        Matrix.rotateM(yRotationMatrix, 0, 90.0f, 0.0f, 1.0f, 0.0f);
+        Matrix.setIdentityM(zRotationMatrix, 0);    
+        Matrix.rotateM(zRotationMatrix, 0, 90.0f, 0.0f, 0.0f, 1.0f);    
+	}
 
 	// Any OpenCV font
 	public final static int FontFace = Core.FONT_HERSHEY_PLAIN;

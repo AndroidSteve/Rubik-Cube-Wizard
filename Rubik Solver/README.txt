@@ -17,8 +17,6 @@ Notice:
 
 To Do:
 
-  o  Merge the two separate OpenGL renders into one.
-  o  Introduce functional coloring to Pilot cube.
   o  Move to GLES 2.0
      - Study example code.
      - Some kronous required.
