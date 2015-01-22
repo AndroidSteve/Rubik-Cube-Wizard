@@ -130,30 +130,5 @@ public class CameraCalibration {
         return glProjectionMatrix;
     }
 	
-//	/**
-//	 * Get OpenGL Projection Matrix
-//	 * 
-//	 * This is derived from the Android Camera Parameters.
-//	 * 
-//	 * @return
-//	 */
-//	public float[] getOpenGLProjectionMatrix2() {
-//
-//	    // =+= How should these numbers be determined?  In particular, near is used in calculations below.
-//	    // =+= Seems that that number should be the "image z axis".
-//        float projectionNearClipping = 1.0f;
-//        float projectionFarClipping = 100.0f;
-//
-//	    float [] projectionMatrix          = new float[16];
-//
-//	    Matrix.perspectiveM(
-//	            projectionMatrix,           // projection matrix array
-//	            0,                          // array offset
-//	            projectionFieldOfView,      // FOV [deg]            = 47.1 deg
-//	            projectionAspect,           // aspect ratio         = 1.667
-//	            projectionNearClipping,     // Near clipping plane  = 1
-//	            projectionFarClipping );    // Far clipping plane   = 3000
-//
-//	    return projectionMatrix;
-//	}
+
 }

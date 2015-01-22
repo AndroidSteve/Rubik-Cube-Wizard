@@ -21,8 +21,10 @@
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.front.autofocus" android:required="false"/>
-    <!-- <uses-feature android:glEsVersion="0x00020000" android:required="true" /> -->
 
+    <!-- Tell the system this app requires OpenGL ES 2.0. -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    
     <application
         android:label="Rubik Solver"
         android:icon="@drawable/icon"
