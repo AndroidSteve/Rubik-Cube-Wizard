@@ -109,10 +109,10 @@ public class GLCube2 {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float frontCoords[] = {
-        -0.5f,  0.5f, +0.5f,   // top left
-        -0.5f, -0.5f, +0.5f,   // bottom left
-         0.5f, -0.5f, +0.5f,   // bottom right
-         0.5f,  0.5f, +0.5f }; // top right
+        -1.0f,  1.0f, +1.0f,   // top left
+        -1.0f, -1.0f, +1.0f,   // bottom left
+         1.0f, -1.0f, +1.0f,   // bottom right
+         1.0f,  1.0f, +1.0f }; // top right
 
 
     private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices

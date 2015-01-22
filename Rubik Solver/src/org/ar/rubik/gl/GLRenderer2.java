@@ -115,9 +115,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
 	    // Create the GL pilot cube
 	    pilotGLCube = new GLCube2();
-//      
-//      // Create the GL overlay cube
-//      overlayGLCube = new GLCube();
+
+	    // Create the GL overlay cube
+	    overlayGLCube = new GLCube2();
 //      
 //      // Create two arrows: one half turn, one quarter turn.
 //      arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
@@ -181,40 +181,52 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
 	    // Calculate the projection and view transformation
 	    Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+	    
+	    
+	    
+	       // Render User Instruction Arrows and possibly Overlay Cube
+        if( (MenuAndParams.cubeOverlayDisplay == true)  ) {
+            
+            // Translate Cube per Pose Estimator
+            float [] tranMatrix = new float[16];
+            Matrix.setIdentityM(tranMatrix, 0);
+            Matrix.translateM(tranMatrix, 0, 
+                  myCubeReconstructor.x, 
+                  myCubeReconstructor.y, 
+                  myCubeReconstructor.z);
+            Matrix.multiplyMM(mvpMatrix, 0, mMVPMatrix, 0, tranMatrix, 0);
 
+            // Rotation Cube per Pose Estimator 
+            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
+            
+            // Rotation Cube per additional requests 
+//            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
 
-	    // Use the following code to generate constant rotation.
-	    // Leave this code out when using TouchEvents.
-	    // long time = SystemClock.uptimeMillis() % 4000L;
-	    // float angle = 0.090f * ((int) time);
+            // Scale
+            // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
+//            float scale = (float) MenuAndParams.scaleOffsetParam.value;
+//            gl.glScalef(scale, scale, scale);
 
-//	    Matrix.setRotateM(mRotationMatrix, 0, 45, 0, 1.0f, 0.0f);
+            // If desire, render what we think is the cube location and orientation.
+            if(MenuAndParams.cubeOverlayDisplay == true)
+                overlayGLCube.draw(mvpMatrix);
+        }
 
-	    // Combine the rotation matrix with the projection and camera view
-	    // Note that the mMVPMatrix factor *must be first* in order
-	    // for the matrix multiplication product to be correct.
-//	    Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, stateModel.additionalGLCubeRotation, 0);
-
-//        pilotGLCube.draw(scratch, false);
-//        pilotGLCube.draw(scratch);
 	    
 	       // Render Pilot Cube
         if(MenuAndParams.pilotCubeDisplay == true && stateModel.renderPilotCube == true) {
 
             // Instead of using pose esitmator coordinates, instead position cube at
             // fix location.  We really just desire to observe rotation.
-//            gl.glTranslatef(-4.0f, 0.0f, -10.0f);
             float [] tranMatrix = new float[16];
             Matrix.setIdentityM(tranMatrix, 0);
             Matrix.translateM(tranMatrix, 0, -4.0f, 0.0f, -10.0f);
             Matrix.multiplyMM(mvpMatrix, 0, mMVPMatrix, 0, tranMatrix, 0);
 
             // Rotation Cube per Pose Estimator 
-//            gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
             Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
 
             // Rotation Cube per additional requests 
-//            gl.glMultMatrixf(stateModel.additionalGLCubeRotation, 0);
             Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
             
             pilotGLCube.draw(mvpMatrix);
