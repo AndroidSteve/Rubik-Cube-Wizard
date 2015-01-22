@@ -73,12 +73,25 @@ public class GLCube2 {
     private FloatBuffer vertexBuffer;  // Buffer for vertex-array
     private int numFaces = 6;
     
+    private float[][] colors = {  // Colors of the 6 faces
+            {1.0f, 0.0f, 0.0f, 1.0f},  // 0. Front is Red
+            {1.0f, 0.5f, 0.0f, 1.0f},  // 1. Back is Orange
+            {0.0f, 1.0f, 0.0f, 1.0f},  // 2. Left is Green
+            {0.0f, 0.0f, 1.0f, 1.0f},  // 3. Right is Blue
+            {0.8f, 0.8f, 0.8f, 1.0f},  // 4. Up is White
+            {1.0f, 1.0f, 0.0f, 1.0f}   // 5. Down is Yellow
+    };
+    
     private float[] vertices = {  // Vertices of the 6 faces
             // FRONT
            -1.0f, -1.0f,  1.0f,  // 0. left-bottom-front
             1.0f, -1.0f,  1.0f,  // 1. right-bottom-front
            -1.0f,  1.0f,  1.0f,  // 2. left-top-front
             1.0f,  1.0f,  1.0f,  // 3. right-top-front
+//           -1.0f,  1.0f,  1.0f,  // 0. left-bottom-front
+//           -1.0f, -1.0f,  1.0f,  // 1. right-bottom-front
+//            1.0f, -1.0f,  1.0f,  // 2. left-top-front
+//            1.0f,  1.0f,  1.0f,  // 3. right-top-front
             // BACK
             1.0f, -1.0f, -1.0f,  // 6. right-bottom-back
            -1.0f, -1.0f, -1.0f,  // 4. left-bottom-back
@@ -179,20 +192,20 @@ public class GLCube2 {
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
         // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(
-                mPositionHandle, 
-                COORDS_PER_VERTEX,
-                GLES20.GL_FLOAT,
-                false,
-                vertexStride,
-                frontVertexBuffer);
 //        GLES20.glVertexAttribPointer(
 //                mPositionHandle, 
 //                COORDS_PER_VERTEX,
 //                GLES20.GL_FLOAT,
 //                false,
 //                vertexStride,
-//                vertexBuffer);
+//                frontVertexBuffer);
+        GLES20.glVertexAttribPointer(
+                mPositionHandle, 
+                COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT,
+                false,
+                vertexStride,
+                vertexBuffer);
         
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
@@ -209,20 +222,26 @@ public class GLCube2 {
         GLUtil.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
-        GLES20.glDrawElements(
-                GLES20.GL_TRIANGLES, 
-                drawOrder.length,
-                GLES20.GL_UNSIGNED_SHORT,
-                frontDrawListBuffer);
+//        GLES20.glDrawElements(
+//                GLES20.GL_TRIANGLES, 
+//                drawOrder.length,
+//                GLES20.GL_UNSIGNED_SHORT,
+//                frontDrawListBuffer);
         
         // Render all the faces
-//        for (int face = 0; face < numFaces; face++) {
-//            
-//            GLES20.glDrawArrays(
-//                    GLES20.GL_TRIANGLE_STRIP, 
-//                    face*4, 
-//                    4);
-//        }
+        for (int face = 0; face < numFaces; face++) {
+            
+            // =+= Front (red) and Up (white)
+            if(face == 0 || face == 4) {
+
+                GLES20.glUniform4fv(mColorHandle, 1, colors[face], 0);
+
+                GLES20.glDrawArrays(
+                        GLES20.GL_TRIANGLE_STRIP, 
+                        face*4, 
+                        4);
+            }
+        }
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);

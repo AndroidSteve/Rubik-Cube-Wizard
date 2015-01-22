@@ -40,7 +40,6 @@ import javax.microedition.khronos.opengles.GL10;
 import org.ar.rubik.Constants;
 import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.MenuAndParams;
-import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
 import org.ar.rubik.gl.GLArrow.Amount;
@@ -48,7 +47,6 @@ import org.opencv.core.Scalar;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLU;
 import android.opengl.Matrix;
 
 
@@ -173,7 +171,6 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             return;
 
 	    // Set the camera position (View matrix)
-//        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.setLookAtM(mViewMatrix, 0,
                 0,    0,    0,    // Camera Location
                 0f,   0f,  -1f,   // Camera points down Z axis.
@@ -184,7 +181,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    
 	    
 	    
-	       // Render User Instruction Arrows and possibly Overlay Cube
+	    // Render User Instruction Arrows and possibly Overlay Cube
         if( (MenuAndParams.cubeOverlayDisplay == true)  ) {
             
             // Translate Cube per Pose Estimator
@@ -227,7 +224,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
 
             // Rotation Cube per additional requests 
-            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+//            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
             
             pilotGLCube.draw(mvpMatrix);
         }
@@ -237,118 +234,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	
 
 	
-	/**
-	 * On Draw Frame
-	 * 
-	 * Possibly Render:
-	 *  1) An arrow to rotate the entire cube.
-	 *  2) An arrow to rotate an edge of the cube.
-	 *  3) An Overlay Cube (i.e., should be observed as exactly over the physical cube).
-	 *  4) An Pilot Cube off to the right, at a fixed size and location, but with rotation of the physical cube.
-	 * 
-	 * @param gl
-	 *  (non-Javadoc)
-	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
-	 */
-//	@Override
-	public void onDrawFrame_orig(GL10 gl) {
 
-	    //      Log.e(Constants.TAG, "GL Thread ID = " + Thread.currentThread().getId());
-
-	    // Clear color and depth buffers using clear-value set earlier
-	    gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-
-	    // Unless one of these conditions is true, we don't need to render anything.
-	    if( (MenuAndParams.pilotCubeDisplay == false) &&
-	            (MenuAndParams.cubeOverlayDisplay == false)  &&
-	            (stateModel.appState != AppStateEnum.ROTATE) && 
-	            (stateModel.appState != AppStateEnum.DO_MOVE) )
-	        return;
-
-	    // Make copy reference to Cube Reconstructor.
-	    // This is to avoid asynchronous OpenGL and OpenCV problems. 
-	    CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
-
-	    // Check and if null don't render.
-	    if(myCubeReconstructor == null)
-	        return;
-
-	    // Set GL_MODELVIEW transformation mode
-	    gl.glMatrixMode(GL10.GL_MODELVIEW);
-	    gl.glLoadIdentity();   // reset the matrix to its default state
-
-	    // When using GL_MODELVIEW, you must set the view point
-	    // Sets the location, direction, and orientation of camera, but not zoom
-	    GLU.gluLookAt(gl,  
-	            0,    0,    0,    // Camera Location
-	            0f,   0f,  -1f,   // Camera points down Z axis.
-	            0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
-
-
-//	    // Render User Instruction Arrows and possibly Overlay Cube
-//	    if( (MenuAndParams.cubeOverlayDisplay == true)  ||
-//	            (stateModel.appState == AppStateEnum.ROTATE) || 
-//	            (stateModel.appState == AppStateEnum.DO_MOVE) ) {
-//
-//	        // Save this Matrix State
-//	        gl.glPushMatrix();
-//	        
-//	        // Translate Cube per Pose Estimator
-//	        gl.glTranslatef(
-//	                myCubeReconstructor.x, 
-//	                myCubeReconstructor.y, 
-//	                myCubeReconstructor.z);
-//
-//	        // Rotation Cube per Pose Estimator 
-//	        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
-//	        
-//            // Rotation Cube per additional requests 
-//            gl.glMultMatrixf(stateModel.additionalGLCubeRotation, 0);
-//
-//	        // Scale
-//	        // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
-//	        float scale = (float) MenuAndParams.scaleOffsetParam.value;
-//	        gl.glScalef(scale, scale, scale);
-//
-//	        // If desire, render what we think is the cube location and orientation.
-//	        if(MenuAndParams.cubeOverlayDisplay == true)
-//	            overlayGLCube.draw(gl, true);
-//
-//	        // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
-//	        switch(stateModel.appState) {
-//
-//	        case ROTATE:
-//	            renderCubeFullRotationArrow(gl);
-//	            break;
-//
-//	        case DO_MOVE:
-//	            renderCubeEdgeRotationArrow(gl);
-//	            break;
-//
-//	        default:
-//	            break;
-//	        }
-//	        
-//	        // Return Matrix State
-//	        gl.glPopMatrix();
-//	    }
-
-	    // Render Pilot Cube
-	    if(MenuAndParams.pilotCubeDisplay == true && stateModel.renderPilotCube == true) {
-
-	        // Instead of using pose esitmator coordinates, instead position cube at
-	        // fix location.  We really just desire to observe rotation.
-	        gl.glTranslatef(-4.0f, 0.0f, -10.0f);
-
-	        // Rotation Cube per Pose Estimator 
-	        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
-
-	        // Rotation Cube per additional requests 
-            gl.glMultMatrixf(stateModel.additionalGLCubeRotation, 0);
-
-//	        pilotGLCube.draw(gl, false);
-	    }
-	}
 	
     
     /**
