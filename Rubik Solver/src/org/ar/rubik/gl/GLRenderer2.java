@@ -158,6 +158,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 unused) {
 	    
 	    float[] mvpMatrix = new float[16];
+	    float[] tmpMatrix = new float[16];
 
 	    // Draw background color
 	    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -194,7 +195,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             Matrix.multiplyMM(mvpMatrix, 0, mMVPMatrix, 0, tranMatrix, 0);
 
             // Rotation Cube per Pose Estimator 
-            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
+            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
             
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
@@ -221,7 +223,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             Matrix.multiplyMM(mvpMatrix, 0, mMVPMatrix, 0, tranMatrix, 0);
 
             // Rotation Cube per Pose Estimator 
-            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
+            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
 
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);

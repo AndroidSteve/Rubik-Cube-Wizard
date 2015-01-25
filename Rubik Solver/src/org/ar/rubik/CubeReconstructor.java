@@ -166,7 +166,7 @@ public class CubeReconstructor {
 //		Log.e(Constants.TAG, "Image Points: " + imagePoints.dump());
 //		Log.e(Constants.TAG, "Object Points: " + objectPoints.dump());
 		
-//		boolean result = 
+//		=+= sometimes a "count >= 4" exception 
 		Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
 		
 	    Log.v(Constants.TAG, String.format("Open CV Rotation Vector x=%4.2f y=%4.2f z=%4.2f", rvec.get(0, 0)[0], rvec.get(1, 0)[0], rvec.get(2, 0)[0] ));

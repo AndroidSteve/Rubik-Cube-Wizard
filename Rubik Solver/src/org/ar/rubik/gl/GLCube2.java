@@ -34,8 +34,6 @@ package org.ar.rubik.gl;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-
 import android.opengl.GLES20;
 
 /**
@@ -62,8 +60,8 @@ public class GLCube2 {
             "  gl_FragColor = vColor;" +
             "}";
 
-    private final FloatBuffer frontVertexBuffer;
-    private final ShortBuffer frontDrawListBuffer;
+//    private final FloatBuffer frontVertexBuffer;
+//    private final ShortBuffer frontDrawListBuffer;
 
     private final int mProgram;
     private int mPositionHandle;
@@ -128,7 +126,7 @@ public class GLCube2 {
          1.0f,  1.0f, +1.0f }; // top right
 
 
-    private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
+//    private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
@@ -139,21 +137,21 @@ public class GLCube2 {
      */
     public GLCube2() {
         
-        // initialize vertex byte buffer for shape coordinates
-        // (# of coordinate values * 4 bytes per float)
-        ByteBuffer frontCoordsByteBuffer = ByteBuffer.allocateDirect(frontCoords.length * 4);
-        frontCoordsByteBuffer.order(ByteOrder.nativeOrder());
-        frontVertexBuffer = frontCoordsByteBuffer.asFloatBuffer();
-        frontVertexBuffer.put(frontCoords);
-        frontVertexBuffer.position(0);
-
-        // initialize byte buffer for the draw list
-        // (# of coordinate values * 2 bytes per short)
-        ByteBuffer frontDrawByteBuffer = ByteBuffer.allocateDirect(drawOrder.length * 2);
-        frontDrawByteBuffer.order(ByteOrder.nativeOrder());
-        frontDrawListBuffer = frontDrawByteBuffer.asShortBuffer();
-        frontDrawListBuffer.put(drawOrder);
-        frontDrawListBuffer.position(0);
+//        // initialize vertex byte buffer for shape coordinates
+//        // (# of coordinate values * 4 bytes per float)
+//        ByteBuffer frontCoordsByteBuffer = ByteBuffer.allocateDirect(frontCoords.length * 4);
+//        frontCoordsByteBuffer.order(ByteOrder.nativeOrder());
+//        frontVertexBuffer = frontCoordsByteBuffer.asFloatBuffer();
+//        frontVertexBuffer.put(frontCoords);
+//        frontVertexBuffer.position(0);
+//
+//        // initialize byte buffer for the draw list
+//        // (# of coordinate values * 2 bytes per short)
+//        ByteBuffer frontDrawByteBuffer = ByteBuffer.allocateDirect(drawOrder.length * 2);
+//        frontDrawByteBuffer.order(ByteOrder.nativeOrder());
+//        frontDrawListBuffer = frontDrawByteBuffer.asShortBuffer();
+//        frontDrawListBuffer.put(drawOrder);
+//        frontDrawListBuffer.position(0);
         
         // Setup vertex-array buffer. Vertices in float. A float has 4 bytes
         // This reserves memory that GPU has direct access to (correct?).

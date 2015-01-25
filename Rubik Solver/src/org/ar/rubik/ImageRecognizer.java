@@ -68,6 +68,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 	// We cannot use Toast; it must be used on the UI thread and we are executing on the Frame thread.
 	private Mat errorImage = null;
 	
+	//
     private long framesPerSecondTimeStamp;
 
 	
