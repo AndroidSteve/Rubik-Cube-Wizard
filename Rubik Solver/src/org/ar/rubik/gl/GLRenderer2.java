@@ -106,6 +106,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 //      // Create two arrows: one half turn, one quarter turn.
 //      arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
 //      arrowHalfTurn = new GLArrow(Amount.HALF_TURN);
+	    
+	    GLES20.glEnable(GLES20.GL_CULL_FACE);
 	}
 
 
@@ -203,7 +205,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
             // If desire, render what we think is the cube location and orientation.
             if(MenuAndParams.cubeOverlayDisplay == true)
-                overlayGLCube.draw(mvpMatrix);
+                overlayGLCube.draw(mvpMatrix, true);
         }
 
 	    
@@ -224,7 +226,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
             
-            pilotGLCube.draw(mvpMatrix);
+            pilotGLCube.draw(mvpMatrix, false);
         }
 	}
 	

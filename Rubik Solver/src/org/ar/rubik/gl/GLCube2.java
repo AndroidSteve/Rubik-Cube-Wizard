@@ -137,7 +137,6 @@ public class GLCube2 {
         vertexBuffer.put(vertices);         // Copy data into buffer
         vertexBuffer.position(0);           // Rewind
         
-
         // prepare shaders and OpenGL program
         int vertexShader = GLUtil.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
         int fragmentShader = GLUtil.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
@@ -154,7 +153,7 @@ public class GLCube2 {
      * @param mvpMatrix - The Model View Project matrix in which to draw
      * this shape.
      */
-    public void draw(float[] mvpMatrix) {
+    public void draw(float[] mvpMatrix, boolean isTransparent) {
         
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
@@ -187,17 +186,19 @@ public class GLCube2 {
         
         // Render all the faces
         for (int face = 0; face < numFaces; face++) {
+ 
+            // Specify color and transparency
+            colors[face][3] = (isTransparent ? 0.2f : 1.0f);
+            GLES20.glUniform4fv(mColorHandle, 1, colors[face], 0);
 
-                GLES20.glUniform4fv(mColorHandle, 1, colors[face], 0);
-
-                GLES20.glDrawArrays(
-                        GLES20.GL_TRIANGLE_STRIP, 
-                        face*4, 
-                        4);
+            // Draw Triangles
+            GLES20.glDrawArrays(
+                    GLES20.GL_TRIANGLE_STRIP, 
+                    face*4, 
+                    4);
         }
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
-
 }
