@@ -60,16 +60,24 @@ public class GLCube2 {
             "  gl_FragColor = vColor;" +
             "}";
 
-//    private final FloatBuffer frontVertexBuffer;
-//    private final ShortBuffer frontDrawListBuffer;
 
     private final int mProgram;
     private int mPositionHandle;
     private int mColorHandle;
     private int mMVPMatrixHandle;
     
-    private FloatBuffer vertexBuffer;  // Buffer for vertex-array
-    private int numFaces = 6;
+    
+    // Buffer for vertex-array
+    private FloatBuffer vertexBuffer; 
+    
+    // number of cube faces: of course it is 6!
+    private static final int numFaces = 6;
+
+    // number of coordinates per vertex in this array
+    private static final int COORDS_PER_VERTEX = 3;
+
+    // number of total bytes in vertex stride: 12 in this case.
+    private static final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
     
     private float[][] colors = {  // Colors of the 6 faces
             {1.0f, 0.0f, 0.0f, 1.0f},  // 0. Front is Red
@@ -86,10 +94,6 @@ public class GLCube2 {
             1.0f, -1.0f,  1.0f,  // 1. right-bottom-front
            -1.0f,  1.0f,  1.0f,  // 2. left-top-front
             1.0f,  1.0f,  1.0f,  // 3. right-top-front
-//           -1.0f,  1.0f,  1.0f,  // 0. left-bottom-front
-//           -1.0f, -1.0f,  1.0f,  // 1. right-bottom-front
-//            1.0f, -1.0f,  1.0f,  // 2. left-top-front
-//            1.0f,  1.0f,  1.0f,  // 3. right-top-front
             // BACK
             1.0f, -1.0f, -1.0f,  // 6. right-bottom-back
            -1.0f, -1.0f, -1.0f,  // 4. left-bottom-back
@@ -117,41 +121,13 @@ public class GLCube2 {
             1.0f, -1.0f,  1.0f   // 1. right-bottom-front
     };
 
-    // number of coordinates per vertex in this array
-    static final int COORDS_PER_VERTEX = 3;
-    static float frontCoords[] = {
-        -1.0f,  1.0f, +1.0f,   // top left
-        -1.0f, -1.0f, +1.0f,   // bottom left
-         1.0f, -1.0f, +1.0f,   // bottom right
-         1.0f,  1.0f, +1.0f }; // top right
-
-
-//    private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
-
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-
-    float redColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    
+    
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
     public GLCube2() {
-        
-//        // initialize vertex byte buffer for shape coordinates
-//        // (# of coordinate values * 4 bytes per float)
-//        ByteBuffer frontCoordsByteBuffer = ByteBuffer.allocateDirect(frontCoords.length * 4);
-//        frontCoordsByteBuffer.order(ByteOrder.nativeOrder());
-//        frontVertexBuffer = frontCoordsByteBuffer.asFloatBuffer();
-//        frontVertexBuffer.put(frontCoords);
-//        frontVertexBuffer.position(0);
-//
-//        // initialize byte buffer for the draw list
-//        // (# of coordinate values * 2 bytes per short)
-//        ByteBuffer frontDrawByteBuffer = ByteBuffer.allocateDirect(drawOrder.length * 2);
-//        frontDrawByteBuffer.order(ByteOrder.nativeOrder());
-//        frontDrawListBuffer = frontDrawByteBuffer.asShortBuffer();
-//        frontDrawListBuffer.put(drawOrder);
-//        frontDrawListBuffer.position(0);
         
         // Setup vertex-array buffer. Vertices in float. A float has 4 bytes
         // This reserves memory that GPU has direct access to (correct?).
@@ -186,17 +162,10 @@ public class GLCube2 {
         // get handle to vertex shader's vPosition member
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
 
-        // Enable a handle to the triangle vertices
+        // Enable a handle to the cubevertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
-        // Prepare the triangle coordinate data
-//        GLES20.glVertexAttribPointer(
-//                mPositionHandle, 
-//                COORDS_PER_VERTEX,
-//                GLES20.GL_FLOAT,
-//                false,
-//                vertexStride,
-//                frontVertexBuffer);
+        // Prepare the cube coordinate data
         GLES20.glVertexAttribPointer(
                 mPositionHandle, 
                 COORDS_PER_VERTEX,
@@ -208,9 +177,6 @@ public class GLCube2 {
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
 
-        // Set color for drawing the triangle
-        GLES20.glUniform4fv(mColorHandle, 1, redColor, 0);
-
         // get handle to shape's transformation matrix
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         GLUtil.checkGlError("glGetUniformLocation");
@@ -218,19 +184,9 @@ public class GLCube2 {
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         GLUtil.checkGlError("glUniformMatrix4fv");
-
-        // Draw the square
-//        GLES20.glDrawElements(
-//                GLES20.GL_TRIANGLES, 
-//                drawOrder.length,
-//                GLES20.GL_UNSIGNED_SHORT,
-//                frontDrawListBuffer);
         
         // Render all the faces
         for (int face = 0; face < numFaces; face++) {
-            
-            // =+= Front (red) and Up (white)
-            if(face == 0 || face == 4) {
 
                 GLES20.glUniform4fv(mColorHandle, 1, colors[face], 0);
 
@@ -238,7 +194,6 @@ public class GLCube2 {
                         GLES20.GL_TRIANGLE_STRIP, 
                         face*4, 
                         4);
-            }
         }
 
         // Disable vertex array

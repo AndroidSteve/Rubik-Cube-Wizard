@@ -71,12 +71,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
     private GLCube2  pilotGLCube;
 
 
-
-    // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
-    private final float[] mMVPMatrix = new float[16];
+    // Projection Matrix:  basically defines a Frustum 
     private final float[] mProjectionMatrix = new float[16];
-    private final float[] mViewMatrix = new float[16];
-//    private final float[] mRotationMatrix = new float[16];
 
 
 	/**
@@ -87,16 +83,6 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	public GLRenderer2(StateModel stateModel) {
 		
 		this.stateModel = stateModel;
-		
-//		// Create the GL pilot cube
-//		pilotGLCube = new GLCube();
-//		
-//		// Create the GL overlay cube
-//		overlayGLCube = new GLCube();
-//		
-//		// Create two arrows: one half turn, one quarter turn.
-//		arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
-//		arrowHalfTurn = new GLArrow(Amount.HALF_TURN);
 	}
 
 
@@ -138,13 +124,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	        // such as screen rotations
 	        GLES20.glViewport(0, 0, width, height);
 	        
-// =+= Original
-//	        gl.glMatrixMode(GL10.GL_PROJECTION);        // set matrix to projection mode
-//	        gl.glLoadIdentity();                        // reset the matrix to its default state
-//	        
-//	        gl.glMultMatrixf(stateModel.cameraParameters.getOpenGLProjectionMatrix(), 0);
-	        
-	        // =+= 2.0 port
+	        // Calculate screen aspect ratio.  Should be the same as cameras
 	        float ratio = (float) width / height;
 
 	        // this projection matrix is applied to object coordinates
@@ -154,11 +134,26 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
 
 
+	/**
+	 * On Draw Frame
+	 * 
+	 *  (non-Javadoc)
+	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
+	 */
 	@Override
 	public void onDrawFrame(GL10 unused) {
+
+	    // View Matrix
+        final float[] viewMatrix = new float[16];
+        
+        // Projection View Matrix
+        final float[] pvMatrix   = new float[16];
+        
+        // Model View Projection Matrix
+	    final float[] mvpMatrix  = new float[16];
 	    
-	    float[] mvpMatrix = new float[16];
-	    float[] tmpMatrix = new float[16];
+	    // Temporary Matrix to facilitate in-place multiplies
+	    final float[] tmpMatrix  = new float[16];
 
 	    // Draw background color
 	    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -172,13 +167,13 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             return;
 
 	    // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0,
+        Matrix.setLookAtM(viewMatrix, 0,
                 0,    0,    0,    // Camera Location
                 0f,   0f,  -1f,   // Camera points down Z axis.
                 0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
 
 	    // Calculate the projection and view transformation
-	    Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+	    Matrix.multiplyMM(pvMatrix, 0, mProjectionMatrix, 0, viewMatrix, 0);
 	    
 	    
 	    
@@ -192,7 +187,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
                   myCubeReconstructor.x, 
                   myCubeReconstructor.y, 
                   myCubeReconstructor.z);
-            Matrix.multiplyMM(mvpMatrix, 0, mMVPMatrix, 0, tranMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, pvMatrix, 0, tranMatrix, 0);
 
             // Rotation Cube per Pose Estimator 
             Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
@@ -220,7 +215,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             float [] tranMatrix = new float[16];
             Matrix.setIdentityM(tranMatrix, 0);
             Matrix.translateM(tranMatrix, 0, -4.0f, 0.0f, -10.0f);
-            Matrix.multiplyMM(mvpMatrix, 0, mMVPMatrix, 0, tranMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, pvMatrix, 0, tranMatrix, 0);
 
             // Rotation Cube per Pose Estimator 
             Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
