@@ -200,8 +200,12 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
             // Scale
             // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
-//            float scale = (float) MenuAndParams.scaleOffsetParam.value;
-//            gl.glScalef(scale, scale, scale);
+            float scale = (float) MenuAndParams.scaleOffsetParam.value;
+            float [] scaleMatrix = new float[16];
+            Matrix.setIdentityM(scaleMatrix, 0);
+            Matrix.scaleM(scaleMatrix, 0, scale, scale, scale);
+            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, scaleMatrix, 0);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
 
             // If desire, render what we think is the cube location and orientation.
             if(MenuAndParams.cubeOverlayDisplay == true)
@@ -209,7 +213,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         }
 
 	    
-	       // Render Pilot Cube
+	    // Render Pilot Cube
         if(MenuAndParams.pilotCubeDisplay == true && stateModel.renderPilotCube == true) {
 
             // Instead of using pose esitmator coordinates, instead position cube at

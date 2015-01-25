@@ -43,12 +43,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.ar.rubik.gl.GLRenderer;
+import org.ar.rubik.gl.GLRenderer2;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+
 import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
@@ -172,7 +173,7 @@ public class AndroidActivity extends Activity {
         
         // Setup and Add GL Surface View and GL Renderer
         gLSurfaceView = new GLSurfaceView(this);
-//        gLSurfaceView.setEGLContextClientVersion(2);         // Create an OpenGL ES 2.0 context.
+        gLSurfaceView.setEGLContextClientVersion(2);         // Create an OpenGL ES 2.0 context.
         gLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
         gLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
         gLSurfaceView.setZOrderOnTop(true);
@@ -181,7 +182,7 @@ public class AndroidActivity extends Activity {
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
         frameLayout.addView(gLSurfaceView);
-        GLRenderer gLRenderer = new GLRenderer(stateModel);
+        GLRenderer2 gLRenderer = new GLRenderer2(stateModel);
         gLSurfaceView.setRenderer(gLRenderer); 	
 
         // =+= Currently not in use, but is used to support OpenCL

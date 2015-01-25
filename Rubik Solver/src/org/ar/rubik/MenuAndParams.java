@@ -64,7 +64,7 @@ public class MenuAndParams {
 	public static boolean userTextDisplay = true;
 	
     // Toggle Cube Overlay
-    public static boolean cubeOverlayDisplay = false;
+    public static boolean cubeOverlayDisplay = true;
 
     // Toggle Face Overlay
     public static boolean faceOverlayDisplay = true;
@@ -93,10 +93,10 @@ public class MenuAndParams {
     public static RubikMenuParam xRotationOffsetParam        = new RubikMenuParam("X Rotation Offset",         -20.0,  +20.0,   +0.0);
     public static RubikMenuParam yRotationOffsetParam        = new RubikMenuParam("Y Rotation Offset",         -20.0,  +20.0,   +0.0);
     public static RubikMenuParam zRotationOffsetParam        = new RubikMenuParam("Z Rotation Offset",         -20.0,  +20.0,   +0.0);
-    public static RubikMenuParam xTranslationOffsetParam     = new RubikMenuParam("X Translation Offset",      -2.0,    +2.0,   -0.4);
-    public static RubikMenuParam yTranslationOffsetParam     = new RubikMenuParam("Y Translation Offset",      -2.0,    +2.0,   +0.0);
+    public static RubikMenuParam xTranslationOffsetParam     = new RubikMenuParam("X Translation Offset",      -2.0,    +2.0,   +0.2);
+    public static RubikMenuParam yTranslationOffsetParam     = new RubikMenuParam("Y Translation Offset",      -2.0,    +2.0,   -0.1);
     public static RubikMenuParam zTranslationOffsetParam     = new RubikMenuParam("Z Translation Offset",      -2.0,    +2.0,   +0.0);
-    public static RubikMenuParam scaleOffsetParam            = new RubikMenuParam("Scale Offset",              +0.5,    +2.0,   +0.8);
+    public static RubikMenuParam scaleOffsetParam            = new RubikMenuParam("Scale Offset",              +0.5,    +2.0,   +1.4);
 
     
 	// Gaussian Blur Kernal Size
