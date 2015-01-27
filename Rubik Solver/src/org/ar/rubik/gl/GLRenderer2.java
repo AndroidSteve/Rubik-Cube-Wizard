@@ -42,12 +42,13 @@ import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
-import org.ar.rubik.gl.GLArrow.Amount;
+import org.ar.rubik.gl.GLArrow2.Amount;
 import org.opencv.core.Scalar;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 
 /**
@@ -65,8 +66,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	private StateModel stateModel;
 	
 	// GL Objects that can be rendered
-	private GLArrow arrowQuarterTurn;
-	private GLArrow arrowHalfTurn;
+	private GLArrow2 arrowQuarterTurn;
+	private GLArrow2 arrowHalfTurn;
 	private GLCube2  overlayGLCube;
     private GLCube2  pilotGLCube;
 
@@ -102,12 +103,10 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
 	    // Create the GL overlay cube
 	    overlayGLCube = new GLCube2();
-//      
-//      // Create two arrows: one half turn, one quarter turn.
-//      arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
-//      arrowHalfTurn = new GLArrow(Amount.HALF_TURN);
 	    
-	    GLES20.glEnable(GLES20.GL_CULL_FACE);
+	    // Create two arrows: one half turn, one quarter turn.
+	    arrowQuarterTurn = new GLArrow2(Amount.QUARTER_TURN);
+	    arrowHalfTurn = new GLArrow2(Amount.HALF_TURN);
 	}
 
 
@@ -136,9 +135,15 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
 
 
-	/**
-	 * On Draw Frame
-	 * 
+    /**
+     * On Draw Frame
+     * 
+     * Possibly Render:
+     *  1) An arrow to rotate the entire cube.
+     *  2) An arrow to rotate an edge of the cube.
+     *  3) An Overlay Cube (i.e., should be observed as exactly over the physical cube).
+     *  4) An Pilot Cube off to the right, at a fixed size and location, but with rotation of the physical cube.
+     * 
 	 *  (non-Javadoc)
 	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
 	 */
@@ -210,6 +215,23 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             // If desire, render what we think is the cube location and orientation.
             if(MenuAndParams.cubeOverlayDisplay == true)
                 overlayGLCube.draw(mvpMatrix, true);
+            
+            
+            // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
+            switch(stateModel.appState) {
+            
+
+            case ROTATE:
+                renderCubeFullRotationArrow(mvpMatrix);
+                break;
+
+//            case DO_MOVE:
+//                renderCubeEdgeRotationArrow(mvpMatrix, unused);
+//                break;
+
+            default:
+                break;
+            }
         }
 
 	    
@@ -250,7 +272,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * 
 	 * @param gl
 	 */
-	private void renderCubeEdgeRotationArrow(GL10 gl) {
+	private void renderCubeEdgeRotationArrow(float[] mvpMatrix, GL10 gl) {
 		
 		String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
 
@@ -325,9 +347,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 		}
 		
 		if(amount == Amount.QUARTER_TURN)
-			arrowQuarterTurn.draw(gl, color);
+			arrowQuarterTurn.draw(mvpMatrix, color);
 		else
-			arrowHalfTurn.draw(gl, color);
+			arrowHalfTurn.draw(mvpMatrix, color);
 	}
 
 
@@ -340,29 +362,62 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * 
 	 * @param gl
 	 */
-	private void renderCubeFullRotationArrow(GL10 gl) {		
-		
-		// Render Front Face to Top Face Arrow Rotation
-		if(stateModel.getNumObservedFaces() % 2 == 0) {
-			gl.glTranslatef(0.0f, +1.5f, +1.5f);
-			gl.glRotatef(-90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
-		}
-		
-		// Render Right Face to Top Face Arrow Rotation
-		else {
-			gl.glTranslatef(+1.5f, +1.5f, 0.0f);
-		}
-		
-		
-		// Reverse direction of arrow.
-		gl.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
-		gl.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
-
-		// Make Arrow Wider than normal by a factor of three.
-		gl.glScalef(1.0f, 1.0f, 3.0f);
+	private void renderCubeFullRotationArrow(float[] mvpMatrix) {
+	    
+//	    float [] tmpMatrix = new float[16];
+//        float [] tranMatrix = new float[16];
+//        float [] rotateMatrix = new float[16];
+//        float [] scaleMatrix = new float[16];
+//               
+//        
+//		// Render Front Face to Top Face Arrow Rotation
+//		if(stateModel.getNumObservedFaces() % 2 == 0) {
+//		    
+//            Matrix.setIdentityM(tranMatrix, 0);
+//            Matrix.translateM(tranMatrix, 0, 0.0f, +1.5f, +1.5f);
+//            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
+//            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+////			GLES20.glTranslatef(0.0f, +1.5f, +1.5f);
+//
+//            Matrix.setIdentityM(rotateMatrix, 0);
+//            Matrix.rotateM(rotateMatrix, 0, -90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
+//            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
+//            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+////			GLES20.glRotatef(-90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
+//		}
+//		
+//		// Render Right Face to Top Face Arrow Rotation
+//		else {
+//            Matrix.setIdentityM(tranMatrix, 0);
+//            Matrix.translateM(tranMatrix, 0, +1.5f, +1.5f, 0.0f);
+//            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
+//            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+////			GLES20.glTranslatef(+1.5f, +1.5f, 0.0f);
+//		}
+//		
+//		
+//		// Reverse direction of arrow.
+//        Matrix.setIdentityM(rotateMatrix, 0);
+//        Matrix.rotateM(rotateMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+//        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
+//        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+////		GLES20.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+//
+//        Matrix.setIdentityM(rotateMatrix, 0);
+//        Matrix.rotateM(rotateMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+//        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
+//        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+////		GLES20.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+//
+//		// Make Arrow Wider than normal by a factor of three.
+//        Matrix.setIdentityM(scaleMatrix, 0);
+//        Matrix.scaleM(scaleMatrix, 0, 1.0f, 1.0f, 3.0f);
+//        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, scaleMatrix, 0);
+//        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+////		GLES20.glScalef(1.0f, 1.0f, 3.0f);
 		
 		// Render Quarter Turn Arrow
-		arrowQuarterTurn.draw(gl, Constants.ColorWhite);
+		arrowQuarterTurn.draw(mvpMatrix, Constants.ColorWhite);
 	}
 
 }

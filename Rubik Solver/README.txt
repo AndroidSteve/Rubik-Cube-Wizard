@@ -18,9 +18,9 @@ Notice:
 To Do:
 
   o  Move to GLES 2.0
-     - Study example code.
-     - Some kronous required.
-     - Shaders required.
+     - Re-establish arrows
+     - Broader review and examination of calibration
+     - Ocult, then, transparent: custom shader?
   o  Time and CPU measurements.  Possible use of DDMS
   o  Refactor and clean up state machines.
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
