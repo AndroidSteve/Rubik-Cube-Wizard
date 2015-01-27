@@ -214,7 +214,7 @@ public class GLArrow2 {
         GLES20.glDrawArrays(
                 GLES20.GL_TRIANGLE_STRIP, 
                 0, 
-                VERTICES_PER_ARCH * 2);
+                VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);

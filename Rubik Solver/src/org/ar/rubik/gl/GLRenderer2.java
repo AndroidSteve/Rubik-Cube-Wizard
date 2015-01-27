@@ -187,18 +187,17 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    // Render User Instruction Arrows and possibly Overlay Cube
         if( (MenuAndParams.cubeOverlayDisplay == true)  ) {
             
+            System.arraycopy(pvMatrix, 0, mvpMatrix, 0, pvMatrix.length);
+            
             // Translate Cube per Pose Estimator
-            float [] tranMatrix = new float[16];
-            Matrix.setIdentityM(tranMatrix, 0);
-            Matrix.translateM(tranMatrix, 0, 
-                  myCubeReconstructor.x, 
-                  myCubeReconstructor.y, 
-                  myCubeReconstructor.z);
-            Matrix.multiplyMM(mvpMatrix, 0, pvMatrix, 0, tranMatrix, 0);
-
+            Matrix.translateM(mvpMatrix, 0, 
+                    myCubeReconstructor.x, 
+                    myCubeReconstructor.y, 
+                    myCubeReconstructor.z);
+            
             // Rotation Cube per Pose Estimator 
             Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, mvpMatrix.length);
             
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
@@ -206,11 +205,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             // Scale
             // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
             float scale = (float) MenuAndParams.scaleOffsetParam.value;
-            float [] scaleMatrix = new float[16];
-            Matrix.setIdentityM(scaleMatrix, 0);
-            Matrix.scaleM(scaleMatrix, 0, scale, scale, scale);
-            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, scaleMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+            Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
 
             // If desire, render what we think is the cube location and orientation.
             if(MenuAndParams.cubeOverlayDisplay == true)
@@ -237,17 +232,16 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    
 	    // Render Pilot Cube
         if(MenuAndParams.pilotCubeDisplay == true && stateModel.renderPilotCube == true) {
+            
+            System.arraycopy(pvMatrix, 0, mvpMatrix, 0, pvMatrix.length);
 
             // Instead of using pose esitmator coordinates, instead position cube at
             // fix location.  We really just desire to observe rotation.
-            float [] tranMatrix = new float[16];
-            Matrix.setIdentityM(tranMatrix, 0);
-            Matrix.translateM(tranMatrix, 0, -4.0f, 0.0f, -10.0f);
-            Matrix.multiplyMM(mvpMatrix, 0, pvMatrix, 0, tranMatrix, 0);
+            Matrix.translateM(mvpMatrix, 0, -6.0f, 0.0f, -10.0f);
 
             // Rotation Cube per Pose Estimator 
             Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, mvpMatrix.length);
 
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
@@ -363,58 +357,24 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * @param gl
 	 */
 	private void renderCubeFullRotationArrow(float[] mvpMatrix) {
-	    
-	    float [] tmpMatrix = new float[16];
-        float [] tranMatrix = new float[16];
-        float [] rotateMatrix = new float[16];
-        float [] scaleMatrix = new float[16];
-               
-        
+	            
 		// Render Front Face to Top Face Arrow Rotation
 		if(stateModel.getNumObservedFaces() % 2 == 0) {
-		    
-            Matrix.setIdentityM(tranMatrix, 0);
-            Matrix.translateM(tranMatrix, 0, 0.0f, +1.5f, +1.5f);
-            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-//			GLES20.glTranslatef(0.0f, +1.5f, +1.5f);
-
-            Matrix.setIdentityM(rotateMatrix, 0);
-            Matrix.rotateM(rotateMatrix, 0, -90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
-            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-//			GLES20.glRotatef(-90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
+            Matrix.translateM(mvpMatrix, 0, 0.0f, +1.5f, +1.5f);
+            Matrix.rotateM(mvpMatrix, 0, -90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
 		}
 		
 		// Render Right Face to Top Face Arrow Rotation
 		else {
-            Matrix.setIdentityM(tranMatrix, 0);
-            Matrix.translateM(tranMatrix, 0, +1.5f, +1.5f, 0.0f);
-            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-//			GLES20.glTranslatef(+1.5f, +1.5f, 0.0f);
-		}
-		
+            Matrix.translateM(mvpMatrix, 0, +1.5f, +1.5f, 0.0f);
+		}	
 		
 		// Reverse direction of arrow.
-        Matrix.setIdentityM(rotateMatrix, 0);
-        Matrix.rotateM(rotateMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
-        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
-        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-//		GLES20.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
-
-        Matrix.setIdentityM(rotateMatrix, 0);
-        Matrix.rotateM(rotateMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
-        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
-        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-//		GLES20.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+        Matrix.rotateM(mvpMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+        Matrix.rotateM(mvpMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
 
 		// Make Arrow Wider than normal by a factor of three.
-        Matrix.setIdentityM(scaleMatrix, 0);
-        Matrix.scaleM(scaleMatrix, 0, 1.0f, 1.0f, 3.0f);
-        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, scaleMatrix, 0);
-        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-//		GLES20.glScalef(1.0f, 1.0f, 3.0f);
+        Matrix.scaleM(mvpMatrix, 0, 1.0f, 1.0f, 3.0f);
 		
 		// Render Quarter Turn Arrow
 		arrowQuarterTurn.draw(mvpMatrix, Constants.ColorWhite);
