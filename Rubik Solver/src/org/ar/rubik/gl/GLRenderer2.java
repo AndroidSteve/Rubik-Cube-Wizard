@@ -364,57 +364,57 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 */
 	private void renderCubeFullRotationArrow(float[] mvpMatrix) {
 	    
-//	    float [] tmpMatrix = new float[16];
-//        float [] tranMatrix = new float[16];
-//        float [] rotateMatrix = new float[16];
-//        float [] scaleMatrix = new float[16];
-//               
-//        
-//		// Render Front Face to Top Face Arrow Rotation
-//		if(stateModel.getNumObservedFaces() % 2 == 0) {
-//		    
-//            Matrix.setIdentityM(tranMatrix, 0);
-//            Matrix.translateM(tranMatrix, 0, 0.0f, +1.5f, +1.5f);
-//            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
-//            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-////			GLES20.glTranslatef(0.0f, +1.5f, +1.5f);
-//
-//            Matrix.setIdentityM(rotateMatrix, 0);
-//            Matrix.rotateM(rotateMatrix, 0, -90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
-//            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
-//            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-////			GLES20.glRotatef(-90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
-//		}
-//		
-//		// Render Right Face to Top Face Arrow Rotation
-//		else {
-//            Matrix.setIdentityM(tranMatrix, 0);
-//            Matrix.translateM(tranMatrix, 0, +1.5f, +1.5f, 0.0f);
-//            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
-//            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-////			GLES20.glTranslatef(+1.5f, +1.5f, 0.0f);
-//		}
-//		
-//		
-//		// Reverse direction of arrow.
-//        Matrix.setIdentityM(rotateMatrix, 0);
-//        Matrix.rotateM(rotateMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
-//        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
-//        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-////		GLES20.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
-//
-//        Matrix.setIdentityM(rotateMatrix, 0);
-//        Matrix.rotateM(rotateMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
-//        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
-//        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-////		GLES20.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
-//
-//		// Make Arrow Wider than normal by a factor of three.
-//        Matrix.setIdentityM(scaleMatrix, 0);
-//        Matrix.scaleM(scaleMatrix, 0, 1.0f, 1.0f, 3.0f);
-//        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, scaleMatrix, 0);
-//        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
-////		GLES20.glScalef(1.0f, 1.0f, 3.0f);
+	    float [] tmpMatrix = new float[16];
+        float [] tranMatrix = new float[16];
+        float [] rotateMatrix = new float[16];
+        float [] scaleMatrix = new float[16];
+               
+        
+		// Render Front Face to Top Face Arrow Rotation
+		if(stateModel.getNumObservedFaces() % 2 == 0) {
+		    
+            Matrix.setIdentityM(tranMatrix, 0);
+            Matrix.translateM(tranMatrix, 0, 0.0f, +1.5f, +1.5f);
+            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+//			GLES20.glTranslatef(0.0f, +1.5f, +1.5f);
+
+            Matrix.setIdentityM(rotateMatrix, 0);
+            Matrix.rotateM(rotateMatrix, 0, -90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
+            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+//			GLES20.glRotatef(-90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
+		}
+		
+		// Render Right Face to Top Face Arrow Rotation
+		else {
+            Matrix.setIdentityM(tranMatrix, 0);
+            Matrix.translateM(tranMatrix, 0, +1.5f, +1.5f, 0.0f);
+            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, tranMatrix, 0);
+            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+//			GLES20.glTranslatef(+1.5f, +1.5f, 0.0f);
+		}
+		
+		
+		// Reverse direction of arrow.
+        Matrix.setIdentityM(rotateMatrix, 0);
+        Matrix.rotateM(rotateMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
+        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+//		GLES20.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+
+        Matrix.setIdentityM(rotateMatrix, 0);
+        Matrix.rotateM(rotateMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, rotateMatrix, 0);
+        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+//		GLES20.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+
+		// Make Arrow Wider than normal by a factor of three.
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, 1.0f, 1.0f, 3.0f);
+        Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, scaleMatrix, 0);
+        System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, tmpMatrix.length);
+//		GLES20.glScalef(1.0f, 1.0f, 3.0f);
 		
 		// Render Quarter Turn Arrow
 		arrowQuarterTurn.draw(mvpMatrix, Constants.ColorWhite);

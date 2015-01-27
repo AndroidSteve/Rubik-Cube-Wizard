@@ -19,12 +19,10 @@ To Do:
 
   o  Move to GLES 2.0
      - Re-establish arrows
-     - Broader review and examination of calibration
-     - Ocult, then, transparent: custom shader?
   o  Time and CPU measurements.  Possible use of DDMS
   o  Refactor and clean up state machines.
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
-  o  Make direction arrows occult with respect to physical cube.
+  o  Make direction arrows occult with respect to physical cube: custom shader?
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
   o  Introduce real Pilot Cube that demonstrates requested user activity.
