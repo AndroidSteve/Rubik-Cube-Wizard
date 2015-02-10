@@ -161,6 +161,7 @@ public class GLCube2 {
     public void draw(float[] mvpMatrix, boolean isTransparent) {
         
         GLES20.glEnable(GLES20.GL_CULL_FACE);
+        GLES20.glCullFace(GLES20.GL_BACK);   // =+= ?? Why ??
         
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);

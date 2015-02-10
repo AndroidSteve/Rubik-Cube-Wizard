@@ -152,11 +152,11 @@ public class GLArrow2 {
         
         double angleDegrees = angleRads * 180.0 / Math.PI;
         
-        // Arrow Body
+        // Arrow Body - A constant width of 0.3.
         if(angleDegrees > 20.0)
             return 0.3f;
         
-        // Arrow Head
+        // Arrow Head - Ranges from a width of 0.0 to 0.6.
         else
             return (float) (angleDegrees / 20.0 * 0.6);
     }
@@ -171,6 +171,8 @@ public class GLArrow2 {
      */
     public void draw(float[] mvpMatrix, Scalar color) {
         
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
+        
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
 
@@ -179,15 +181,6 @@ public class GLArrow2 {
 
         // Enable a handle to the cube vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
-
-        // Prepare the cube coordinate data
-        GLES20.glVertexAttribPointer(
-                mPositionHandle, 
-                COORDS_PER_VERTEX,
-                GLES20.GL_FLOAT,
-                false,
-                VERTEX_STRIDE,
-                vertexBuffer);
         
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
@@ -198,17 +191,31 @@ public class GLArrow2 {
 
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        GLUtil.checkGlError("glUniformMatrix4fv");
+        GLUtil.checkGlError("glUniformMatrix4fv");        
         
- 
+
+        
+        
+        // Prepare the cube coordinate data
+        GLES20.glVertexAttribPointer(
+                mPositionHandle, 
+                COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT,
+                false,
+                VERTEX_STRIDE,
+                vertexBuffer);
+
+        // Draw Back Side a bit darker
         // Translate to GL Color and make a bit darker.
-        float [] glColor = {
+        float [] glBackSideColor = {
                 (float)color.val[0] / (256.0f + 128.0f),
                 (float)color.val[1] / (256.0f + 128.0f),
                 (float)color.val[2] / (256.0f + 128.0f),
                 1.0f
         };
-        GLES20.glUniform4fv(mColorHandle, 1, glColor, 0);
+        GLES20.glUniform4fv(mColorHandle, 1, glBackSideColor, 0);
+
+        GLES20.glCullFace(GLES20.GL_BACK);
 
         // Draw Triangles
         GLES20.glDrawArrays(
@@ -216,7 +223,40 @@ public class GLArrow2 {
                 0, 
                 VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
 
+        
+                
+        // Prepare the cube coordinate data
+        GLES20.glVertexAttribPointer(
+                mPositionHandle, 
+                COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT,
+                false,
+                VERTEX_STRIDE,
+                vertexBuffer);
+
+        // Draw Front Side a bit darker
+        // Translate to GL Color and make a bit darker.
+        float [] glFrontSideColor = {
+                (float)color.val[0] / 256.0f,
+                (float)color.val[1] / 256.0f,
+                (float)color.val[2] / 256.0f,
+                1.0f
+        };
+        GLES20.glUniform4fv(mColorHandle, 1, glFrontSideColor, 0);
+
+        GLES20.glCullFace(GLES20.GL_FRONT);
+
+        // Draw Triangles
+        GLES20.glDrawArrays(
+                GLES20.GL_TRIANGLE_STRIP, 
+                0, 
+                VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
+
+
+
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(mPositionHandle);        
+        
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
     }
 }
