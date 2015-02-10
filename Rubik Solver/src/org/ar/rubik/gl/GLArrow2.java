@@ -72,10 +72,6 @@ public class GLArrow2 {
     public enum Amount { QUARTER_TURN, HALF_TURN };
 
     private final int mProgram;
-    private int mPositionHandle;
-    private int mColorHandle;
-    private int mMVPMatrixHandle;
-    
     
     // Buffer for vertex-array
     private FloatBuffer vertexBuffer;
@@ -177,34 +173,53 @@ public class GLArrow2 {
         GLES20.glUseProgram(mProgram);
 
         // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        int vertexArrayID = GLES20.glGetAttribLocation(mProgram, "vPosition");
 
         // Enable a handle to the cube vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glEnableVertexAttribArray(vertexArrayID);
         
         // get handle to fragment shader's vColor member
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+        int colorID = GLES20.glGetUniformLocation(mProgram, "vColor");
 
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        int mvpMatrixID = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         GLUtil.checkGlError("glGetUniformLocation");
 
         // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        GLES20.glUniformMatrix4fv(mvpMatrixID, 1, false, mvpMatrix, 0);
         GLUtil.checkGlError("glUniformMatrix4fv");        
-        
-
-        
-        
+ 
         // Prepare the cube coordinate data
         GLES20.glVertexAttribPointer(
-                mPositionHandle, 
+                vertexArrayID, 
                 COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT,
                 false,
                 VERTEX_STRIDE,
                 vertexBuffer);
 
+        
+        
+        // Draw Front Side a bit darker
+        // Translate to GL Color
+        float [] glFrontSideColor = {
+                (float)color.val[0] / 256.0f,
+                (float)color.val[1] / 256.0f,
+                (float)color.val[2] / 256.0f,
+                1.0f
+        };
+        GLES20.glUniform4fv(colorID, 1, glFrontSideColor, 0);
+
+        GLES20.glCullFace(GLES20.GL_FRONT);
+
+        // Draw Triangles
+        GLES20.glDrawArrays(
+                GLES20.GL_TRIANGLE_STRIP, 
+                0, 
+                VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
+        
+
+        
         // Draw Back Side a bit darker
         // Translate to GL Color and make a bit darker.
         float [] glBackSideColor = {
@@ -213,38 +228,9 @@ public class GLArrow2 {
                 (float)color.val[2] / (256.0f + 128.0f),
                 1.0f
         };
-        GLES20.glUniform4fv(mColorHandle, 1, glBackSideColor, 0);
+        GLES20.glUniform4fv(colorID, 1, glBackSideColor, 0);
 
         GLES20.glCullFace(GLES20.GL_BACK);
-
-        // Draw Triangles
-        GLES20.glDrawArrays(
-                GLES20.GL_TRIANGLE_STRIP, 
-                0, 
-                VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
-
-        
-                
-        // Prepare the cube coordinate data
-        GLES20.glVertexAttribPointer(
-                mPositionHandle, 
-                COORDS_PER_VERTEX,
-                GLES20.GL_FLOAT,
-                false,
-                VERTEX_STRIDE,
-                vertexBuffer);
-
-        // Draw Front Side a bit darker
-        // Translate to GL Color and make a bit darker.
-        float [] glFrontSideColor = {
-                (float)color.val[0] / 256.0f,
-                (float)color.val[1] / 256.0f,
-                (float)color.val[2] / 256.0f,
-                1.0f
-        };
-        GLES20.glUniform4fv(mColorHandle, 1, glFrontSideColor, 0);
-
-        GLES20.glCullFace(GLES20.GL_FRONT);
 
         // Draw Triangles
         GLES20.glDrawArrays(
@@ -255,7 +241,7 @@ public class GLArrow2 {
 
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);        
+        GLES20.glDisableVertexAttribArray(vertexArrayID);        
         
         GLES20.glDisable(GLES20.GL_CULL_FACE);
     }
