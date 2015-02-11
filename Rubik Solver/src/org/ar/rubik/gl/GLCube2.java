@@ -141,8 +141,8 @@ public class GLCube2 {
         vertexBuffer.position(0);           // Rewind
         
         // prepare shaders and OpenGL program
-        int vertexShader = GLUtil.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
-        int fragmentShader = GLUtil.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+        int vertexShader = GLUtil.compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
+        int fragmentShader = GLUtil.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
 
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
         GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program

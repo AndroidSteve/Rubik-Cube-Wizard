@@ -31,8 +31,27 @@
  */
 package org.ar.rubik.gl;
 
+import static android.opengl.GLES20.GL_COMPILE_STATUS;
+import static android.opengl.GLES20.GL_VALIDATE_STATUS;
+import static android.opengl.GLES20.glCompileShader;
+import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.glDeleteShader;
+import static android.opengl.GLES20.glGetProgramInfoLog;
+import static android.opengl.GLES20.glGetProgramiv;
+import static android.opengl.GLES20.glGetShaderInfoLog;
+import static android.opengl.GLES20.glGetShaderiv;
+import static android.opengl.GLES20.glShaderSource;
+import static android.opengl.GLES20.glValidateProgram;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.ar.rubik.Constants;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -43,28 +62,97 @@ import android.util.Log;
 public class GLUtil {
 
     /**
-     * Utility method for compiling a OpenGL shader.
-     *
-     * <p><strong>Note:</strong> When developing shaders, use the checkGlError()
-     * method to debug shader coding errors.</p>
-     *
-     * @param type - Vertex or fragment shader type.
-     * @param shaderCode - String containing the shader code.
-     * @return - Returns an id for the shader.
+     * Reads in text from a resource file and returns a String containing the
+     * text.
      */
-    public static int loadShader(int type, String shaderCode){
+    public static String readTextFileFromResource(Context context, int resourceId) {
+        StringBuilder body = new StringBuilder();
 
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        int shader = GLES20.glCreateShader(type);
+        try {
+            InputStream inputStream = context.getResources().openRawResource(resourceId);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-        // add the source code to the shader and compile it
-        GLES20.glShaderSource(shader, shaderCode);
-        GLES20.glCompileShader(shader);
+            String nextLine;
 
-        return shader;
+            while ((nextLine = bufferedReader.readLine()) != null) {
+                body.append(nextLine);
+                body.append('\n');
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Could not open resource: " + resourceId, e);
+        } catch (Resources.NotFoundException nfe) {
+            throw new RuntimeException("Resource not found: " + resourceId, nfe);
+        }
+
+        return body.toString();
     }
 
+    
+
+    /**
+     * Compiles a shader, returning the OpenGL object ID.
+     * 
+     * @param type
+     * @param shaderCode
+     * @return
+     */
+    public static int compileShader(int type, String shaderCode) {
+        // Create a new shader object.
+        final int shaderObjectId = glCreateShader(type);
+
+        if (shaderObjectId == 0) {
+            if (Constants.LOGGER) {
+                Log.w(Constants.TAG_SHADER, "Could not create new shader.");
+            }
+
+            return 0;
+        }
+
+        // Pass in the shader source.
+        glShaderSource(shaderObjectId, shaderCode);
+
+        // Compile the shader.
+        glCompileShader(shaderObjectId);
+
+        // Get the compilation status.
+        final int[] compileStatus = new int[1];
+        glGetShaderiv(shaderObjectId, GL_COMPILE_STATUS, compileStatus, 0);
+
+        if (Constants.LOGGER) {
+            // Print the shader info log to the Android log output.
+            Log.v(Constants.TAG_SHADER, "Results of compiling source:" + "\n" + shaderCode + "\n:"
+                    + glGetShaderInfoLog(shaderObjectId));
+        }
+
+        // Verify the compile status.
+        if (compileStatus[0] == 0) {
+            // If it failed, delete the shader object.
+            glDeleteShader(shaderObjectId);
+
+            if (Constants.LOGGER) {
+                Log.w(Constants.TAG_SHADER, "Compilation of shader failed.");
+            }
+
+            return 0;
+        }
+
+        // Return the shader object ID.
+        return shaderObjectId;
+    }
+    
+    
+    /**
+     * Validates an OpenGL program. Should only be called when developing the
+     * application.
+     */
+    public static boolean validateProgram(int programObjectId) {
+        glValidateProgram(programObjectId);
+        final int[] validateStatus = new int[1];
+        glGetProgramiv(programObjectId, GL_VALIDATE_STATUS, validateStatus, 0);
+        Log.v(Constants.TAG_SHADER, "Results of validating program: " + validateStatus[0] + "\nLog:" + glGetProgramInfoLog(programObjectId));
+        return validateStatus[0] != 0;
+    }
     
     
     /**

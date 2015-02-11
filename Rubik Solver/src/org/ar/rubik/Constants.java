@@ -42,7 +42,10 @@ public class Constants {
 	public static final String TAG = "RubikSolver";
 
 	public static final String TAG_CNTRL = "RubikCntrl";
+	
+    public static final String TAG_SHADER = "ShaderHelper";
 
+    
 	public enum AppStateEnum { 
 		START,     // Ready
 		GOT_IT,    // A Cube Face has been recognized and captured.
@@ -149,4 +152,6 @@ public class Constants {
 
 	// Any OpenCV font
 	public final static int FontFace = Core.FONT_HERSHEY_PLAIN;
+	
+	public final static boolean LOGGER = true;
 }

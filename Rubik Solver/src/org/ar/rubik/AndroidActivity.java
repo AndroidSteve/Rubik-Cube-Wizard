@@ -182,8 +182,8 @@ public class AndroidActivity extends Activity {
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
         frameLayout.addView(gLSurfaceView);
-        GLRenderer2 gLRenderer = new GLRenderer2(stateModel);
-        gLSurfaceView.setRenderer(gLRenderer); 	
+        GLRenderer2 gLRenderer = new GLRenderer2(stateModel, this);
+        gLSurfaceView.setRenderer(gLRenderer);
 
         // =+= Currently not in use, but is used to support OpenCL
         MonoChromatic.initOpenCL(getOpenCLProgram());

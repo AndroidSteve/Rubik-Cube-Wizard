@@ -45,10 +45,10 @@ import org.ar.rubik.StateModel;
 import org.ar.rubik.gl.GLArrow2.Amount;
 import org.opencv.core.Scalar;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.util.Log;
 
 
 /**
@@ -64,26 +64,31 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
 	// Main State Model
 	private StateModel stateModel;
-	
+
+	// Android Application Context
+    private Context context;
+    
 	// GL Objects that can be rendered
 	private GLArrow2 arrowQuarterTurn;
 	private GLArrow2 arrowHalfTurn;
 	private GLCube2  overlayGLCube;
     private GLCube2  pilotGLCube;
 
-
     // Projection Matrix:  basically defines a Frustum 
     private final float[] mProjectionMatrix = new float[16];
+
 
 
 	/**
 	 * Constructor with global application stateModel
 	 * 
 	 * @param stateModel
+	 * @param androidActivity 
 	 */
-	public GLRenderer2(StateModel stateModel) {
+	public GLRenderer2(StateModel stateModel, Context context) {
 		
 		this.stateModel = stateModel;
+		this.context = context;
 	}
 
 
@@ -105,8 +110,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    overlayGLCube = new GLCube2();
 	    
 	    // Create two arrows: one half turn, one quarter turn.
-	    arrowQuarterTurn = new GLArrow2(Amount.QUARTER_TURN);
-	    arrowHalfTurn = new GLArrow2(Amount.HALF_TURN);
+	    arrowQuarterTurn = new GLArrow2(Amount.QUARTER_TURN, context);
+	    arrowHalfTurn = new GLArrow2(Amount.HALF_TURN, context);
 	}
 
 
