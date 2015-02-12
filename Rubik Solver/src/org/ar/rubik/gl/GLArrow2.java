@@ -61,6 +61,7 @@ public class GLArrow2 {
 
     public enum Amount { QUARTER_TURN, HALF_TURN };
 
+    // OpenGL shader program ID
     private final int programID;
     
     // Buffer for vertex-array
@@ -113,6 +114,7 @@ public class GLArrow2 {
         vertexBuffer = vbb.asFloatBuffer(); // Convert from byte to float
         vertexBuffer.put(vertices);         // Copy data into buffer
         vertexBuffer.position(0);           // Rewind
+        
         
         // Obtain vertex and fragment shader source text
         String vertexShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_vertex_shader);

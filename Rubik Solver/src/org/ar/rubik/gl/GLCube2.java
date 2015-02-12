@@ -31,41 +31,29 @@
  */
 package org.ar.rubik.gl;
 
+import static android.opengl.GLES20.GL_LINK_STATUS;
+import static android.opengl.GLES20.glDeleteProgram;
+import static android.opengl.GLES20.glGetProgramInfoLog;
+import static android.opengl.GLES20.glGetProgramiv;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+
+import org.ar.rubik.Constants;
+import org.ar.rubik.R;
+
+import android.content.Context;
 import android.opengl.GLES20;
+import android.util.Log;
 
 /**
  * A three-dimensional cube use as a drawn object in OpenGL ES 2.0.
  */
 public class GLCube2 {
 
-    private final String vertexShaderCode =
-            // This matrix member variable provides a hook to manipulate
-            // the coordinates of the objects that use this vertex shader
-            "uniform mat4 uMVPMatrix;" +
-            "attribute vec4 vPosition;" +
-            "void main() {" +
-            // The matrix must be included as a modifier of gl_Position.
-            // Note that the uMVPMatrix factor *must be first* in order
-            // for the matrix multiplication product to be correct.
-            "  gl_Position = uMVPMatrix * vPosition;" +
-            "}";
-
-    private final String fragmentShaderCode =
-            "precision mediump float;" +
-            "uniform vec4 vColor;" +
-            "void main() {" +
-            "  gl_FragColor = vColor;" +
-            "}";
-
-
-    private final int mProgram;
-    private int mPositionHandle;
-    private int mColorHandle;
-    private int mMVPMatrixHandle;
-    
+    // OpenGL shader program ID
+    private final int programID;
     
     // Buffer for vertex-array
     private FloatBuffer vertexBuffer; 
@@ -129,8 +117,9 @@ public class GLCube2 {
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
+     * @param context 
      */
-    public GLCube2() {
+    public GLCube2(Context context) {
         
         // Setup vertex-array buffer. Vertices in float. A float has 4 bytes
         // This reserves memory that GPU has direct access to (correct?).
@@ -140,14 +129,39 @@ public class GLCube2 {
         vertexBuffer.put(vertices);         // Copy data into buffer
         vertexBuffer.position(0);           // Rewind
         
+        
+        // Obtain vertex and fragment shader source text
+        String vertexShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_vertex_shader);
+        String fragmentShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_fragment_shader);
+
+        
         // prepare shaders and OpenGL program
         int vertexShader = GLUtil.compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
         int fragmentShader = GLUtil.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
 
-        mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
-        GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
-        GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
-        GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
+        programID = GLES20.glCreateProgram();             // create empty OpenGL Program
+        GLES20.glAttachShader(programID, vertexShader);   // add the vertex shader to program
+        GLES20.glAttachShader(programID, fragmentShader); // add the fragment shader to program
+        GLES20.glLinkProgram(programID);                  // create OpenGL program executables
+        
+        // Get the link status.
+        final int[] linkStatus = new int[1];
+        glGetProgramiv(programID, GL_LINK_STATUS, linkStatus, 0);
+
+        if (Constants.LOGGER) {
+            // Print the program info log to the Android log output.
+            Log.v(Constants.TAG_SHADER, "Results of linking program:\n" + glGetProgramInfoLog(programID));
+        }
+
+        // Verify the link status.
+        if (linkStatus[0] == 0) {
+            // If it failed, delete the program object.
+            glDeleteProgram(programID);
+
+            if (Constants.LOGGER) {
+                Log.e(Constants.TAG_SHADER, "Linking of program failed.");
+            }
+        }
     }
 
     
@@ -164,17 +178,17 @@ public class GLCube2 {
         GLES20.glCullFace(GLES20.GL_BACK);   // =+= ?? Why ??
         
         // Add program to OpenGL environment
-        GLES20.glUseProgram(mProgram);
+        GLES20.glUseProgram(programID);
 
         // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        int vertexArrayID = GLES20.glGetAttribLocation(programID, "vPosition");
 
         // Enable a handle to the cube vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glEnableVertexAttribArray(vertexArrayID);
 
         // Prepare the cube coordinate data
         GLES20.glVertexAttribPointer(
-                mPositionHandle, 
+                vertexArrayID, 
                 COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT,
                 false,
@@ -182,14 +196,14 @@ public class GLCube2 {
                 vertexBuffer);
         
         // get handle to fragment shader's vColor member
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+        int colorID = GLES20.glGetUniformLocation(programID, "vColor");
 
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        int mvpMatrixID = GLES20.glGetUniformLocation(programID, "uMVPMatrix");
         GLUtil.checkGlError("glGetUniformLocation");
 
         // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        GLES20.glUniformMatrix4fv(mvpMatrixID, 1, false, mvpMatrix, 0);
         GLUtil.checkGlError("glUniformMatrix4fv");
         
         // Render all the faces
@@ -197,7 +211,7 @@ public class GLCube2 {
  
             // Specify color and transparency
             colors[face][3] = (isTransparent ? 0.2f : 1.0f);
-            GLES20.glUniform4fv(mColorHandle, 1, colors[face], 0);
+            GLES20.glUniform4fv(colorID, 1, colors[face], 0);
 
             // Draw Triangles
             GLES20.glDrawArrays(
@@ -207,7 +221,7 @@ public class GLCube2 {
         }
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(vertexArrayID);
         
         GLES20.glDisable(GLES20.GL_CULL_FACE);
     }

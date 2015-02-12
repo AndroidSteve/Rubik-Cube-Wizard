@@ -18,7 +18,7 @@ Notice:
 To Do:
 
   o  Move to GLES 2.0
-     - Re-establish arrows
+     - Consolidate shader programs.
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Time and CPU measurements.  Possible use of DDMS
   o  Refactor and clean up state machines.
