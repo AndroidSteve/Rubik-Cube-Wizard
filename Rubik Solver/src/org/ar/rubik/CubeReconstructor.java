@@ -76,7 +76,7 @@ public class CubeReconstructor {
 	public float z;  // real world units
 	
 	// Open GL Rotation Matrix that expresses object to world rotation
-    public float[] rotationMatrix = new float[16];
+    public float[] poseRotationMatrix = new float[16];
     
     
     /**
@@ -206,19 +206,19 @@ public class CubeReconstructor {
 
         // Initialize all Rotational Matrix elements to zero.
 		for(int i=0; i<16; i++)
-		    rotationMatrix[i] = 0.0f; // Initialize to zero
+		    poseRotationMatrix[i] = 0.0f; // Initialize to zero
 
 		// Initialize element [3,3] to 1.0: i.e., "w" component in homogenous coordinates
-        rotationMatrix[3*4 + 3] = 1.0f;
+        poseRotationMatrix[3*4 + 3] = 1.0f;
 
         // Copy OpenCV matrix to OpenGL matrix element by element.
         for(int r=0; r<3; r++)
             for(int c=0; c<3; c++)
-                rotationMatrix[r + c*4] = (float)(rMatrix.get(r, c)[0]);
+                poseRotationMatrix[r + c*4] = (float)(rMatrix.get(r, c)[0]);
         
         // Diagnostics
         for(int r=0; r<4; r++)
-            Log.v(Constants.TAG, String.format("Rotation Matrix  r=%d  [%5.2f  %5.2f  %5.2f  %5.2f]", r, rotationMatrix[r + 0], rotationMatrix[r+4], rotationMatrix[r+8], rotationMatrix[r+12]));
+            Log.v(Constants.TAG, String.format("Rotation Matrix  r=%d  [%5.2f  %5.2f  %5.2f  %5.2f]", r, poseRotationMatrix[r + 0], poseRotationMatrix[r+4], poseRotationMatrix[r+8], poseRotationMatrix[r+12]));
 
 		
 //		Log.e(Constants.TAG, "Result: " + result);

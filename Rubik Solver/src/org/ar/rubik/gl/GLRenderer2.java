@@ -244,9 +244,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
                     myCubeReconstructor.y, 
                     myCubeReconstructor.z);
             
-            // Rotation Cube per Pose Estimator 
-            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, mvpMatrix.length);
+            // Rotation Cube per Pose Estimator
+            GLUtil.rotateMatrix(mvpMatrix, myCubeReconstructor.poseRotationMatrix);
             
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
@@ -289,8 +288,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             Matrix.translateM(mvpMatrix, 0, -6.0f, 0.0f, -10.0f);
 
             // Rotation Cube per Pose Estimator 
-            Matrix.multiplyMM(tmpMatrix, 0, mvpMatrix, 0, myCubeReconstructor.rotationMatrix, 0);
-            System.arraycopy(tmpMatrix, 0, mvpMatrix, 0, mvpMatrix.length);
+            GLUtil.rotateMatrix(mvpMatrix, myCubeReconstructor.poseRotationMatrix);
 
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);

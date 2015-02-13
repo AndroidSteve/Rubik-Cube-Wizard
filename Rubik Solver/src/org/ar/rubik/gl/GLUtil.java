@@ -53,6 +53,7 @@ import org.ar.rubik.Constants;
 import android.content.Context;
 import android.content.res.Resources;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 
 /**
@@ -175,6 +176,21 @@ public class GLUtil {
             Log.e(Constants.TAG, glOperation + ": glError " + error);
             throw new RuntimeException(glOperation + ": glError " + error);
         }
+    }
+    
+    
+    /**
+     * Rotate matrix x by matrix y 
+     * Multiplies matrix x time y and places results in x.
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    public static void rotateMatrix(float[] x, float[] y) {
+        float [] z = new float[16];
+        Matrix.multiplyMM(z, 0, x, 0, y, 0);
+        System.arraycopy(z, 0, x, 0, x.length);
     }
 
 }

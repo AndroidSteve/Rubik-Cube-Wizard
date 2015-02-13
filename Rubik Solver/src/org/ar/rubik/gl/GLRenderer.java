@@ -196,7 +196,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	                myCubeReconstructor.z);
 
 	        // Rotation Cube per Pose Estimator 
-	        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
+	        gl.glMultMatrixf(myCubeReconstructor.poseRotationMatrix, 0);
 	        
             // Rotation Cube per additional requests 
             gl.glMultMatrixf(stateModel.additionalGLCubeRotation, 0);
@@ -237,7 +237,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	        gl.glTranslatef(-4.0f, 0.0f, -10.0f);
 
 	        // Rotation Cube per Pose Estimator 
-	        gl.glMultMatrixf(myCubeReconstructor.rotationMatrix, 0);
+	        gl.glMultMatrixf(myCubeReconstructor.poseRotationMatrix, 0);
 
 	        // Rotation Cube per additional requests 
             gl.glMultMatrixf(stateModel.additionalGLCubeRotation, 0);
