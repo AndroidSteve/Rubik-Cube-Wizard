@@ -37,22 +37,13 @@
  */
 package org.ar.rubik.gl;
 
-import static android.opengl.GLES20.GL_LINK_STATUS;
-import static android.opengl.GLES20.glDeleteProgram;
-import static android.opengl.GLES20.glGetProgramInfoLog;
-import static android.opengl.GLES20.glGetProgramiv;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import org.ar.rubik.Constants;
-import org.ar.rubik.R;
 import org.opencv.core.Scalar;
 
-import android.content.Context;
 import android.opengl.GLES20;
-import android.util.Log;
 
 /**
  * An arrow in three-dimensional space for use as a drawn object in OpenGL ES 2.0.
@@ -60,9 +51,6 @@ import android.util.Log;
 public class GLArrow2 {
 
     public enum Amount { QUARTER_TURN, HALF_TURN };
-
-    // OpenGL shader program ID
-    private final int programID;
     
     // Buffer for vertex-array
     private FloatBuffer vertexBuffer;
@@ -83,9 +71,9 @@ public class GLArrow2 {
     
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
-     * @param context 
+     * @param programID2 
      */
-    public GLArrow2(Amount amount, Context context) {
+    public GLArrow2(Amount amount) {
         
         double angleScale = (amount == Amount.QUARTER_TURN) ? 1.0 : 3.0;
         
@@ -114,41 +102,6 @@ public class GLArrow2 {
         vertexBuffer = vbb.asFloatBuffer(); // Convert from byte to float
         vertexBuffer.put(vertices);         // Copy data into buffer
         vertexBuffer.position(0);           // Rewind
-        
-        
-        // Obtain vertex and fragment shader source text
-        String vertexShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_vertex_shader);
-        String fragmentShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_fragment_shader);
-        
-        // Compile shaders
-        int vertexShader = GLUtil.compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
-        int fragmentShader = GLUtil.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
-        
-        // Link shaders together
-        programID = GLES20.glCreateProgram();             // create empty OpenGL Program
-        GLES20.glAttachShader(programID, vertexShader);   // add the vertex shader to program
-        GLES20.glAttachShader(programID, fragmentShader); // add the fragment shader to program
-        GLES20.glLinkProgram(programID);                  // create OpenGL program executables
-        
-        // Get the link status.
-        final int[] linkStatus = new int[1];
-        glGetProgramiv(programID, GL_LINK_STATUS, linkStatus, 0);
-
-        if (Constants.LOGGER) {
-            // Print the program info log to the Android log output.
-            Log.v(Constants.TAG_SHADER, "Results of linking program:\n" + glGetProgramInfoLog(programID));
-        }
-
-        // Verify the link status.
-        if (linkStatus[0] == 0) {
-            // If it failed, delete the program object.
-            glDeleteProgram(programID);
-
-            if (Constants.LOGGER) {
-                Log.e(Constants.TAG_SHADER, "Linking of program failed.");
-            }
-        }
-        
     }
     
     
@@ -183,7 +136,7 @@ public class GLArrow2 {
      * @param mvpMatrix - The Model View Project matrix in which to draw this shape.
      * @param color - Color to apply to arrow
      */
-    public void draw(float[] mvpMatrix, Scalar color) {
+    public void draw(float[] mvpMatrix, Scalar color, int programID) {
         
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         
@@ -218,7 +171,7 @@ public class GLArrow2 {
 
         
         
-        // Draw Front Side a bit darker
+        // Draw Outer Side to specified color
         // Translate to GL Color
         float [] glFrontSideColor = {
                 (float)color.val[0] / 256.0f,
@@ -238,8 +191,8 @@ public class GLArrow2 {
         
 
         
-        // Draw Back Side a bit darker
-        // Translate to GL Color and make a bit darker.
+        // Draw Inner Side a bit darker
+        // Translate to GL Color and make a bit darker
         float [] glBackSideColor = {
                 (float)color.val[0] / (256.0f + 128.0f),
                 (float)color.val[1] / (256.0f + 128.0f),

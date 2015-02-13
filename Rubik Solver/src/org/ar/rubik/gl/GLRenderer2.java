@@ -34,12 +34,18 @@
  */
 package org.ar.rubik.gl;
 
+import static android.opengl.GLES20.GL_LINK_STATUS;
+import static android.opengl.GLES20.glDeleteProgram;
+import static android.opengl.GLES20.glGetProgramInfoLog;
+import static android.opengl.GLES20.glGetProgramiv;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants;
 import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.MenuAndParams;
+import org.ar.rubik.R;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
 import org.ar.rubik.gl.GLArrow2.Amount;
@@ -49,6 +55,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 
 /**
@@ -67,6 +74,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
 	// Android Application Context
     private Context context;
+    
+    // OpenGL shader program ID
+    int programID;
     
 	// GL Objects that can be rendered
 	private GLArrow2 arrowQuarterTurn;
@@ -100,18 +110,52 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 */
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+	    
+	    // Obtain vertex and fragment shader source text
+        String vertexShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_vertex_shader);
+        String fragmentShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_fragment_shader);
+        
+        // Compile shaders
+        int vertexShader = GLUtil.compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
+        int fragmentShader = GLUtil.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+        
+        // Link shaders together
+        programID = GLES20.glCreateProgram();             // create empty OpenGL Program
+        GLES20.glAttachShader(programID, vertexShader);   // add the vertex shader to program
+        GLES20.glAttachShader(programID, fragmentShader); // add the fragment shader to program
+        GLES20.glLinkProgram(programID);                  // create OpenGL program executables
+        
+        // Get the link status.
+        final int[] linkStatus = new int[1];
+        glGetProgramiv(programID, GL_LINK_STATUS, linkStatus, 0);
 
+        if (Constants.LOGGER) {
+            // Print the program info log to the Android log output.
+            Log.v(Constants.TAG_SHADER, "Results of linking program:\n" + glGetProgramInfoLog(programID));
+        }
+
+        // Verify the link status.
+        if (linkStatus[0] == 0) {
+            // If it failed, delete the program object.
+            glDeleteProgram(programID);
+
+            if (Constants.LOGGER) {
+                Log.e(Constants.TAG_SHADER, "Linking of program failed.");
+            }
+        }
+
+        // Clear Color 
 	    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	    // Create the GL pilot cube
-	    pilotGLCube = new GLCube2(context);
+	    pilotGLCube = new GLCube2();
 
 	    // Create the GL overlay cube
-	    overlayGLCube = new GLCube2(context);
+	    overlayGLCube = new GLCube2();
 	    
 	    // Create two arrows: one half turn, one quarter turn.
-	    arrowQuarterTurn = new GLArrow2(Amount.QUARTER_TURN, context);
-	    arrowHalfTurn = new GLArrow2(Amount.HALF_TURN, context);
+	    arrowQuarterTurn = new GLArrow2(Amount.QUARTER_TURN);
+	    arrowHalfTurn = new GLArrow2(Amount.HALF_TURN);
 	}
 
 
@@ -214,7 +258,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
             // If desire, render what we think is the cube location and orientation.
             if(MenuAndParams.cubeOverlayDisplay == true)
-                overlayGLCube.draw(mvpMatrix, true);
+                overlayGLCube.draw(mvpMatrix, true, programID);
             
             
             // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
@@ -251,7 +295,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             // Rotation Cube per additional requests 
 //            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
             
-            pilotGLCube.draw(mvpMatrix, false);
+            pilotGLCube.draw(mvpMatrix, false, programID);
         }
 	}
 	
@@ -346,9 +390,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 		}
 		
 		if(amount == Amount.QUARTER_TURN)
-			arrowQuarterTurn.draw(mvpMatrix, color);
+			arrowQuarterTurn.draw(mvpMatrix, color, programID);
 		else
-			arrowHalfTurn.draw(mvpMatrix, color);
+			arrowHalfTurn.draw(mvpMatrix, color, programID);
 	}
 
 
@@ -382,7 +426,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         Matrix.scaleM(mvpMatrix, 0, 1.0f, 1.0f, 3.0f);
 		
 		// Render Quarter Turn Arrow
-		arrowQuarterTurn.draw(mvpMatrix, Constants.ColorWhite);
+		arrowQuarterTurn.draw(mvpMatrix, Constants.ColorWhite, programID);
 	}
 
 }
