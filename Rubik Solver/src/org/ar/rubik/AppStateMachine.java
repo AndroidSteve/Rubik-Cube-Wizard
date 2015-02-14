@@ -37,6 +37,7 @@ package org.ar.rubik;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
+import org.ar.rubik.gl.GLUtil;
 import org.kociemba.twophase.Search;
 import org.kociemba.twophase.Tools;
 
@@ -372,37 +373,31 @@ public class AppStateMachine {
      */
 	private void offNewStableFaceEvent() {
 
-		Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
+	    Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
 
-		switch(stateModel.appState) {
+	    switch(stateModel.appState) {
 
-		case ROTATE:
-			stateModel.appState = AppStateEnum.SEARCHING;
-			break;
+	    case ROTATE:
+	        stateModel.appState = AppStateEnum.SEARCHING;
+	        break;
 
-		default:
-			break;
-		}
-		
-		// Rotate Cube Model so that it matches physical model as user is requested to rotate cube.
-		if(stateModel.adoptFaceCount < 6) {
-		    
-		    float [] result = new float[16];
-		    
-		    if(stateModel.adoptFaceCount % 2 == 0) {
+	    default:
+	        break;
+	    }
+
+	    // Rotate Cube Model so that it matches physical model as user is requested to rotate cube.
+	    if(stateModel.adoptFaceCount < 6) {
+
+	        // =+= Problem: Doesn't work properly. ?????
+	        if(stateModel.adoptFaceCount % 2 == 0) {
 	            // Rotate cube -90 degrees along X axis
-                Matrix.multiplyMM(result, 0, Constants.xRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
-                Matrix.multiplyMM(result, 0, Constants.xRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
-                Matrix.multiplyMM(result, 0, Constants.xRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
-		    }
-		    else {
-		        // Rotate cube +90 degrees along Z axis.
-		        Matrix.multiplyMM(result, 0, Constants.zRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
-		    }
-		    
-		    stateModel.additionalGLCubeRotation = result;
-		}
-
+	            Matrix.rotateM(stateModel.additionalGLCubeRotation, 0, -90f, 1.0f, 0.0f, 0.0f);
+	        }
+	        else {
+	            // Rotate cube +90 degrees along Z axis.
+	            Matrix.rotateM(stateModel.additionalGLCubeRotation, 0, +90f, 0.0f, 0.0f, 1.0f);
+	        }
+	    }
 	}   
 
 

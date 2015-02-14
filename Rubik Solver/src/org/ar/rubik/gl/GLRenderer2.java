@@ -218,7 +218,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             GLUtil.rotateMatrix(mvpMatrix, myCubeReconstructor.poseRotationMatrix);
             
             // Rotation Cube per additional requests 
-//            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+            // =+= Don't use: screws up arrows with present code, and not really important.
+            //GLUtil.rotateMatrix(mvpMatrix, stateModel.additionalGLCubeRotation);
 
             // Scale
             // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
@@ -261,7 +262,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             GLUtil.rotateMatrix(mvpMatrix, myCubeReconstructor.poseRotationMatrix);
 
             // Rotation Cube per additional requests 
-//            Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+            GLUtil.rotateMatrix(mvpMatrix, stateModel.additionalGLCubeRotation);
             
             pilotGLCube.draw(mvpMatrix, false, programID);
         }
