@@ -32,9 +32,11 @@
 package org.ar.rubik.gl;
 
 import static android.opengl.GLES20.GL_COMPILE_STATUS;
+import static android.opengl.GLES20.GL_LINK_STATUS;
 import static android.opengl.GLES20.GL_VALIDATE_STATUS;
 import static android.opengl.GLES20.glCompileShader;
 import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.glDeleteProgram;
 import static android.opengl.GLES20.glDeleteShader;
 import static android.opengl.GLES20.glGetProgramInfoLog;
 import static android.opengl.GLES20.glGetProgramiv;
@@ -151,7 +153,37 @@ public class GLUtil {
      * @return
      */
     public static int linkProgram(int ... shaderIDs) {
-        return 0;
+
+        // create empty OpenGL Program
+        int programID = GLES20.glCreateProgram();
+
+        // add the shader to program
+        for( int shaderID : shaderIDs)
+            GLES20.glAttachShader(programID, shaderID);
+
+        // create OpenGL program executables
+        GLES20.glLinkProgram(programID);
+
+        // Get the link status.
+        final int[] linkStatus = new int[1];
+        glGetProgramiv(programID, GL_LINK_STATUS, linkStatus, 0);
+
+        // Print the program info log to the Android log output.
+        if (Constants.LOGGER)
+            Log.v(Constants.TAG_SHADER, "Results of linking program:\n" + glGetProgramInfoLog(programID));
+
+        // Verify the link status.
+        if (linkStatus[0] == 0) {
+            
+            // If it failed, delete the program object.
+            glDeleteProgram(programID);
+
+            if (Constants.LOGGER) {
+                Log.e(Constants.TAG_SHADER, "Linking of program failed.");
+            }
+        }
+
+        return programID;
     }
     
     

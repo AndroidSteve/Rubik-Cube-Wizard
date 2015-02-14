@@ -34,11 +34,6 @@
  */
 package org.ar.rubik.gl;
 
-import static android.opengl.GLES20.GL_LINK_STATUS;
-import static android.opengl.GLES20.glDeleteProgram;
-import static android.opengl.GLES20.glGetProgramInfoLog;
-import static android.opengl.GLES20.glGetProgramiv;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -55,7 +50,6 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.util.Log;
 
 
 /**
@@ -116,33 +110,12 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         String fragmentShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_fragment_shader);
         
         // Compile shaders
-        int vertexShader = GLUtil.compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
-        int fragmentShader = GLUtil.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+        int vertexShaderID = GLUtil.compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   
+        int fragmentShaderID = GLUtil.compileShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
         
-        // Link shaders together
-        programID = GLES20.glCreateProgram();             // create empty OpenGL Program
-        GLES20.glAttachShader(programID, vertexShader);   // add the vertex shader to program
-        GLES20.glAttachShader(programID, fragmentShader); // add the fragment shader to program
-        GLES20.glLinkProgram(programID);                  // create OpenGL program executables
+        // Link the shaders together into a final GPU executable.
+        programID = GLUtil.linkProgram(vertexShaderID, fragmentShaderID);
         
-        // Get the link status.
-        final int[] linkStatus = new int[1];
-        glGetProgramiv(programID, GL_LINK_STATUS, linkStatus, 0);
-
-        if (Constants.LOGGER) {
-            // Print the program info log to the Android log output.
-            Log.v(Constants.TAG_SHADER, "Results of linking program:\n" + glGetProgramInfoLog(programID));
-        }
-
-        // Verify the link status.
-        if (linkStatus[0] == 0) {
-            // If it failed, delete the program object.
-            glDeleteProgram(programID);
-
-            if (Constants.LOGGER) {
-                Log.e(Constants.TAG_SHADER, "Linking of program failed.");
-            }
-        }
 
         // Clear Color 
 	    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
