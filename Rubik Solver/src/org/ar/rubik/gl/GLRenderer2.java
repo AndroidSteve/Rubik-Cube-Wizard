@@ -207,9 +207,6 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         
         // Model View Projection Matrix
 	    final float[] mvpMatrix  = new float[16];
-	    
-	    // Temporary Matrix to facilitate in-place multiplies
-	    final float[] tmpMatrix  = new float[16];
 
 	    // Draw background color
 	    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -268,9 +265,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
                 renderCubeFullRotationArrow(mvpMatrix);
                 break;
 
-//            case DO_MOVE:
-//                renderCubeEdgeRotationArrow(mvpMatrix, unused);
-//                break;
+            case DO_MOVE:
+                renderCubeEdgeRotationArrow(mvpMatrix);
+                break;
 
             default:
                 break;
@@ -298,11 +295,6 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	}
 	
 	
-	
-
-	
-
-	
     
     /**
 	 * Render Cube Edge Rotation Arrow
@@ -311,9 +303,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * This is used after a solution has been computed and to instruct 
 	 * the user to rotate one edge at a time.
 	 * 
-	 * @param gl
+	 * @param mvpMatrix
 	 */
-	private void renderCubeEdgeRotationArrow(float[] mvpMatrix, GL10 gl) {
+	private void renderCubeEdgeRotationArrow(final float[] mvpMatrix) {
 		
 		String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
 
@@ -343,48 +335,48 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 		switch(moveNumonic.charAt(0)) {
 		case 'U':
 			color = stateModel.getFaceByName(FaceNameEnum.UP).observedTileArray[1][1].color;
-			gl.glTranslatef(0.0f, +2.0f, 0.0f);
-			gl.glRotatef(90f, 1.0f, 0.0f, 0.0f);  // X rotation
+			Matrix.translateM(mvpMatrix, 0, 0.0f, +2.0f, 0.0f);
+			Matrix.rotateM(mvpMatrix, 0, 90f, 1.0f, 0.0f, 0.0f);  // X rotation
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
 			break;
 		case 'D':
 			color = stateModel.getFaceByName(FaceNameEnum.DOWN).observedTileArray[1][1].color;		
-			gl.glTranslatef(0.0f, -2.0f, 0.0f);
-			gl.glRotatef(90f, 1.0f, 0.0f, 0.0f);  // X rotation
+			Matrix.translateM(mvpMatrix, 0, 0.0f, -2.0f, 0.0f);
+			Matrix.rotateM(mvpMatrix, 0, 90f, 1.0f, 0.0f, 0.0f);  // X rotation
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE; 
 			break;
 		case 'L':
 			color = stateModel.getFaceByName(FaceNameEnum.LEFT).observedTileArray[1][1].color;
-			gl.glTranslatef(-2.0f, 0.0f, 0.0f);
-			gl.glRotatef(90f, 0.0f, 1.0f, 0.0f);  // Y rotation
+			Matrix.translateM(mvpMatrix, 0, -2.0f, 0.0f, 0.0f);
+			Matrix.rotateM(mvpMatrix, 0, 90f, 0.0f, 1.0f, 0.0f);  // Y rotation
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
-			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'R':
 			color = stateModel.getFaceByName(FaceNameEnum.RIGHT).observedTileArray[1][1].color;
-			gl.glTranslatef(+2.0f, 0.0f, 0.0f);
-			gl.glRotatef(90f, 0.0f, 1.0f, 0.0f);  // Y rotation
+			Matrix.translateM(mvpMatrix, 0, +2.0f, 0.0f, 0.0f);
+			Matrix.rotateM(mvpMatrix, 0, 90f, 0.0f, 1.0f, 0.0f);  // Y rotation
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE;
-			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'F':
 			color = stateModel.getFaceByName(FaceNameEnum.FRONT).observedTileArray[1][1].color;
-			gl.glTranslatef(0.0f, 0.0f, +2.0f);
+			Matrix.translateM(mvpMatrix, 0, 0.0f, 0.0f, +2.0f);
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE; 
-			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'B':
 			color = stateModel.getFaceByName(FaceNameEnum.BACK).observedTileArray[1][1].color;
-			gl.glTranslatef(0.0f, 0.0f, -2.0f);
+			Matrix.translateM(mvpMatrix, 0, 0.0f, 0.0f, -2.0f);
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
-			gl.glRotatef(30f, 0.0f, 0.0f, 1.0f);  // looks better
+			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		}
 
 		// Specify direction of arrow
 		if(direction == Direction.NEGATIVE)  {
-			gl.glRotatef(-90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
-			gl.glRotatef(+180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
+			Matrix.rotateM(mvpMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
+			Matrix.rotateM(mvpMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
 		}
 		
 		if(amount == Amount.QUARTER_TURN)
@@ -401,9 +393,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * This is used during the exploration phase to observed all six
 	 * sides of the cube before any solution is compute or attempted.
 	 * 
-	 * @param gl
+	 * @param mvpMatrix
 	 */
-	private void renderCubeFullRotationArrow(float[] mvpMatrix) {
+	private void renderCubeFullRotationArrow(final float[] mvpMatrix) {
 	            
 		// Render Front Face to Top Face Arrow Rotation
 		if(stateModel.getNumObservedFaces() % 2 == 0) {

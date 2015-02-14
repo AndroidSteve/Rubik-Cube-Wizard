@@ -144,6 +144,18 @@ public class GLUtil {
     
     
     /**
+     * Link together shaders and for a final program.
+     * ProgramID is return value.
+     * 
+     * @param shaderIDs
+     * @return
+     */
+    public static int linkProgram(int ... shaderIDs) {
+        return 0;
+    }
+    
+    
+    /**
      * Validates an OpenGL program. Should only be called when developing the
      * application.
      */

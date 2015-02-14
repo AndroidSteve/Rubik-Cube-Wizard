@@ -17,8 +17,7 @@ Notice:
 
 To Do:
 
-  o  Move to GLES 2.0
-     - Consolidate shader programs.
+  o  GLES 2.0 - How to get Z-axis buffering working?
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Time and CPU measurements.  Possible use of DDMS
   o  Refactor and clean up state machines.
