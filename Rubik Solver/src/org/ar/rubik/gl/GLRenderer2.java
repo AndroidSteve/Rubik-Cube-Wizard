@@ -40,9 +40,9 @@ import javax.microedition.khronos.opengles.GL10;
 import org.ar.rubik.Constants;
 import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.MenuAndParams;
-import org.ar.rubik.R;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
+import org.ar.rubik.Util;
 import org.ar.rubik.gl.GLArrow2.Amount;
 import org.opencv.core.Scalar;
 
@@ -106,8 +106,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 	    
 	    // Obtain vertex and fragment shader source text
-        String vertexShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_vertex_shader);
-        String fragmentShaderCode = GLUtil.readTextFileFromResource(context, R.raw.simple_fragment_shader);
+        String vertexShaderCode = Util.readTextFileFromAssets(context, "simple_vertex_shader.glsl");
+        String fragmentShaderCode = Util.readTextFileFromAssets(context, "simple_fragment_shader.glsl");
         
         // Compile shaders
         int vertexShaderID = GLUtil.compileShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);   

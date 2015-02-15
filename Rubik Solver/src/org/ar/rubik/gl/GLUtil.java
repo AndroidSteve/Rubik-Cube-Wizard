@@ -45,15 +45,8 @@ import static android.opengl.GLES20.glGetShaderiv;
 import static android.opengl.GLES20.glShaderSource;
 import static android.opengl.GLES20.glValidateProgram;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import org.ar.rubik.Constants;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -63,35 +56,6 @@ import android.util.Log;
  *
  */
 public class GLUtil {
-
-    /**
-     * Reads in text from a resource file and returns a String containing the
-     * text.
-     */
-    public static String readTextFileFromResource(Context context, int resourceId) {
-        StringBuilder body = new StringBuilder();
-
-        try {
-            InputStream inputStream = context.getResources().openRawResource(resourceId);
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            String nextLine;
-
-            while ((nextLine = bufferedReader.readLine()) != null) {
-                body.append(nextLine);
-                body.append('\n');
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Could not open resource: " + resourceId, e);
-        } catch (Resources.NotFoundException nfe) {
-            throw new RuntimeException("Resource not found: " + resourceId, nfe);
-        }
-
-        return body.toString();
-    }
-
-    
 
     /**
      * Compiles a shader, returning the OpenGL object ID.

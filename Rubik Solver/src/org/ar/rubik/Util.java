@@ -31,7 +31,11 @@
  */
 package org.ar.rubik;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.ar.rubik.Constants.ConstantTile;
 import org.kociemba.twophase.PruneTableLoader;
@@ -39,6 +43,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.highgui.Highgui;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -280,5 +285,42 @@ public class Util {
 	    protected void onProgressUpdate(Void... values) {
 	    }
 	}
+	
+
+
+
+    /**
+     * Read Text File from Assets
+     * 
+     * @param context
+     * @param fileName
+     * @return
+     */
+    public static String readTextFileFromAssets(Context context, String fileName) {
+
+        try
+        {
+            InputStream stream = context.getAssets().open(fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(stream);
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+
+            StringBuilder buffer = new StringBuilder();
+            String str;
+
+            while((str = reader.readLine()) != null)
+            {
+                buffer.append(str);
+                buffer.append("\n");
+            }
+
+            reader.close();
+            return buffer.toString();
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Could not open asset: " + fileName, e);
+
+        }
+
+    }
 	
 }
