@@ -180,10 +180,14 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         
         // Model View Projection Matrix
 	    final float[] mvpMatrix  = new float[16];
+        
+        // Enable Depth Testing and Occulsion
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
 	    // Draw background color
 	    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-	    
+
+        
 	    // Make copy reference to Cube Reconstructor.
         // This is to avoid asynchronous OpenGL and OpenCV problems. 
         CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;

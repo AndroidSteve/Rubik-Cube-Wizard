@@ -37,7 +37,6 @@ package org.ar.rubik;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
-import org.ar.rubik.gl.GLUtil;
 import org.kociemba.twophase.Search;
 import org.kociemba.twophase.Tools;
 

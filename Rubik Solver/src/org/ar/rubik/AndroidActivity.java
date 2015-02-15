@@ -170,7 +170,7 @@ public class AndroidActivity extends Activity {
         gLSurfaceView = new GLSurfaceView(this);
         gLSurfaceView.setEGLContextClientVersion(2);         // Create an OpenGL ES 2.0 context.
         gLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-        gLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
+        gLSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         gLSurfaceView.setZOrderOnTop(true);
         gLSurfaceView.setLayoutParams(
         		new FrameLayout.LayoutParams(
