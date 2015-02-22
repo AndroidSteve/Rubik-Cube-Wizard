@@ -38,12 +38,14 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants;
+import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
 import org.ar.rubik.Util;
 import org.ar.rubik.gl.GLArrow2.Amount;
+import org.ar.rubik.gl.GLCube2.Transparency;
 import org.opencv.core.Scalar;
 
 import android.content.Context;
@@ -208,7 +210,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    
 	    
 	    // Render User Instruction Arrows and possibly Overlay Cube
-        if( (MenuAndParams.cubeOverlayDisplay == true)  ) {
+        if( (MenuAndParams.cubeOverlayDisplay == true) || (stateModel.appState == AppStateEnum.ROTATE) || (stateModel.appState == AppStateEnum.DO_MOVE) ) {
             
             System.arraycopy(pvMatrix, 0, mvpMatrix, 0, pvMatrix.length);
             
@@ -230,14 +232,15 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             float scale = (float) MenuAndParams.scaleOffsetParam.value;
             Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
 
-            // If desire, render what we think is the cube location and orientation.
+            // Render, either fully transparent or translucent, the cube in the actual position and orientation from OpenCV Pose Estimator.
             if(MenuAndParams.cubeOverlayDisplay == true)
-                overlayGLCube.draw(mvpMatrix, true, programID);
+                overlayGLCube.draw(mvpMatrix, Transparency.TRANSLUCENT, programID);
+            else
+                overlayGLCube.draw(mvpMatrix, Transparency.TRANSPARENT, programID);
             
             
             // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
             switch(stateModel.appState) {
-            
 
             case ROTATE:
                 renderCubeFullRotationArrow(mvpMatrix);
@@ -268,7 +271,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             // Rotation Cube per additional requests 
             GLUtil.rotateMatrix(mvpMatrix, stateModel.additionalGLCubeRotation);
             
-            pilotGLCube.draw(mvpMatrix, false, programID);
+            pilotGLCube.draw(mvpMatrix, Transparency.OPAQUE, programID);
         }
 	}
 	

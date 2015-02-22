@@ -42,6 +42,8 @@ import android.opengl.GLES20;
  */
 public class GLCube2 {
     
+    public enum Transparency { OPAQUE, TRANSLUCENT, TRANSPARENT };
+    
     // Buffer for vertex-array
     private FloatBuffer vertexBuffer; 
     
@@ -65,6 +67,12 @@ public class GLCube2 {
             {0.8f, 0.8f, 0.8f, 1.0f},  // 4. Up is White
             {1.0f, 1.0f, 0.0f, 1.0f}   // 5. Down is Yellow
     };
+    
+    // A completely transparent OpenGL color
+    private static float [] transparentBlack = { 0f, 0f, 0f, 0f};
+    
+    // A grey translucent OpenGL color
+    private static float [] translusentGrey = { 0.5f, 0.5f, 0.5f, 0.5f};
     
     private static float[] vertices = {  // Vertices of the 6 faces
             // FRONT
@@ -126,7 +134,7 @@ public class GLCube2 {
      * this shape.
      * @param programID 
      */
-    public void draw(float[] mvpMatrix, boolean isTransparent, int programID) {
+    public void draw(float[] mvpMatrix, Transparency transparency, int programID) {
         
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_BACK);   // =+= ?? Why ??
@@ -162,10 +170,23 @@ public class GLCube2 {
         
         // Render all the faces
         for (int face = 0; face < NUM_FACES; face++) {
- 
-            // Specify color and transparency
-            colors[face][3] = (isTransparent ? 0.2f : 1.0f);
-            GLES20.glUniform4fv(colorID, 1, colors[face], 0);
+            
+            
+            switch (transparency) {
+
+            case TRANSPARENT:
+                GLES20.glUniform4fv(colorID, 1, transparentBlack, 0);
+                break;
+
+            case OPAQUE:
+                GLES20.glUniform4fv(colorID, 1, colors[face], 0);
+                break;
+
+            case TRANSLUCENT:
+                GLES20.glUniform4fv(colorID, 1, translusentGrey, 0);
+                break;
+            }
+
 
             // Draw Triangles
             GLES20.glDrawArrays(

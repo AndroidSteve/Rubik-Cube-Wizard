@@ -18,7 +18,6 @@ To Do:
 
   o  GLES 2.0
        - Additional pilot cube rotation not working properly.
-       - How to achieve occulsion of arrows, and then transparency?
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Time and CPU measurements.  Possible use of DDMS
   o  Refactor and clean up state machines.
