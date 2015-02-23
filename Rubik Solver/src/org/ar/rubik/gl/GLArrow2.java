@@ -11,7 +11,7 @@
  * File Description:
  *   An Arrow in 3D space made up of 180 separate triangles, two triangles in 
  *   each degree and each flat segment every one degree is drawn.  The arrow
- *   is drawn in a quarter true in the X-Y plane in quadrant I at a radius of 1.0 with the head
+ *   is drawn in a quarter turn in the X-Y plane in quadrant I at a radius of 1.0 with the head
  *   pointed at the X axis.  The width of the arrow is in the Z axis (+/- 0.3) with the 
  *   head having maximum Z axis dimensions of +/- 0.6.
  *   
@@ -52,8 +52,11 @@ public class GLArrow2 {
 
     public enum Amount { QUARTER_TURN, HALF_TURN };
     
-    // Buffer for vertex-array
-    private FloatBuffer vertexBuffer;
+    // Buffer for Arrow vertex-array
+    private FloatBuffer vertexBufferArrow;
+    
+    // Buffer for Arrow Outline vertex-array
+    private FloatBuffer vertexBufferOutline;
 
     // number of coordinates per vertex in this array
     private static final int COORDS_PER_VERTEX = 3;
@@ -66,6 +69,9 @@ public class GLArrow2 {
 
     // number of vertices in the arrow arch
     private static final int VERTICES_PER_ARCH = 90 + 1;
+    
+    // OpenGL Opaque Black Color
+    private static final float [] opaqueBlack = { 0.0f, 0.0f, 0.0f, 1.0f};
 
     
     
@@ -77,7 +83,8 @@ public class GLArrow2 {
         
         double angleScale = (amount == Amount.QUARTER_TURN) ? 1.0 : 3.0;
         
-        float[] vertices = new float[VERTICES_PER_ARCH * 6];
+        float[] verticesArrow = new float[VERTICES_PER_ARCH * 6];
+        float[] verticesOutline = new float[VERTICES_PER_ARCH * 6];
         
         for(int i=0; i<VERTICES_PER_ARCH; i++)  {
             
@@ -86,22 +93,39 @@ public class GLArrow2 {
             float x = (float) Math.cos(angleRads);
             float y = (float) Math.sin(angleRads);
             
-            vertices[i*6 + 0] = x;
-            vertices[i*6 + 1] = y;
-            vertices[i*6 + 2] = -1.0f * calculateWidth(angleRads);
+            verticesArrow[i*6 + 0] = x;
+            verticesArrow[i*6 + 1] = y;
+            verticesArrow[i*6 + 2] = -1.0f * calculateWidth(angleRads);
 
-            vertices[i*6 + 3] = x;
-            vertices[i*6 + 4] = y;
-            vertices[i*6 + 5] = +1.0f * calculateWidth(angleRads);
+            verticesArrow[i*6 + 3] = x;
+            verticesArrow[i*6 + 4] = y;
+            verticesArrow[i*6 + 5] = +1.0f * calculateWidth(angleRads);
+            
+            
+            // Fill from 0 to 272
+            verticesOutline[i*3 + 0] = x;
+            verticesOutline[i*3 + 1] = y;
+            verticesOutline[i*3 + 2] = -1.0f * calculateWidth(angleRads);
+
+            // Fill from 545 to 273
+            verticesOutline[(180 - i)*3 + 3] = x;
+            verticesOutline[(180 - i)*3 + 4] = y;
+            verticesOutline[(180 - i)*3 + 5] = calculateWidth(angleRads);
         }
         
         // Setup vertex-array buffer. Vertices in float. A float has 4 bytes
         // This reserves memory that GPU has direct access to (correct?).
-        ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
-        vbb.order(ByteOrder.nativeOrder()); // Use native byte order
-        vertexBuffer = vbb.asFloatBuffer(); // Convert from byte to float
-        vertexBuffer.put(vertices);         // Copy data into buffer
-        vertexBuffer.position(0);           // Rewind
+        ByteBuffer arrowVbb = ByteBuffer.allocateDirect(verticesArrow.length * 4);
+        arrowVbb.order(ByteOrder.nativeOrder()); // Use native byte order
+        vertexBufferArrow = arrowVbb.asFloatBuffer(); // Convert from byte to float
+        vertexBufferArrow.put(verticesArrow);         // Copy data into buffer
+        vertexBufferArrow.position(0);           // Rewind
+        
+        ByteBuffer outlineVbb = ByteBuffer.allocateDirect(verticesOutline.length * 4);
+        outlineVbb.order(ByteOrder.nativeOrder());
+        vertexBufferOutline = outlineVbb.asFloatBuffer();
+        vertexBufferOutline.put(verticesOutline);
+        vertexBufferOutline.position(0);
     }
     
     
@@ -137,9 +161,7 @@ public class GLArrow2 {
      * @param color - Color to apply to arrow
      */
     public void draw(float[] mvpMatrix, Scalar color, int programID) {
-        
-        GLES20.glEnable(GLES20.GL_CULL_FACE);
-        
+               
         // Add program to OpenGL environment
         GLES20.glUseProgram(programID);
 
@@ -160,6 +182,35 @@ public class GLArrow2 {
         GLES20.glUniformMatrix4fv(mvpMatrixID, 1, false, mvpMatrix, 0);
         GLUtil.checkGlError("glUniformMatrix4fv");        
  
+
+        // Draw Arrow Outer Surface
+        drawArrowOuterSurface(color, colorID, vertexArrayID);
+        
+        // Draw Arrow Inner Surface (a bit darker than above)
+        drawArrowInnerSurface(color, colorID, vertexArrayID);
+
+        //Draw Arrow Outline
+        drawArrowOutline(colorID, vertexArrayID);
+
+
+        // Disable vertex array
+        GLES20.glDisableVertexAttribArray(vertexArrayID);        
+        
+        // Disable cull face: i.e., will now attempt to render both sides instead of just front
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
+    }
+
+
+    /**
+     * Draw Arrow Outline
+     * 
+     * @param colorID 
+     * @param vertexArrayID
+     */
+    private void drawArrowOutline(int colorID, int vertexArrayID) {
+        
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
+        
         // Prepare the cube coordinate data
         GLES20.glVertexAttribPointer(
                 vertexArrayID, 
@@ -167,9 +218,40 @@ public class GLArrow2 {
                 GLES20.GL_FLOAT,
                 false,
                 VERTEX_STRIDE,
-                vertexBuffer);
-
+                vertexBufferOutline);
         
+
+        GLES20.glUniform4fv(colorID, 1, opaqueBlack, 0);
+        
+        GLES20.glLineWidth(10.0f);
+
+        // Draw Triangles
+        GLES20.glDrawArrays(
+                GLES20.GL_LINE_STRIP, 
+                0, 
+                VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
+    }
+
+
+    /**
+     * Draw Arrow Outer Side
+     * 
+     * @param color
+     * @param colorID
+     * @param vertexArrayID
+     */
+    private void drawArrowOuterSurface(Scalar color, int colorID, int vertexArrayID) {
+        
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
+        
+        // Prepare the cube coordinate data
+        GLES20.glVertexAttribPointer(
+                vertexArrayID, 
+                COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT,
+                false,
+                VERTEX_STRIDE,
+                vertexBufferArrow);
         
         // Draw Outer Side to specified color
         // Translate to GL Color
@@ -188,8 +270,28 @@ public class GLArrow2 {
                 GLES20.GL_TRIANGLE_STRIP, 
                 0, 
                 VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
-        
+    }
 
+
+    /**
+     * Draw Arrow Inner Side
+     * 
+     * @param color
+     * @param colorID
+     * @param vertexArrayID
+     */
+    private void drawArrowInnerSurface(Scalar color, int colorID, int vertexArrayID) {
+        
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
+        
+        // Prepare the cube coordinate data
+        GLES20.glVertexAttribPointer(
+                vertexArrayID, 
+                COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT,
+                false,
+                VERTEX_STRIDE,
+                vertexBufferArrow);
         
         // Draw Inner Side a bit darker
         // Translate to GL Color and make a bit darker
@@ -208,12 +310,5 @@ public class GLArrow2 {
                 GLES20.GL_TRIANGLE_STRIP, 
                 0, 
                 VERTICES_PER_ARCH * 2);  // Number of triangles to be drawn
-
-
-
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(vertexArrayID);        
-        
-        GLES20.glDisable(GLES20.GL_CULL_FACE);
     }
 }
