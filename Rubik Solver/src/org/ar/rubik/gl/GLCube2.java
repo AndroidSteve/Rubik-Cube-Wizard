@@ -11,6 +11,14 @@
  * File Description:
  *   Renders a six sided cube in Object Coordinates centered at the origin with
  *   edge length of 2.0 units.
+ *   
+ * To Do List:
+ *   0)  How to get colors from global Constants
+ *   1)  Color can be assigned per face name.
+ *   2)  Only the center tile of a face is colored.
+ *   3)  Orientation is set able (i.e., xxxxxxxxxx)
+ *   4)  Or should we consider Rubik Cube Animator
+ * 
  * 
  * License:
  * 
