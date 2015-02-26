@@ -207,6 +207,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    // Calculate the projection and view transformation
 	    Matrix.multiplyMM(pvMatrix, 0, mProjectionMatrix, 0, viewMatrix, 0);
 	    
+	    // Calculate arrow animation rotation.
+	    long time = System.currentTimeMillis();
+	    int arrowRotationInDegrees = (int) (( time / 10 ) % 90);
 	    
 	    
 	    // Render User Instruction Arrows and possibly Overlay Cube
@@ -243,11 +246,11 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             switch(stateModel.appState) {
 
             case ROTATE:
-                renderCubeFullRotationArrow(mvpMatrix);
+                renderCubeFullRotationArrow(mvpMatrix, arrowRotationInDegrees);
                 break;
 
             case DO_MOVE:
-                renderCubeEdgeRotationArrow(mvpMatrix);
+                renderCubeEdgeRotationArrow(mvpMatrix, arrowRotationInDegrees);
                 break;
 
             default:
@@ -285,8 +288,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * the user to rotate one edge at a time.
 	 * 
 	 * @param mvpMatrix
+     * @param arrowRotationInDegrees 
 	 */
-	private void renderCubeEdgeRotationArrow(final float[] mvpMatrix) {
+	private void renderCubeEdgeRotationArrow(final float[] mvpMatrix, int arrowRotationInDegrees) {
 		
 		String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
 
@@ -306,7 +310,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 			amount = Amount.QUARTER_TURN;
 		}
 		else
-			throw new java.lang.Error("Unknow rotation amount");
+			throw new java.lang.Error("Unknow rotation amount: problem with ascii format of logic solution");
 		
 		
 		Scalar color = null;
@@ -354,11 +358,16 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 			break;
 		}
 
+	     Matrix.rotateM(mvpMatrix, 0, arrowRotationInDegrees, 0.0f, 0.0f, 1.0f);  // 0->90 degrees Z rotation
+
+	      
 		// Specify direction of arrow
 		if(direction == Direction.NEGATIVE)  {
 			Matrix.rotateM(mvpMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
 			Matrix.rotateM(mvpMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
 		}
+		
+ 
 		
 		if(amount == Amount.QUARTER_TURN)
 			arrowQuarterTurn.draw(mvpMatrix, color, programID);
@@ -375,8 +384,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * sides of the cube before any solution is compute or attempted.
 	 * 
 	 * @param mvpMatrix
+	 * @param arrowRotationInDegrees 
 	 */
-	private void renderCubeFullRotationArrow(final float[] mvpMatrix) {
+	private void renderCubeFullRotationArrow(final float[] mvpMatrix, int arrowRotationInDegrees) {
 	            
 		// Render Front Face to Top Face Arrow Rotation
 		if(stateModel.getNumObservedFaces() % 2 == 0) {
@@ -388,7 +398,10 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 		else {
             Matrix.translateM(mvpMatrix, 0, +1.5f, +1.5f, 0.0f);
 		}	
-		
+
+		// Roate arrow to give impression of movement.  Also, start back at -60 degrees: looks better.
+        Matrix.rotateM(mvpMatrix, 0, arrowRotationInDegrees - 60, 0.0f, 0.0f, 1.0f);  // -60 -> +30 degrees Z rotation
+
 		// Reverse direction of arrow.
         Matrix.rotateM(mvpMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
         Matrix.rotateM(mvpMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180

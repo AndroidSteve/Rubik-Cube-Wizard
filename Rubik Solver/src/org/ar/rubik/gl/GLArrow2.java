@@ -296,9 +296,9 @@ public class GLArrow2 {
         // Draw Inner Side a bit darker
         // Translate to GL Color and make a bit darker
         float [] glBackSideColor = {
-                (float)color.val[0] / (256.0f + 128.0f),
-                (float)color.val[1] / (256.0f + 128.0f),
-                (float)color.val[2] / (256.0f + 128.0f),
+                (float)color.val[0] / (256.0f + 256.0f),
+                (float)color.val[1] / (256.0f + 256.0f),
+                (float)color.val[2] / (256.0f + 256.0f),
                 1.0f
         };
         GLES20.glUniform4fv(colorID, 1, glBackSideColor, 0);

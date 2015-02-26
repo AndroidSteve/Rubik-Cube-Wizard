@@ -16,11 +16,10 @@ Notice:
 
 To Do:
 
-  o  GLES 2.0
-       - Additional pilot cube rotation not working properly.
-       - Animate Arrow Rotation
-  o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
+  o  Achieve correct coloring of pilot cube as faces are detected.
   o  Time and CPU measurements.  Possible use of DDMS
+  o  Create image recognition test suite.
+  o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Refactor and clean up state machines.
   o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
