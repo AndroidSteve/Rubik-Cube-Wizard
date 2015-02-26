@@ -59,7 +59,7 @@ public class StateModel {
 	public RubikFace activeRubikFace;
 	
 	/*
-	 * This is "Rubik Cube State" or "Rubik Cube Model" in model-veiw-controller vernacular.
+	 * This is "Rubik Cube State" or "Rubik Cube Model" in model-view-controller vernacular.
 	 * Map of above rubik face objects index by FaceNameEnum
 	 */
 	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);

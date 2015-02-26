@@ -385,16 +385,26 @@ public class AppStateMachine {
 	    }
 
 	    // Rotate Cube Model so that it matches physical model as user is requested to rotate cube.
-	    if(stateModel.adoptFaceCount < 6) {
+	    if(stateModel.adoptFaceCount <= 6) {
 
-	        // =+= Problem: Doesn't work properly. ?????
+	        // =+= x and z matrix can be made static, but performance here hardly matters.
 	        if(stateModel.adoptFaceCount % 2 == 0) {
 	            // Rotate cube -90 degrees along X axis
-	            Matrix.rotateM(stateModel.additionalGLCubeRotation, 0, -90f, 1.0f, 0.0f, 0.0f);
+	            float [] xRotationMatrix = new float[16];
+	            Matrix.setIdentityM(xRotationMatrix, 0);
+	            Matrix.rotateM(xRotationMatrix, 0, -90f, 1.0f, 0.0f, 0.0f);
+                float [] z = new float[16];
+                Matrix.multiplyMM(z, 0, xRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+                System.arraycopy(z, 0, stateModel.additionalGLCubeRotation, 0, stateModel.additionalGLCubeRotation.length);
 	        }
 	        else {
 	            // Rotate cube +90 degrees along Z axis.
-	            Matrix.rotateM(stateModel.additionalGLCubeRotation, 0, +90f, 0.0f, 0.0f, 1.0f);
+	            float [] zRotationMatrix = new float[16];
+	            Matrix.setIdentityM(zRotationMatrix, 0);
+	            Matrix.rotateM(zRotationMatrix, 0, +90f, 0.0f, 0.0f, 1.0f);
+                float [] z = new float[16];
+                Matrix.multiplyMM(z, 0, zRotationMatrix, 0, stateModel.additionalGLCubeRotation, 0);
+                System.arraycopy(z, 0, stateModel.additionalGLCubeRotation, 0, stateModel.additionalGLCubeRotation.length);
 	        }
 	    }
 	}   
