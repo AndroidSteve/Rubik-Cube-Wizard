@@ -208,7 +208,7 @@ public class Annotation {
 
 			        // Draw tile
 					if(tile != null)
-						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), tile.color, -1);
+						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), tile.colorOpenCV, -1);
 					else
 						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), Constants.ColorGrey, -1);
 				}
@@ -316,7 +316,7 @@ public class Annotation {
 					Point tileCenterInPixels = face.getTileCenterInPixels(n, m);
 					tileCenterInPixels.x -= 10.0;
 					tileCenterInPixels.y += 10.0;
-					String text = Character.toString(face.observedTileArray[n][m].character);
+					String text = Character.toString(face.observedTileArray[n][m].symbol);
 					Core.putText(img, text, tileCenterInPixels, Constants.FontFace, 3, Constants.ColorBlack, 3);
 				}
 			}
@@ -458,26 +458,26 @@ public class Annotation {
 				double uChromananceScaled = measuredTileColorYUV[1] * 2;
 				double vChromananceScaled = measuredTileColorYUV[2] * 2;
 
-				String text = Character.toString(face.observedTileArray[n][m].character);
+				String text = Character.toString(face.observedTileArray[n][m].symbol);
 				
 				// Draw tile character in UV plane
-				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].colorOpenCV, 3);
 				
 				// Draw tile characters on INSIDE right side for Y axis for adjusted luminosity.
-				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset), Constants.FontFace, 3, face.observedTileArray[n][m].colorOpenCV, 3);
 				
 				// Draw tile characters on OUTSIDE right side for Y axis as directly measured.
-				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].color, 3);
+				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].colorOpenCV, 3);
 //				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
 			}
 		}
 
-		Scalar rubikRed    = Constants.constantTileColorArray[ConstantTileColorEnum.RED.ordinal()].color;
-		Scalar rubikOrange = Constants.constantTileColorArray[ConstantTileColorEnum.ORANGE.ordinal()].color;
-		Scalar rubikYellow = Constants.constantTileColorArray[ConstantTileColorEnum.YELLOW.ordinal()].color;
-		Scalar rubikGreen  = Constants.constantTileColorArray[ConstantTileColorEnum.GREEN.ordinal()].color;
-		Scalar rubikBlue   = Constants.constantTileColorArray[ConstantTileColorEnum.BLUE.ordinal()].color;
-		Scalar rubikWhite  = Constants.constantTileColorArray[ConstantTileColorEnum.WHITE.ordinal()].color;
+		Scalar rubikRed    = Constants.constantTileColorArray[ConstantTileColorEnum.RED.ordinal()].colorOpenCV;
+		Scalar rubikOrange = Constants.constantTileColorArray[ConstantTileColorEnum.ORANGE.ordinal()].colorOpenCV;
+		Scalar rubikYellow = Constants.constantTileColorArray[ConstantTileColorEnum.YELLOW.ordinal()].colorOpenCV;
+		Scalar rubikGreen  = Constants.constantTileColorArray[ConstantTileColorEnum.GREEN.ordinal()].colorOpenCV;
+		Scalar rubikBlue   = Constants.constantTileColorArray[ConstantTileColorEnum.BLUE.ordinal()].colorOpenCV;
+		Scalar rubikWhite  = Constants.constantTileColorArray[ConstantTileColorEnum.WHITE.ordinal()].colorOpenCV;
 
 		
 		// Draw Color Calibration in UV plane as dots

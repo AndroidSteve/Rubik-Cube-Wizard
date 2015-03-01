@@ -103,6 +103,42 @@ public class Constants {
 	public final static Scalar RubikWhite  = new Scalar(225.0, 255.0, 255.0);
 
 	public enum ConstantTileColorEnum { RED, ORANGE, YELLOW, GREEN, BLUE, WHITE };
+	
+	
+	/*
+	 * Class Color
+	 */
+	public static class Color2 {
+        
+	    public Scalar openCV;
+        public float [] openGL;
+        public char symbol;
+        
+	    public Color2(char symbol, Scalar openCV, float[] openGL) {
+            this.openCV = openCV;
+            this.openGL = openGL;
+            this.symbol = symbol;
+        }
+
+	}
+	
+	/*
+	 * OpenCV colors are chosen to match that of a cube in normal shaded daylight conditions.
+	 * OpenGL colors are chosen more arbitrarily.
+	 */
+    public static final Color2 RED2    = new Color2( 'R', new Scalar(220.0,   20.0,  30.0), new float [] {1.0f, 0.0f, 0.0f, 1.0f});
+    public static final Color2 ORANGE2 = new Color2( 'O', new Scalar(240.0,   80.0,   0.0), new float [] {1.0f, 0.5f, 0.0f, 1.0f});
+    public static final Color2 YELLOW2 = new Color2( 'Y', new Scalar(230.0,  230.0,  20.0), new float [] {0.9f, 0.9f, 0.1f, 1.0f});
+    public static final Color2 GREEN2  = new Color2( 'G', new Scalar(0.0,    140.0,  60.0), new float [] {1.0f, 0.6f, 0.2f, 1.0f});
+    public static final Color2 BLUE2   = new Color2( 'B', new Scalar(0.0,     60.0, 220.0), new float [] {1.0f, 0.0f, 1.0f, 1.0f});
+    public static final Color2 WHITE2  = new Color2( 'W', new Scalar(225.0,  225.0, 225.0), new float [] {1.0f, 1.0f, 1.0f, 1.0f});
+    public static final Color2 GREY2   = new Color2( 'E', new Scalar(50.0,    50.0,  50.0), new float [] {0.2f, 0.2f, 0.2f, 1.0f});
+    public static final Color2 BLACK   = new Color2( 'L', new Scalar(0.0,      0.0,   0.0), new float [] {0.0f, 0.0f, 0.0f, 1.0f});
+    
+    
+    // Handy if we are searching for a cube color.
+    public static final Color2 [] CUBE_COLORS_ARRAY = {RED2, ORANGE2, YELLOW2, GREEN2, BLUE2, WHITE2};
+	
 
 	// Group together enum, color and character annotation.
 	public static final class ConstantTile implements Serializable {
@@ -112,15 +148,15 @@ public class Constants {
 		public ConstantTileColorEnum constantTileColor;
 
 		// Color values selected for display purposes.
-		public Scalar color;
+		public Scalar colorOpenCV;
 
 		// Character symbol of color
-		public char character;
+		public char symbol;
 
 		public ConstantTile(ConstantTileColorEnum constantTileColor, Scalar color, char character) {
 			this.constantTileColor = constantTileColor;
-			this.color = color;
-			this.character = character;
+			this.colorOpenCV = color;
+			this.symbol = character;
 		}
 	}
 

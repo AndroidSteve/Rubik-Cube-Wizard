@@ -624,7 +624,7 @@ public class RubikFace implements Serializable {
 				ConstantTile bestCandidate = null;
 				for(int i=0; i<6; i++) {
 					ConstantTile candidateTile = Constants.constantTileColorArray[i];
-					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.color.val);
+					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.colorOpenCV.val);
 
 					// Only examine U and V axis, and not luminous.
 					double error =
@@ -648,7 +648,7 @@ public class RubikFace implements Serializable {
 		// Calculate and record LMS error (including luminous).
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
-				double[] selectedColor = observedTileArray[n][m].color.val;
+				double[] selectedColor = observedTileArray[n][m].colorOpenCV.val;
 				double[] measuredColor = measuredColorArray[n][m];
 				colorErrorBeforeCorrection += calculateColorError(selectedColor, measuredColor, true, 0.0);
 			}
@@ -660,17 +660,17 @@ public class RubikFace implements Serializable {
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][0], colorError[0][0]), Util.dumpRGB(measuredColorArray[1][0], colorError[1][0]), Util.dumpRGB(measuredColorArray[2][0], colorError[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][0]), Util.dumpYUV(measuredColorArray[1][0]), Util.dumpYUV(measuredColorArray[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][0]), Util.dumpRGB(observedTileArray[1][0]), Util.dumpRGB(observedTileArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].color.val), Util.dumpYUV(observedTileArray[1][0].color.val), Util.dumpYUV(observedTileArray[2][0].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].colorOpenCV.val), Util.dumpYUV(observedTileArray[1][0].colorOpenCV.val), Util.dumpYUV(observedTileArray[2][0].colorOpenCV.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][1], colorError[0][1]), Util.dumpRGB(measuredColorArray[1][1], colorError[1][1]), Util.dumpRGB(measuredColorArray[2][1], colorError[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][1]), Util.dumpYUV(measuredColorArray[1][1]), Util.dumpYUV(measuredColorArray[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][1]), Util.dumpRGB(observedTileArray[1][1]), Util.dumpRGB(observedTileArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].color.val), Util.dumpYUV(observedTileArray[1][1].color.val), Util.dumpYUV(observedTileArray[2][1].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].colorOpenCV.val), Util.dumpYUV(observedTileArray[1][1].colorOpenCV.val), Util.dumpYUV(observedTileArray[2][1].colorOpenCV.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][2], colorError[0][2]), Util.dumpRGB(measuredColorArray[1][2], colorError[1][2]), Util.dumpRGB(measuredColorArray[2][2], colorError[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][2]), Util.dumpYUV(measuredColorArray[1][2]), Util.dumpYUV(measuredColorArray[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][2]), Util.dumpRGB(observedTileArray[1][2]), Util.dumpRGB(observedTileArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].color.val), Util.dumpYUV(observedTileArray[1][2].color.val), Util.dumpYUV(observedTileArray[2][2].color.val) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].colorOpenCV.val), Util.dumpYUV(observedTileArray[1][2].colorOpenCV.val), Util.dumpYUV(observedTileArray[2][2].colorOpenCV.val) ));
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, "Total Color Error Before Correction: " + colorErrorBeforeCorrection);
 		
@@ -686,7 +686,7 @@ public class RubikFace implements Serializable {
 				if(logicalTile.constantTileColor == ConstantTileColorEnum.RED || logicalTile.constantTileColor == ConstantTileColorEnum.ORANGE)
 					continue;
 				double measuredLuminousity = Util.getYUVfromRGB(measuredColorArray[n][m])[0];
-				double expectedLuminousity = Util.getYUVfromRGB(logicalTile.color.val)[0];
+				double expectedLuminousity = Util.getYUVfromRGB(logicalTile.colorOpenCV.val)[0];
 				luminousOffset += (expectedLuminousity - measuredLuminousity);
 				count++;
 			}
@@ -705,7 +705,7 @@ public class RubikFace implements Serializable {
 				ConstantTile bestCandidate = null;
 				for(int i=0; i<6; i++) {
 					ConstantTile candidateTile = Constants.constantTileColorArray[i];
-					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.color.val);
+					double[] candidateColorYUV = Util.getYUVfromRGB(candidateTile.colorOpenCV.val);
 
 					// Only examine U and V axis, and not luminous.
 					double error =
@@ -724,7 +724,7 @@ public class RubikFace implements Serializable {
 //				Log.d(Constants.TAG, String.format( "Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.character, smallestError));
 
 				if(bestCandidate != observedTileArray[n][m]) {
-					Log.i(Constants.TAG, String.format("Reclassiffying tile [%d][%d] from %c to %c", n, m, observedTileArray[n][m].character, bestCandidate.character));
+					Log.i(Constants.TAG, String.format("Reclassiffying tile [%d][%d] from %c to %c", n, m, observedTileArray[n][m].symbol, bestCandidate.symbol));
 					observedTileArray[n][m] = bestCandidate;
 				}
 			}
@@ -733,7 +733,7 @@ public class RubikFace implements Serializable {
 		// Calculate and record LMS error (includeing LMS).
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
-				double[] selectedColor = observedTileArray[n][m].color.val;
+				double[] selectedColor = observedTileArray[n][m].colorOpenCV.val;
 				double[] measuredColor = measuredColorArray[n][m];
 				colorErrorAfterCorrection += calculateColorError(selectedColor, measuredColor, true, luminousOffset);
 			}
@@ -744,17 +744,17 @@ public class RubikFace implements Serializable {
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][0], colorError[0][0]), Util.dumpRGB(measuredColorArray[1][0], colorError[1][0]), Util.dumpRGB(measuredColorArray[2][0], colorError[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][0]), Util.dumpYUV(measuredColorArray[1][0]), Util.dumpYUV(measuredColorArray[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][0]), Util.dumpRGB(observedTileArray[1][0]), Util.dumpRGB(observedTileArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].color.val), Util.dumpYUV(observedTileArray[1][0].color.val), Util.dumpYUV(observedTileArray[2][0].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].colorOpenCV.val), Util.dumpYUV(observedTileArray[1][0].colorOpenCV.val), Util.dumpYUV(observedTileArray[2][0].colorOpenCV.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][1], colorError[0][1]), Util.dumpRGB(measuredColorArray[1][1], colorError[1][1]), Util.dumpRGB(measuredColorArray[2][1], colorError[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][1]), Util.dumpYUV(measuredColorArray[1][1]), Util.dumpYUV(measuredColorArray[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][1]), Util.dumpRGB(observedTileArray[1][1]), Util.dumpRGB(observedTileArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].color.val), Util.dumpYUV(observedTileArray[1][1].color.val), Util.dumpYUV(observedTileArray[2][1].color.val) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].colorOpenCV.val), Util.dumpYUV(observedTileArray[1][1].colorOpenCV.val), Util.dumpYUV(observedTileArray[2][1].colorOpenCV.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][2], colorError[0][2]), Util.dumpRGB(measuredColorArray[1][2], colorError[1][2]), Util.dumpRGB(measuredColorArray[2][2], colorError[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][2]), Util.dumpYUV(measuredColorArray[1][2]), Util.dumpYUV(measuredColorArray[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][2]), Util.dumpRGB(observedTileArray[1][2]), Util.dumpRGB(observedTileArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].color.val), Util.dumpYUV(observedTileArray[1][2].color.val), Util.dumpYUV(observedTileArray[2][2].color.val) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].colorOpenCV.val), Util.dumpYUV(observedTileArray[1][2].colorOpenCV.val), Util.dumpYUV(observedTileArray[2][2].colorOpenCV.val) ));
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 
 		Log.d(Constants.TAG, "Color Error After Correction: " + colorErrorAfterCorrection);

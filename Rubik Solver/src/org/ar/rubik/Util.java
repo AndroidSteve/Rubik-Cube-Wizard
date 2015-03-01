@@ -61,8 +61,8 @@ public class Util {
 	}
 
 	public static String dumpRGB(ConstantTile logicalTile) {
-		double color[] = logicalTile.color.val;
-		return String.format("r=%3.0f g=%3.0f b=%3.0f     t=%c", color[0], color[1], color[2], logicalTile.character);
+		double color[] = logicalTile.colorOpenCV.val;
+		return String.format("r=%3.0f g=%3.0f b=%3.0f     t=%c", color[0], color[1], color[2], logicalTile.symbol);
 	}
 	public static String dumpYUV(double[] color) {
 		color = getYUVfromRGB(color);
