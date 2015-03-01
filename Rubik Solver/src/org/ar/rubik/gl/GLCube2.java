@@ -43,6 +43,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import org.ar.rubik.Constants.FaceNameEnum;
+import org.ar.rubik.RubikFace;
+import org.ar.rubik.StateModel;
+
 import android.opengl.GLES20;
 
 /**
@@ -53,7 +57,10 @@ public class GLCube2 {
     public enum Transparency { OPAQUE, TRANSLUCENT, TRANSPARENT };
     
     // Buffer for vertex-array
-    private FloatBuffer vertexBuffer; 
+    private FloatBuffer vertexBuffer;
+
+    // Used to obtain center tile color information
+    private StateModel stateModel; 
     
     // number of cube faces: of course it is 6!
     private static final int NUM_FACES = 6;
@@ -66,15 +73,6 @@ public class GLCube2 {
 
     // number of total bytes in vertex stride: 12 in this case.
     private static final int VERTEX_STRIDE = COORDS_PER_VERTEX * BYTES_PER_FLOAT;
-
-    private static float[][] colors = {  // Colors of the 6 faces
-            {1.0f, 0.0f, 0.0f, 1.0f},  // 0. Front is Red
-            {1.0f, 0.5f, 0.0f, 1.0f},  // 1. Back is Orange
-            {0.0f, 1.0f, 0.0f, 1.0f},  // 2. Left is Green
-            {0.0f, 0.0f, 1.0f, 1.0f},  // 3. Right is Blue
-            {0.8f, 0.8f, 0.8f, 1.0f},  // 4. Up is White
-            {1.0f, 1.0f, 0.0f, 1.0f}   // 5. Down is Yellow
-    };
     
     // A completely transparent OpenGL color
     private static float [] transparentBlack = { 0f, 0f, 0f, 0f};
@@ -120,9 +118,12 @@ public class GLCube2 {
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
+     * @param stateModel 
      * @param programID2 
      */
-    public GLCube2() {
+    public GLCube2(StateModel stateModel) {
+        
+        this.stateModel = stateModel;
         
         // Setup vertex-array buffer. Vertices in float. A float has 4 bytes
         // This reserves memory that GPU has direct access to (correct?).
@@ -187,7 +188,51 @@ public class GLCube2 {
                 break;
 
             case OPAQUE:
-                GLES20.glUniform4fv(colorID, 1, colors[face], 0);
+                
+                // Map Face index to Name
+                FaceNameEnum faceName = null;
+                switch(face) {
+                case 0: faceName = FaceNameEnum.FRONT; break;
+                case 1: faceName = FaceNameEnum.BACK; break;
+                case 2: faceName = FaceNameEnum.LEFT; break;
+                case 3: faceName = FaceNameEnum.RIGHT; break;
+                case 4: faceName = FaceNameEnum.UP; break;
+                case 5: faceName = FaceNameEnum.DOWN; break;
+                }
+                
+                // Get Face
+                RubikFace rubikFace = stateModel.nameRubikFaceMap.get(faceName);
+                
+                // Color in GL format
+                float [] measuredColorGL = new float [4];                
+                
+                if(rubikFace != null) {
+                    
+                    // Get Measured Color of Center Tile
+                    double[] measuredColorCV = rubikFace.measuredColorArray[1][1];
+                    
+                    // ConstantTileColorEnum tileColor = rubikFace.observedTileArray[1][1].constantTileColor;
+                    // =+= Seems like we need some type of Constant Color Class that contains:
+                    // =+= Preferred OpenCV rendered color values
+                    // =+= Preferred OpenGL rendered color values
+                    // =+= Best static guess at actual OpenCV measured color values
+                    // =+= Single character representation
+                    // =+= Enum ?  Possibly not necessary.
+                    // =+= Should be able to eliminate colorTileMap in state model
+
+                    measuredColorGL[0] = (float) (measuredColorCV[0] / 256.0f);
+                    measuredColorGL[1] = (float) (measuredColorCV[1] / 256.0f);
+                    measuredColorGL[2] = (float) (measuredColorCV[2] / 256.0f);
+                    measuredColorGL[3] = 1.0f;
+                }
+                else {
+                    measuredColorGL[0] = 0.5f;
+                    measuredColorGL[1] = 0.5f;
+                    measuredColorGL[2] = 0.5f;
+                    measuredColorGL[3] = 1.0f;
+                }
+                // Render
+                GLES20.glUniform4fv(colorID, 1, measuredColorGL, 0);
                 break;
 
             case TRANSLUCENT:

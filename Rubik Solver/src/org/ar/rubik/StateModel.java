@@ -156,9 +156,13 @@ public class StateModel {
     	}
     	
     	if(adoptFaceCount < 6) {
-    		colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
+    	    
+    	    // Record Face by Name: i.e., UP, DOWN, LEFT, ...
     		nameRubikFaceMap.put(rubikFace.faceNameEnum, rubikFace);
-    	}
+    		
+    		// Record Face by center tile color =+= Is this really useful at all?
+            colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
+      	}
     	
     	adoptFaceCount++;
     }

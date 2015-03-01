@@ -123,10 +123,10 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	    // Create the GL pilot cube
-	    pilotGLCube = new GLCube2();
+	    pilotGLCube = new GLCube2(stateModel);
 
 	    // Create the GL overlay cube
-	    overlayGLCube = new GLCube2();
+	    overlayGLCube = new GLCube2(stateModel);
 	    
 	    // Create two arrows: one half turn, one quarter turn.
 	    arrowQuarterTurn = new GLArrow2(Amount.QUARTER_TURN);
