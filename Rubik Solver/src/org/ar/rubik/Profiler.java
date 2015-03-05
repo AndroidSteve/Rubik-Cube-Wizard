@@ -34,6 +34,7 @@ package org.ar.rubik;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ar.rubik.Constants.ColorTileEnum;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -77,7 +78,7 @@ public class Profiler {
 	 */
 	public Mat drawTimeConsumptionMetrics(Mat image, StateModel stateModel) {
 
-    	Core.rectangle(image, new Point(0, 0), new Point(500, 720), Constants.ColorBlack, -1);
+    	Core.rectangle(image, new Point(0, 0), new Point(500, 720), ColorTileEnum.BLACK.cvColor, -1);
 		int index = 0;
 		
         long newTimeStamp = System.currentTimeMillis();
@@ -85,12 +86,12 @@ public class Profiler {
 		    long frameTime = newTimeStamp - framesPerSecondTimeStamp;
 		    double framesPerSecond = 1000.0 / frameTime;
 		    String string = String.format("Frames Per Second: %4.1f", framesPerSecond);
-		    Core.putText(image, string, new Point(50, 100), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		    Core.putText(image, string, new Point(50, 100), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 		}
         framesPerSecondTimeStamp = newTimeStamp;
 
 
-		Core.putText(image, "Event    Time  Min", new Point(50, 150), Constants.FontFace, 2, Constants.ColorWhite, 2);
+		Core.putText(image, "Event    Time  Min", new Point(50, 150), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 				
 		renderAndIndex(Event.GREYSCALE,  Event.START,     image, index++);
 		renderAndIndex(Event.GAUSSIAN,   Event.GREYSCALE, image, index++);
@@ -125,7 +126,7 @@ public class Profiler {
     	
     	// No measurement yet for this event type.
     	if(eventSet.containsKey(endEvent) == false) {
-    		Core.putText(image, endEvent.toString() + ": NA", new Point(50, 200 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    		Core.putText(image, endEvent.toString() + ": NA", new Point(50, 200 + 50 * index), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
     	}
     	
     	// If total, perform special processing.  Specifically, add up and report all minimums found in 
@@ -143,7 +144,7 @@ public class Profiler {
     			minValue += minEventTime;
 
 			String string = String.format("%10s: %3dmS %3dmS", endEvent.toString(), elapsedTime, minValue);
-    		Core.putText(image, string, new Point(50, 200 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    		Core.putText(image, string, new Point(50, 200 + 50 * index), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
     	}
     	
     	// Render time and minimum tile for this event type.
@@ -159,7 +160,7 @@ public class Profiler {
     		}
 
 			String string = String.format("%10s: %3dmS %3dmS", endEvent.toString(), elapsedTime, minValue);
-    		Core.putText(image, string, new Point(50, 200 + 50 * index), Constants.FontFace, 2, Constants.ColorWhite, 2);
+    		Core.putText(image, string, new Point(50, 200 + 50 * index), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
     	}
     }
 

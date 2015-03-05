@@ -29,8 +29,6 @@
  */
 package org.ar.rubik;
 
-import java.io.Serializable;
-
 import org.opencv.core.Core;
 import org.opencv.core.Scalar;
 
@@ -80,96 +78,87 @@ public class Constants {
 
 	// Conventional Rubik Face nomenclature
 	public enum FaceNameEnum { UP, DOWN, LEFT, RIGHT, FRONT, BACK};
-
-	// Constant Colors as Scalar objects for purpose of various text, line and annotation rendering.
-	public final static Scalar ColorRed    = new Scalar(255.0, 0.0, 0.0);
-	public final static Scalar ColorOrange = new Scalar(240.0, 120.0, 100.0);
-	public final static Scalar ColorYellow = new Scalar(255.0, 255.0, 0.0);
-	public final static Scalar ColorGreen  = new Scalar(0.0, 255.0, 0.0);
-	public final static Scalar ColorBlue   = new Scalar(0.0, 0.0, 255.0);
-	public final static Scalar ColorWhite  = new Scalar(255.0, 255.0, 255.0);
-	public final static Scalar ColorGrey   = new Scalar(50.0, 50.0, 50.0);
-	public final static Scalar ColorBlack  = new Scalar(0.0, 0.0, 0.0);
-
-	// Constant Colors as Scalar objects to match Rubik tile colors.
-	// This values below are calibrated for morning light.
-	public final static Scalar RubikRed    = new Scalar(220.0,  20.0,  30.0);
-	public final static Scalar RubikOrange = new Scalar(240.0,  80.0,   0.0);
-//		public final static Scalar RubikOrange = new Scalar(240.0, 120.0,   0.0);
-	public final static Scalar RubikYellow = new Scalar(230.0, 230.0,  20.0);
-//		public final static Scalar RubikYellow = new Scalar(230.0, 230.0,  80.0);
-	public final static Scalar RubikGreen  = new Scalar(  0.0, 140.0,  60.0);
-	public final static Scalar RubikBlue   = new Scalar(  0.0,  60.0, 220.0);
-	public final static Scalar RubikWhite  = new Scalar(225.0, 255.0, 255.0);
-
-	public enum ConstantTileColorEnum { RED, ORANGE, YELLOW, GREEN, BLUE, WHITE };
 	
 	
-	/*
-	 * Class Color
+	/**
+	 * Color Tile Enum
+	 * 
+	 * This one class serves as both a collection of colors and the values used by various activities
+	 * throughout the application, and as a Tile type (more specifically enumeration) that 
+	 * the RubikFace class can reference to for each of the nine tiles on each face.
+	 * 
+	 * Each enumerated color value possess three values: 
+	 * - openCV of type Scalar
+	 * - openGL of type float[4]
+	 * - symbol of type char 
+	 * 
+	 * @author android.steve@testlens.com
+	 *
 	 */
-	public static class Color2 {
+	public enum ColorTileEnum {
+	    
+	    RED   ( true, 'R', new Scalar(220.0,   20.0,  30.0), new float [] {1.0f, 0.0f, 0.0f, 1.0f}),	    
+	    ORANGE( true, 'O', new Scalar(240.0,   80.0,   0.0), new float [] {0.9f, 0.4f, 0.0f, 1.0f}),
+	    YELLOW( true, 'Y', new Scalar(230.0,  230.0,  20.0), new float [] {0.9f, 0.9f, 0.2f, 1.0f}),
+	    GREEN ( true, 'G', new Scalar(0.0,    140.0,  60.0), new float [] {0.0f, 1.0f, 0.0f, 1.0f}),
+	    BLUE  ( true, 'B', new Scalar(0.0,     60.0, 220.0), new float [] {0.0f, 0.0f, 1.0f, 1.0f}),
+        WHITE ( true, 'W', new Scalar(225.0,  225.0, 225.0), new float [] {1.0f, 1.0f, 1.0f, 1.0f}),
         
-	    public Scalar openCV;
-        public float [] openGL;
-        public char symbol;
+        BLACK (false, 'K', new Scalar(  0.0,    0.0,   0.0) ),    
+        GREY  (false, 'E', new Scalar( 50.0,   50.0,  50.0) );
         
-	    public Color2(char symbol, Scalar openCV, float[] openGL) {
-            this.openCV = openCV;
-            this.openGL = openGL;
+	    
+	    // A Rubik Color
+	    public final boolean isRubikColor;
+	    
+	    // Measuring and Decision Testing in OpenCV
+	    public final Scalar rubikColor;
+	    
+	    // Rendering in OpenCV
+        public final Scalar cvColor;
+        
+        // Rendering in OpenGL
+        public final float [] glColor;
+        
+        // Single letter character
+        public final char symbol;
+        
+        /**
+         * Color Tile Enum Constructor
+         * 
+         * Accept an Rubik Color and derive OpenCV and OpenGL colors from this.
+         * 
+         * @param isRubik
+         * @param symbol
+         * @param rubikColor
+         */
+        private ColorTileEnum(boolean isRubik, char symbol, Scalar rubikColor) {
+            this.isRubikColor = isRubik;
+            this.cvColor = rubikColor;
+            this.rubikColor = rubikColor;
+            this.glColor =  new float [] {(float)rubikColor.val[0] / 255f, (float)rubikColor.val[1] / 255f, (float)rubikColor.val[2] / 255f, 1.0f};  
+            this.symbol = symbol;
+        }
+        
+        
+        /**
+         * Color Tile Enum Constructor
+         * 
+         * Accept an Rubik Color and an OpenGL color.  Derive OpenCV color from OpenGL color.
+         * 
+         * @param isRubik
+         * @param symbol
+         * @param rubikColor
+         */
+        private ColorTileEnum(boolean isRubik, char symbol, Scalar rubikColor, float[] renderColor) {
+            this.isRubikColor = isRubik;
+            this.cvColor = new Scalar(renderColor[0] * 255, renderColor[1] * 255, renderColor[2] * 255);
+            this.rubikColor = rubikColor;
+            this.glColor =  renderColor;
             this.symbol = symbol;
         }
 
 	}
-	
-	/*
-	 * OpenCV colors are chosen to match that of a cube in normal shaded daylight conditions.
-	 * OpenGL colors are chosen more arbitrarily.
-	 */
-    public static final Color2 RED2    = new Color2( 'R', new Scalar(220.0,   20.0,  30.0), new float [] {1.0f, 0.0f, 0.0f, 1.0f});
-    public static final Color2 ORANGE2 = new Color2( 'O', new Scalar(240.0,   80.0,   0.0), new float [] {1.0f, 0.5f, 0.0f, 1.0f});
-    public static final Color2 YELLOW2 = new Color2( 'Y', new Scalar(230.0,  230.0,  20.0), new float [] {0.9f, 0.9f, 0.1f, 1.0f});
-    public static final Color2 GREEN2  = new Color2( 'G', new Scalar(0.0,    140.0,  60.0), new float [] {1.0f, 0.6f, 0.2f, 1.0f});
-    public static final Color2 BLUE2   = new Color2( 'B', new Scalar(0.0,     60.0, 220.0), new float [] {1.0f, 0.0f, 1.0f, 1.0f});
-    public static final Color2 WHITE2  = new Color2( 'W', new Scalar(225.0,  225.0, 225.0), new float [] {1.0f, 1.0f, 1.0f, 1.0f});
-    public static final Color2 GREY2   = new Color2( 'E', new Scalar(50.0,    50.0,  50.0), new float [] {0.2f, 0.2f, 0.2f, 1.0f});
-    public static final Color2 BLACK   = new Color2( 'L', new Scalar(0.0,      0.0,   0.0), new float [] {0.0f, 0.0f, 0.0f, 1.0f});
-    
-    
-    // Handy if we are searching for a cube color.
-    public static final Color2 [] CUBE_COLORS_ARRAY = {RED2, ORANGE2, YELLOW2, GREEN2, BLUE2, WHITE2};
-	
-
-	// Group together enum, color and character annotation.
-	public static final class ConstantTile implements Serializable {
-		private static final long serialVersionUID = 4739751093453679173L;
-
-		// Color values selected to be close to that of cube.
-		public ConstantTileColorEnum constantTileColor;
-
-		// Color values selected for display purposes.
-		public Scalar colorOpenCV;
-
-		// Character symbol of color
-		public char symbol;
-
-		public ConstantTile(ConstantTileColorEnum constantTileColor, Scalar color, char character) {
-			this.constantTileColor = constantTileColor;
-			this.colorOpenCV = color;
-			this.symbol = character;
-		}
-	}
-
-
-	// Array of possible Rubik Tile Colors.
-	public final static ConstantTile [] constantTileColorArray = {
-		new ConstantTile(ConstantTileColorEnum.RED,     RubikRed,    'R'),
-		new ConstantTile(ConstantTileColorEnum.ORANGE,  RubikOrange, 'O'),
-		new ConstantTile(ConstantTileColorEnum.YELLOW,  RubikYellow, 'Y'),
-		new ConstantTile(ConstantTileColorEnum.GREEN,   RubikGreen,  'G'),
-		new ConstantTile(ConstantTileColorEnum.BLUE,    RubikBlue,   'B'),
-		new ConstantTile(ConstantTileColorEnum.WHITE,   RubikWhite,  'W')
-	};
 
 	// Any OpenCV font
 	public final static int FontFace = Core.FONT_HERSHEY_PLAIN;

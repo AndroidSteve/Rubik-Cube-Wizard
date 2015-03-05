@@ -37,8 +37,8 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import org.ar.rubik.Constants;
 import org.ar.rubik.Constants.AppStateEnum;
+import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.CubeReconstructor;
 import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.Constants.FaceNameEnum;
@@ -319,39 +319,39 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 		// Rotate and Translate Arrow as required by Rubik Logic Solution algorithm. 
 		switch(moveNumonic.charAt(0)) {
 		case 'U':
-			color = stateModel.getFaceByName(FaceNameEnum.UP).observedTileArray[1][1].colorOpenCV;
+			color = stateModel.getFaceByName(FaceNameEnum.UP).observedTileArray[1][1].cvColor;
 			Matrix.translateM(mvpMatrix, 0, 0.0f, +2.0f, 0.0f);
 			Matrix.rotateM(mvpMatrix, 0, 90f, 1.0f, 0.0f, 0.0f);  // X rotation
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
 			break;
 		case 'D':
-			color = stateModel.getFaceByName(FaceNameEnum.DOWN).observedTileArray[1][1].colorOpenCV;		
+			color = stateModel.getFaceByName(FaceNameEnum.DOWN).observedTileArray[1][1].cvColor;		
 			Matrix.translateM(mvpMatrix, 0, 0.0f, -2.0f, 0.0f);
 			Matrix.rotateM(mvpMatrix, 0, 90f, 1.0f, 0.0f, 0.0f);  // X rotation
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE; 
 			break;
 		case 'L':
-			color = stateModel.getFaceByName(FaceNameEnum.LEFT).observedTileArray[1][1].colorOpenCV;
+			color = stateModel.getFaceByName(FaceNameEnum.LEFT).observedTileArray[1][1].cvColor;
 			Matrix.translateM(mvpMatrix, 0, -2.0f, 0.0f, 0.0f);
 			Matrix.rotateM(mvpMatrix, 0, 90f, 0.0f, 1.0f, 0.0f);  // Y rotation
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
 			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'R':
-			color = stateModel.getFaceByName(FaceNameEnum.RIGHT).observedTileArray[1][1].colorOpenCV;
+			color = stateModel.getFaceByName(FaceNameEnum.RIGHT).observedTileArray[1][1].cvColor;
 			Matrix.translateM(mvpMatrix, 0, +2.0f, 0.0f, 0.0f);
 			Matrix.rotateM(mvpMatrix, 0, 90f, 0.0f, 1.0f, 0.0f);  // Y rotation
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE;
 			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'F':
-			color = stateModel.getFaceByName(FaceNameEnum.FRONT).observedTileArray[1][1].colorOpenCV;
+			color = stateModel.getFaceByName(FaceNameEnum.FRONT).observedTileArray[1][1].cvColor;
 			Matrix.translateM(mvpMatrix, 0, 0.0f, 0.0f, +2.0f);
 			direction = (rotation == Rotation.COUNTER_CLOCKWISE) ? Direction.NEGATIVE : Direction.POSITIVE; 
 			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		case 'B':
-			color = stateModel.getFaceByName(FaceNameEnum.BACK).observedTileArray[1][1].colorOpenCV;
+			color = stateModel.getFaceByName(FaceNameEnum.BACK).observedTileArray[1][1].cvColor;
 			Matrix.translateM(mvpMatrix, 0, 0.0f, 0.0f, -2.0f);
 			direction = (rotation == Rotation.CLOCKWISE) ?         Direction.NEGATIVE : Direction.POSITIVE; 
 			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
@@ -410,7 +410,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         Matrix.scaleM(mvpMatrix, 0, 1.0f, 1.0f, 3.0f);
 		
 		// Render Quarter Turn Arrow
-		arrowQuarterTurn.draw(mvpMatrix, Constants.ColorWhite, programID);
+		arrowQuarterTurn.draw(mvpMatrix, ColorTileEnum.WHITE.cvColor, programID);
 	}
 
 }

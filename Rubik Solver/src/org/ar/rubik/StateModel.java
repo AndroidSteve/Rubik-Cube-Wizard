@@ -38,8 +38,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
-import org.ar.rubik.Constants.ConstantTile;
-import org.ar.rubik.Constants.ConstantTileColorEnum;
+import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
@@ -64,9 +63,6 @@ public class StateModel {
 	 */
 	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
 	
-	// Map of above rubik face objects index by TileColorEnum.
-	public HashMap<ConstantTileColorEnum, RubikFace> colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);
-
 	// Application State; see AppStateEnum.
 	public AppStateEnum appState = AppStateEnum.START;
 	
@@ -159,9 +155,6 @@ public class StateModel {
     	    
     	    // Record Face by Name: i.e., UP, DOWN, LEFT, ...
     		nameRubikFaceMap.put(rubikFace.faceNameEnum, rubikFace);
-    		
-    		// Record Face by center tile color =+= Is this really useful at all?
-            colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
       	}
     	
     	adoptFaceCount++;
@@ -214,18 +207,20 @@ public class StateModel {
 		for(RubikFace rubikFace : nameRubikFaceMap.values() ) {
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
-					numColorTilesArray[ rubikFace.observedTileArray[n][m].constantTileColor.ordinal() ]++;
+					numColorTilesArray[ rubikFace.observedTileArray[n][m].ordinal() ]++;    // constantTileColor.ordinal() ]++;
 				}
 			}	
 		}
 		
 		// Check that we have nine of each tile color over entire cube.
-		for(ConstantTileColorEnum constantTileColor : Constants.ConstantTileColorEnum.values()) {
-			if( numColorTilesArray[constantTileColor.ordinal()] != 9)
-				return false;
+		for(ColorTileEnum colorTile : ColorTileEnum.values()) {
+		    if(colorTile.isRubikColor == true) {
+		        if( numColorTilesArray[colorTile.ordinal()] != 9)
+		            return false;
+		    }
 		}
 		return true;
-	}
+    }
 
 
     
@@ -240,13 +235,25 @@ public class StateModel {
 	 * @return
 	 */
 	public String getStringRepresentationOfCube() {
+	    
+	    // Create a map of tile color to face name. The center tile of each face is used for this 
+	    // definition.  This information is used by Rubik Cube Logic Solution.
+	    HashMap<ColorTileEnum, FaceNameEnum> colorTileToNameMap = new HashMap<ColorTileEnum, FaceNameEnum>(6);
+        colorTileToNameMap.put(getFaceByName(FaceNameEnum.UP).transformedTileArray[1][1],    FaceNameEnum.UP);
+        colorTileToNameMap.put(getFaceByName(FaceNameEnum.DOWN).transformedTileArray[1][1],  FaceNameEnum.DOWN);
+        colorTileToNameMap.put(getFaceByName(FaceNameEnum.LEFT).transformedTileArray[1][1],  FaceNameEnum.LEFT);
+        colorTileToNameMap.put(getFaceByName(FaceNameEnum.RIGHT).transformedTileArray[1][1], FaceNameEnum.RIGHT);
+        colorTileToNameMap.put(getFaceByName(FaceNameEnum.FRONT).transformedTileArray[1][1], FaceNameEnum.FRONT);
+        colorTileToNameMap.put(getFaceByName(FaceNameEnum.BACK).transformedTileArray[1][1],  FaceNameEnum.BACK);
+	    
+	    
 		StringBuffer sb = new StringBuffer();
-		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.UP)));
-		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.RIGHT)));
-		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.FRONT)));
-		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.DOWN)));
-		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.LEFT)));
-		sb.append(getStringRepresentationOfFace( getFaceByName(FaceNameEnum.BACK)));
+		sb.append(getStringRepresentationOfFace( colorTileToNameMap, getFaceByName(FaceNameEnum.UP)));
+		sb.append(getStringRepresentationOfFace( colorTileToNameMap, getFaceByName(FaceNameEnum.RIGHT)));
+		sb.append(getStringRepresentationOfFace( colorTileToNameMap, getFaceByName(FaceNameEnum.FRONT)));
+		sb.append(getStringRepresentationOfFace( colorTileToNameMap, getFaceByName(FaceNameEnum.DOWN)));
+		sb.append(getStringRepresentationOfFace( colorTileToNameMap, getFaceByName(FaceNameEnum.LEFT)));
+		sb.append(getStringRepresentationOfFace( colorTileToNameMap, getFaceByName(FaceNameEnum.BACK)));
 		return sb.toString();
 	}
 
@@ -254,16 +261,18 @@ public class StateModel {
 
 	/**
 	 * Get String Representing a particular Face.
+	 * @param colorTileToNameMap 
 	 * 
 	 * @param rubikFace
 	 * @return
 	 */
-	private StringBuffer getStringRepresentationOfFace(RubikFace rubikFace) {
+	private StringBuffer getStringRepresentationOfFace(HashMap<ColorTileEnum, FaceNameEnum> colorTileToNameMap, RubikFace rubikFace) {
+	    
 		StringBuffer sb = new StringBuffer();
-		ConstantTile[][] virtualLogicalTileArray = rubikFace.transformedTileArray;
+		ColorTileEnum[][] virtualLogicalTileArray = rubikFace.transformedTileArray;
 		for(int m=0; m<3; m++)
 			for(int n=0; n<3; n++)
-				sb.append(getCharacterRepresentingColor(virtualLogicalTileArray[n][m].constantTileColor));
+				sb.append(getCharacterRepresentingColor(colorTileToNameMap, virtualLogicalTileArray[n][m]));
 		return sb;
 	}
 	
@@ -273,14 +282,15 @@ public class StateModel {
 	 * 
 	 * Return single character representing Face Name (i.e., Up, Down, etc...) of face 
 	 * who's center tile is of the passed in arg.
+	 * @param colorTileToNameMap 
 	 * 
 	 * 
 	 * @param colorEnum
 	 * @return
 	 */
-	private char getCharacterRepresentingColor(ConstantTileColorEnum colorEnum) {
+	private char getCharacterRepresentingColor(HashMap<ColorTileEnum, FaceNameEnum> colorTileToNameMap, ColorTileEnum colorEnum) {
 
-		switch(colorRubikFaceMap.get(colorEnum).faceNameEnum) {
+		switch(colorTileToNameMap.get(colorEnum) ) {
 		case FRONT: return 'F';
 		case BACK:  return 'B';
 		case DOWN:  return 'D';
@@ -349,11 +359,6 @@ public class StateModel {
 		nameRubikFaceMap.put(FaceNameEnum.DOWN, rubikFaceArray[3]);
 		nameRubikFaceMap.put(FaceNameEnum.LEFT, rubikFaceArray[4]);
 		nameRubikFaceMap.put(FaceNameEnum.BACK, rubikFaceArray[5]);
-		
-		
-		// Rebuild Color and Name Rubik Maps.
-		for(RubikFace rubikFace : rubikFaceArray)
-    		colorRubikFaceMap.put(rubikFace.observedTileArray[1][1].constantTileColor, rubikFace); // =+= can be inaccurate!
 	}
 
 
@@ -366,10 +371,7 @@ public class StateModel {
 
 		// Rubik Face of latest processed frame: may or may not be any of the six state objects.
 		activeRubikFace = null;
-
-		// Array of above rubik face objects index by TileColorEnum.
-		colorRubikFaceMap = new HashMap<Constants.ConstantTileColorEnum, RubikFace>(6);
-
+		
 		// Array of above rubik face objects index by FaceNameEnum
 		nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
 

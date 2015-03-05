@@ -37,6 +37,7 @@ package org.ar.rubik;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.Constants.ImageProcessModeEnum;
 import org.ar.rubik.Constants.ImageSourceModeEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
@@ -147,7 +148,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
             long frameTime = newTimeStamp - framesPerSecondTimeStamp;
             double framesPerSecond = 1000.0 / frameTime;
             String string = String.format("%4.1f FPS", framesPerSecond);
-            Core.putText(image, string, new Point(50, 700), Constants.FontFace, 2, Constants.ColorWhite, 2);
+            Core.putText(image, string, new Point(50, 700), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
         }
         framesPerSecondTimeStamp = newTimeStamp;
 
@@ -277,8 +278,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Mat rgba_gray_image = new Mat(imageSize, CvType.CV_8UC4);
 				Imgproc.cvtColor( image, gray_image, Imgproc.COLOR_RGB2GRAY);
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 3);
-				Imgproc.drawContours(rgba_gray_image, contours, -1, Constants.ColorYellow, 3);
-				Core.putText(rgba_gray_image, "Num Contours: " + contours.size(),  new Point(500, 50), Constants.FontFace, 4, Constants.ColorRed, 4);
+				Imgproc.drawContours(rgba_gray_image, contours, -1, ColorTileEnum.YELLOW.cvColor, 3);
+				Core.putText(rgba_gray_image, "Num Contours: " + contours.size(),  new Point(500, 50), Constants.FontFace, 4, ColorTileEnum.RED.cvColor, 4);
 				return annotation.drawAnnotation(rgba_gray_image);
 			}
 			
@@ -329,8 +330,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Imgproc.cvtColor( image, gray_image, Imgproc.COLOR_RGB2GRAY);
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 4);
 				for(Rhombus polygon : polygonList)
-					polygon.draw(rgba_gray_image, Constants.ColorYellow);
-				Core.putText(rgba_gray_image, "Num Polygons: " + polygonList.size(),  new Point(500, 50), Constants.FontFace, 3, Constants.ColorRed, 4);
+					polygon.draw(rgba_gray_image, ColorTileEnum.YELLOW.cvColor);
+				Core.putText(rgba_gray_image, "Num Polygons: " + polygonList.size(),  new Point(500, 50), Constants.FontFace, 3, ColorTileEnum.RED.cvColor, 4);
 				return annotation.drawAnnotation(rgba_gray_image);
 			}
 
@@ -364,8 +365,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Imgproc.cvtColor( image, gray_image, Imgproc.COLOR_RGB2GRAY);
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 4);
 				for(Rhombus rhombus : rhombusList)
-					rhombus.draw(rgba_gray_image, Constants.ColorYellow);
-				Core.putText(rgba_gray_image, "Num Rhombus: " + rhombusList.size(),  new Point(500, 50), Constants.FontFace, 4, Constants.ColorRed, 4);
+					rhombus.draw(rgba_gray_image, ColorTileEnum.YELLOW.cvColor);
+				Core.putText(rgba_gray_image, "Num Rhombus: " + rhombusList.size(),  new Point(500, 50), Constants.FontFace, 4, ColorTileEnum.RED.cvColor, 4);
 				return annotation.drawAnnotation(rgba_gray_image);
 			}
 
@@ -426,26 +427,26 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			Log.e(Constants.TAG, "CvException: " + e.getMessage());
 			e.printStackTrace();  	
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, "CvException: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			Core.putText(errorImage, "CvException: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 			int i = 1;
 			for(StackTraceElement element : e.getStackTrace ())
-				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 		} catch (Exception e) {
 			Log.e(Constants.TAG, "Exception: " + e.getMessage());
 			e.printStackTrace();
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, "Exception: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			Core.putText(errorImage, "Exception: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 			int i = 1;
 			for(StackTraceElement element : e.getStackTrace ())
-				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 		} catch (Error e) {
 			Log.e(Constants.TAG, "Error: " + e.getMessage());
 			e.printStackTrace();
 			errorImage = new Mat(imageSize, CvType.CV_8UC4);
-			Core.putText(errorImage, "Error: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, Constants.ColorWhite, 2);
+			Core.putText(errorImage, "Error: " + e.getMessage(), new Point(50, 50), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 			int i = 1;
 			for(StackTraceElement element : e.getStackTrace ())
-				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, Constants.ColorWhite, 2);
+				Core.putText(errorImage, element.toString(), new Point(50, 50 + 50 * i++), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 		}
 
 		return annotation.drawAnnotation(image);

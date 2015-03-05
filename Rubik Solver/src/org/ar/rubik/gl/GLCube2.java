@@ -43,6 +43,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import org.ar.rubik.Constants;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.RubikFace;
 import org.ar.rubik.StateModel;
@@ -143,7 +144,7 @@ public class GLCube2 {
      * this shape.
      * @param programID 
      */
-    public void draw(float[] mvpMatrix, Transparency transparency, int programID) {
+    public void draw(float[] mvpMatrix, Transparency transparencyMode, int programID) {
         
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_BACK);   // =+= ?? Why ??
@@ -178,61 +179,32 @@ public class GLCube2 {
         GLUtil.checkGlError("glUniformMatrix4fv");
         
         // Render all the faces
-        for (int face = 0; face < NUM_FACES; face++) {
+        for (int faceIndex = 0; faceIndex < NUM_FACES; faceIndex++) {
             
-            
-            switch (transparency) {
+            switch (transparencyMode) {
 
             case TRANSPARENT:
                 GLES20.glUniform4fv(colorID, 1, transparentBlack, 0);
                 break;
 
             case OPAQUE:
-                
-                // Map Face index to Name
-                FaceNameEnum faceName = null;
-                switch(face) {
-                case 0: faceName = FaceNameEnum.FRONT; break;
-                case 1: faceName = FaceNameEnum.BACK; break;
-                case 2: faceName = FaceNameEnum.LEFT; break;
-                case 3: faceName = FaceNameEnum.RIGHT; break;
-                case 4: faceName = FaceNameEnum.UP; break;
-                case 5: faceName = FaceNameEnum.DOWN; break;
-                }
-                
-                // Get Face
-                RubikFace rubikFace = stateModel.nameRubikFaceMap.get(faceName);
-                
-                // Color in GL format
-                float [] measuredColorGL = new float [4];                
-                
-                if(rubikFace != null) {
-                    
-                    // Get Measured Color of Center Tile
-                    double[] measuredColorCV = rubikFace.measuredColorArray[1][1];
-                    
-                    // ConstantTileColorEnum tileColor = rubikFace.observedTileArray[1][1].constantTileColor;
-                    // =+= Seems like we need some type of Constant Color Class that contains:
-                    // =+= Preferred OpenCV rendered color values
-                    // =+= Preferred OpenGL rendered color values
-                    // =+= Best static guess at actual OpenCV measured color values
-                    // =+= Single character representation
-                    // =+= Enum ?  Possibly not necessary.
-                    // =+= Should be able to eliminate colorTileMap in state model
 
-                    measuredColorGL[0] = (float) (measuredColorCV[0] / 256.0f);
-                    measuredColorGL[1] = (float) (measuredColorCV[1] / 256.0f);
-                    measuredColorGL[2] = (float) (measuredColorCV[2] / 256.0f);
-                    measuredColorGL[3] = 1.0f;
+                // Get Face
+                RubikFace rubikFace = null;
+                switch(faceIndex) {
+                case 0: rubikFace = stateModel.nameRubikFaceMap.get( FaceNameEnum.FRONT); break;
+                case 1: rubikFace = stateModel.nameRubikFaceMap.get( FaceNameEnum.BACK);  break;
+                case 2: rubikFace = stateModel.nameRubikFaceMap.get( FaceNameEnum.LEFT);  break;
+                case 3: rubikFace = stateModel.nameRubikFaceMap.get( FaceNameEnum.RIGHT); break;
+                case 4: rubikFace = stateModel.nameRubikFaceMap.get( FaceNameEnum.UP);    break;
+                case 5: rubikFace = stateModel.nameRubikFaceMap.get( FaceNameEnum.DOWN);  break;
                 }
-                else {
-                    measuredColorGL[0] = 0.5f;
-                    measuredColorGL[1] = 0.5f;
-                    measuredColorGL[2] = 0.5f;
-                    measuredColorGL[3] = 1.0f;
-                }
+
+                // Color in GL format
+                float [] colorGL = (rubikFace != null) ? rubikFace.transformedTileArray[1][1].glColor : Constants.ColorTileEnum.GREY.glColor;
+
                 // Render
-                GLES20.glUniform4fv(colorID, 1, measuredColorGL, 0);
+                GLES20.glUniform4fv(colorID, 1, colorGL, 0);
                 break;
 
             case TRANSLUCENT:
@@ -244,7 +216,7 @@ public class GLCube2 {
             // Draw Triangles
             GLES20.glDrawArrays(
                     GLES20.GL_TRIANGLE_STRIP, 
-                    face*BYTES_PER_FLOAT, 
+                    faceIndex*BYTES_PER_FLOAT, 
                     BYTES_PER_FLOAT);
         }
 

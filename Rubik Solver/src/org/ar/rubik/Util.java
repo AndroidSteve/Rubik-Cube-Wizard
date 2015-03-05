@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.ar.rubik.Constants.ConstantTile;
+import org.ar.rubik.Constants.ColorTileEnum;
 import org.kociemba.twophase.PruneTableLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -52,18 +52,19 @@ public class Util {
 
 
 
-	public static String dumpRGB(double[] color) {
-		return String.format("r=%3.0f g=%3.0f b=%3.0f        ", color[0], color[1], color[2]);
+	public static String dumpRGB(ColorTileEnum colorTile) {
+		double[] val = colorTile.cvColor.val;
+        return String.format("r=%3.0f g=%3.0f b=%3.0f        ", val[0], val[1], val[2]);
 	}
 	
 	public static String dumpRGB(double[] color, double colorError) {
 		return String.format("r=%3.0f g=%3.0f b=%3.0f e=%5.0f", color[0], color[1], color[2], colorError);
 	}
 
-	public static String dumpRGB(ConstantTile logicalTile) {
-		double color[] = logicalTile.colorOpenCV.val;
-		return String.format("r=%3.0f g=%3.0f b=%3.0f     t=%c", color[0], color[1], color[2], logicalTile.symbol);
-	}
+//	public static String dumpRGB(ConstantTile logicalTile) {
+//		double color[] = logicalTile.colorOpenCV.val;
+//		return String.format("r=%3.0f g=%3.0f b=%3.0f     t=%c", color[0], color[1], color[2], logicalTile.symbol);
+//	}
 	public static String dumpYUV(double[] color) {
 		color = getYUVfromRGB(color);
 		return String.format("y=%3.0f u=%3.0f v=%3.0f        ", color[0], color[1], color[2]);
@@ -142,12 +143,12 @@ public class Util {
 	 * @param arg
 	 * @return
 	 */
-	public static ConstantTile[][] getTileArrayRotatedClockwise(ConstantTile[][] arg) {	
+	public static ColorTileEnum[][] getTileArrayRotatedClockwise(ColorTileEnum[][] arg) {	
 		//         n -------------->
 		//   m     0-0    1-0    2-0
 		//   |     0-1    1-1    2-1
 		//   v     0-2    1-2    2-2
-		ConstantTile [][] result = new ConstantTile[3][3];
+		ColorTileEnum [][] result = new ColorTileEnum[3][3];
 		result[1][1] = arg[1][1];
 		result[2][0] = arg[0][0];
 		result[2][1] = arg[1][0];
@@ -160,10 +161,10 @@ public class Util {
 		
 		return result;
 	}
-	public static ConstantTile [][] getTileArrayRotatedCounterClockwise(ConstantTile[][] arg) {
+	public static ColorTileEnum [][] getTileArrayRotatedCounterClockwise(ColorTileEnum[][] arg) {
 		return getTileArrayRotatedClockwise( getTileArrayRotatedClockwise( getTileArrayRotatedClockwise( arg)));
 	}
-	public static ConstantTile [][] getTileArrayRotated180(ConstantTile[][] arg) {
+	public static ColorTileEnum [][] getTileArrayRotated180(ColorTileEnum[][] arg) {
 		return getTileArrayRotatedClockwise( getTileArrayRotatedClockwise( arg));
 	}
 
