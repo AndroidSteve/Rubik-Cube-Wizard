@@ -42,7 +42,6 @@ import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 
 import android.util.Log;
@@ -235,7 +234,7 @@ public class RubikFace implements Serializable {
 		// A good solution has been reached!
 		
 		// Obtain Logical Tiles
-		findClosestLogicalTiles(image);
+		findClosestTileColor(image);
 
 		// Calculate a hash code that is unique for the given collection of Logical Tiles.
 		// Added right rotation to obtain unique number with respect to locations.
@@ -243,6 +242,7 @@ public class RubikFace implements Serializable {
 		for(int n=0; n<3; n++)
 			for(int m=0; m<3; m++)
 				myHashCode = observedTileArray[n][m].hashCode() ^ Integer.rotateRight(myHashCode, 1);
+		
 		
 		faceRecognitionStatus =  FaceRecognitionStatusEnum.SOLVED;
     }
@@ -565,7 +565,7 @@ public class RubikFace implements Serializable {
 	
 	
 	/**
-	 * Find Closest Logical Tile
+	 * Find Closest Tile Color
 	 * 
 	 * Two Pass algorithm:
 	 * 1) Find closest fit using just U and V axis.
@@ -575,7 +575,7 @@ public class RubikFace implements Serializable {
 	 * 
 	 * @return
 	 */
-	private void findClosestLogicalTiles(Mat image) {
+	private void findClosestTileColor(Mat image) {
 		
 		double [][] colorError = new double[3][3];
 		
@@ -587,19 +587,19 @@ public class RubikFace implements Serializable {
 			    Size size = image.size();
 			    double width = size.width;
 			    double height = size.height;
+			    
+			    // Check location of tile on screen: can be too close to screen edge.
 			    if( tileCenter.x < 10 || tileCenter.x > width - 10 || tileCenter.y < 10 || tileCenter.y > height - 10) {
 			        Log.w(Constants.TAG, String.format("Tile at [%1d,%1d] has coordinates x=%5.1f y=%5.1f too close to edge to assign color.", n, m, tileCenter.x, tileCenter.y));
 			        measuredColorArray[n][m] = new double[4];  // This will default to back.  
 			    }
 
+			    // Obtain measured color from average over 20 by 20 pixel squar.
 			    else {
 
 			        try {
 			            Mat mat = image.submat((int)(tileCenter.y - 10), (int)(tileCenter.y + 10), (int)(tileCenter.x - 10), (int)(tileCenter.x + 10));
-
-			            Scalar mean = Core.mean(mat);
-			            double [] actualTileColor = mean.val;
-			            measuredColorArray[n][m] = actualTileColor;
+			            measuredColorArray[n][m] = Core.mean(mat).val;
 			        }
 
 			        // Probably LMS calculations produced bogus tile location.
@@ -644,6 +644,7 @@ public class RubikFace implements Serializable {
 
 //				Log.d(Constants.TAG, String.format( "Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.character, smallestError));
 
+				// Assign best candidate to this tile location.
 				observedTileArray[n][m] = bestCandidate;
 			}
 		}
@@ -657,23 +658,23 @@ public class RubikFace implements Serializable {
 			}
 		}
 		
-		// For each tile location print: measure RGB, measure YUV, logical RGB, logical YUV
+		// Diagnostics:  For each tile location print: measure RGB, measure YUV, logical RGB, logical YUV
 		Log.d(Constants.TAG, "Table: Measure RGB, Measure YUV, Logical RGB, Logical YUV");
 		Log.d(Constants.TAG, String.format( " m:n|----------0--------------|-----------1-------------|---------2---------------|") );
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][0], colorError[0][0]), Util.dumpRGB(measuredColorArray[1][0], colorError[1][0]), Util.dumpRGB(measuredColorArray[2][0], colorError[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][0]), Util.dumpYUV(measuredColorArray[1][0]), Util.dumpYUV(measuredColorArray[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][0]), Util.dumpRGB(observedTileArray[1][0]), Util.dumpRGB(observedTileArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].cvColor.val), Util.dumpYUV(observedTileArray[1][0].cvColor.val), Util.dumpYUV(observedTileArray[2][0].cvColor.val) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].rubikColor.val), Util.dumpYUV(observedTileArray[1][0].rubikColor.val), Util.dumpYUV(observedTileArray[2][0].rubikColor.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][1], colorError[0][1]), Util.dumpRGB(measuredColorArray[1][1], colorError[1][1]), Util.dumpRGB(measuredColorArray[2][1], colorError[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][1]), Util.dumpYUV(measuredColorArray[1][1]), Util.dumpYUV(measuredColorArray[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][1]), Util.dumpRGB(observedTileArray[1][1]), Util.dumpRGB(observedTileArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].cvColor.val), Util.dumpYUV(observedTileArray[1][1].cvColor.val), Util.dumpYUV(observedTileArray[2][1].cvColor.val) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].rubikColor.val), Util.dumpYUV(observedTileArray[1][1].rubikColor.val), Util.dumpYUV(observedTileArray[2][1].rubikColor.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][2], colorError[0][2]), Util.dumpRGB(measuredColorArray[1][2], colorError[1][2]), Util.dumpRGB(measuredColorArray[2][2], colorError[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][2]), Util.dumpYUV(measuredColorArray[1][2]), Util.dumpYUV(measuredColorArray[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][2]), Util.dumpRGB(observedTileArray[1][2]), Util.dumpRGB(observedTileArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].cvColor.val), Util.dumpYUV(observedTileArray[1][2].cvColor.val), Util.dumpYUV(observedTileArray[2][2].cvColor.val) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].rubikColor.val), Util.dumpYUV(observedTileArray[1][2].rubikColor.val), Util.dumpYUV(observedTileArray[2][2].rubikColor.val) ));
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, "Total Color Error Before Correction: " + colorErrorBeforeCorrection);
 		
@@ -697,6 +698,7 @@ public class RubikFace implements Serializable {
 		luminousOffset = (count == 0) ? 0.0 : luminousOffset / count;
 		Log.d(Constants.TAG, "Luminousity Offset: " + luminousOffset);
 		
+		
 		// Second Pass: Find closest logical color using YUV but add luminousity offset to measured values.
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
@@ -713,7 +715,7 @@ public class RubikFace implements Serializable {
 
 				        double[] candidateColorYUV = Util.getYUVfromRGB(candidateColorTile.rubikColor.val);
 
-				        // Calculate Error based on U, V, and Y, but adjust for luminous offset.
+				        // Calculate Error based on U, V, and Y, but adjust with luminous offset.
 				        double error =
 				                (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset)) * (candidateColorYUV[0] - (measuredColorYUV[0] + luminousOffset)) +
 				                (candidateColorYUV[1] -  measuredColorYUV[1]) * (candidateColorYUV[1] - measuredColorYUV[1]) +
@@ -730,6 +732,7 @@ public class RubikFace implements Serializable {
 
 //				Log.d(Constants.TAG, String.format( "Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.character, smallestError));
 
+				// Check and possibly re-assign this tile location with a different color.
 				if(bestCandidate != observedTileArray[n][m]) {
 					Log.i(Constants.TAG, String.format("Reclassiffying tile [%d][%d] from %c to %c", n, m, observedTileArray[n][m].symbol, bestCandidate.symbol));
 					observedTileArray[n][m] = bestCandidate;
@@ -746,26 +749,26 @@ public class RubikFace implements Serializable {
 			}
 		}		
 		
+		// Diagnostics: 
 		Log.d(Constants.TAG, "Table: Measure RGB, Measure YUV, Logical RGB, Logical YUV");
 		Log.d(Constants.TAG, String.format( " m:n|----------0--------------|-----------1-------------|---------2---------------|") );
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][0], colorError[0][0]), Util.dumpRGB(measuredColorArray[1][0], colorError[1][0]), Util.dumpRGB(measuredColorArray[2][0], colorError[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][0]), Util.dumpYUV(measuredColorArray[1][0]), Util.dumpYUV(measuredColorArray[2][0]) )); 
 		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][0]), Util.dumpRGB(observedTileArray[1][0]), Util.dumpRGB(observedTileArray[2][0]) )); 
-		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].cvColor.val), Util.dumpYUV(observedTileArray[1][0].cvColor.val), Util.dumpYUV(observedTileArray[2][0].cvColor.val) )); 
+		Log.d(Constants.TAG, String.format( " 0  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][0].rubikColor.val), Util.dumpYUV(observedTileArray[1][0].rubikColor.val), Util.dumpYUV(observedTileArray[2][0].rubikColor.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][1], colorError[0][1]), Util.dumpRGB(measuredColorArray[1][1], colorError[1][1]), Util.dumpRGB(measuredColorArray[2][1], colorError[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][1]), Util.dumpYUV(measuredColorArray[1][1]), Util.dumpYUV(measuredColorArray[2][1]) )); 
 		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][1]), Util.dumpRGB(observedTileArray[1][1]), Util.dumpRGB(observedTileArray[2][1]) )); 
-		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].cvColor.val), Util.dumpYUV(observedTileArray[1][1].cvColor.val), Util.dumpYUV(observedTileArray[2][1].cvColor.val) )); 
+		Log.d(Constants.TAG, String.format( " 1  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][1].rubikColor.val), Util.dumpYUV(observedTileArray[1][1].rubikColor.val), Util.dumpYUV(observedTileArray[2][1].rubikColor.val) )); 
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(measuredColorArray[0][2], colorError[0][2]), Util.dumpRGB(measuredColorArray[1][2], colorError[1][2]), Util.dumpRGB(measuredColorArray[2][2], colorError[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(measuredColorArray[0][2]), Util.dumpYUV(measuredColorArray[1][2]), Util.dumpYUV(measuredColorArray[2][2]) ));
 		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpRGB(observedTileArray[0][2]), Util.dumpRGB(observedTileArray[1][2]), Util.dumpRGB(observedTileArray[2][2]) ));
-		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].cvColor.val), Util.dumpYUV(observedTileArray[1][2].cvColor.val), Util.dumpYUV(observedTileArray[2][2].cvColor.val) ));
+		Log.d(Constants.TAG, String.format( " 2  |%s|%s|%s|", Util.dumpYUV(observedTileArray[0][2].rubikColor.val), Util.dumpYUV(observedTileArray[1][2].rubikColor.val), Util.dumpYUV(observedTileArray[2][2].rubikColor.val) ));
 		Log.d(Constants.TAG, String.format( "    |-------------------------|-------------------------|-------------------------|") );
 
 		Log.d(Constants.TAG, "Color Error After Correction: " + colorErrorAfterCorrection);
-
 	}
 	
 	

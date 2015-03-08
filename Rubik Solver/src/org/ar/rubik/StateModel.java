@@ -42,6 +42,7 @@ import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
+import org.opencv.core.Scalar;
 
 import android.opengl.Matrix;
 import android.os.Environment;
@@ -62,6 +63,13 @@ public class StateModel {
 	 * Map of above rubik face objects index by FaceNameEnum
 	 */
 	public HashMap<FaceNameEnum, RubikFace> nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
+	
+	/*
+	 * This is a hash map of OpenCV colors that are initialized to those specified by field
+	 * rubikColor of ColorTileEnum.   Function reevauateSelectTileColors() adjusts these 
+	 * colors according to a Mean-Shift algorithm to correct for lumonosity.
+	 */
+	public HashMap<ColorTileEnum, Scalar> mutableTileColors = new HashMap<ColorTileEnum, Scalar>(6);
 	
 	// Application State; see AppStateEnum.
 	public AppStateEnum appState = AppStateEnum.START;
@@ -374,6 +382,12 @@ public class StateModel {
 		
 		// Array of above rubik face objects index by FaceNameEnum
 		nameRubikFaceMap = new HashMap<Constants.FaceNameEnum, RubikFace>(6);
+		
+		// Array of tile colors index by ColorTileEnum.
+		mutableTileColors.clear();
+		for(ColorTileEnum colorTile : ColorTileEnum.values())
+		    if(colorTile.isRubikColor == true)
+		        mutableTileColors.put(colorTile, colorTile.rubikColor);
 
 		// Application State = null; see AppStateEnum.
 		appState = AppStateEnum.START;

@@ -16,15 +16,16 @@ Notice:
 
 To Do:
 
-  o  Achieve correct coloring of pilot cube as faces are detected.
-  o  Time and CPU measurements.  Possible use of DDMS
+  o  Tile Color Determination
+     - Re-evaluate after all 54 tiles have been observed.
+     - Create smarter algorithm.
   o  Create image recognition test suite.
+  
+  o  Time and CPU measurements.  Possible use of DDMS
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Refactor and clean up state machines.
-  o  Determine actual tile colors after all 54 tiles have been observed for better robustness.
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
   o  Introduce real Pilot Cube that demonstrates requested user activity.
-  o  Sweep through and make screen size independent.
   o  Edge detection on 3 colors instead of just greyscale?
   o  Improve Camera Calibration:
      - Evaluate openCV checkboard calibration.

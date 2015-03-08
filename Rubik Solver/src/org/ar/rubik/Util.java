@@ -36,11 +36,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.ar.rubik.Constants.ColorTileEnum;
 import org.kociemba.twophase.PruneTableLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.highgui.Highgui;
 
 import android.content.Context;
@@ -112,27 +116,149 @@ public class Util {
 	 * 
 	 * @param stateModel 
 	 */
-	public static void reevauateSelectTileColors(StateModel stateModel) {
+	@SuppressWarnings("null")
+    public static void reevauateSelectTileColors(StateModel stateModel) {
+	    
+	    if(stateModel != null)
+	           return;
+	    
+	    // =+= this algorithm needs to run before transformedArray[][] is created.
+	    
+	    /*
+	     * Modified Mean Shift Algorithm
+	     * 
+	     * Make copy of constant rubik colors into mutable array
+	     * 
+	     * 
+	     * Assign each tile to closest mutable rubik color.
+	     * 
+	     * WHILE (there are NOT nine tiles of each color type)
+	     * 
+	     *   IF (too many iterations)
+	     *     ERROR
+	     *    
+         *   FOREACH mutable rubik color
+         *   
+         *     Find closest five tiles
+         *     
+         *     Calculate new color value base on above selection
+         *     
+         *   END FOREACH
+	     * 
+	     * END WHILE
+	     */
 
-		/*
-		 * Populate a 3D space with 54 measure tile colors.
-		 *  	
-		 * Set initial color points as per those values found in constant color
-		 *  
-		 * WHILE
-		 * 
-		 *   Assign points to color enum per nearest neighbor algorithm.
-		 * 
-		 *   Calculate total error
-		 *   
-		 *   IF( < threshold) break
-		 *   
-		 *   IF too many iterations break
-		 *   
-		 *   Calculate new color points as average of closest 5 points per region
-		 *   
-		 */    	
 
+	    // Assign each tile to closest mutable rubik color.
+	    for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values())
+	        assignColorToTiles(rubikFace, stateModel.mutableTileColors);
+
+	    // Loop until a valid solution (i.e., mapping of measured tile colors to logical Color Tiles). 
+	    while(stateModel.isTileColorsValid() == false) {
+
+	        // Loop over available tile colors.
+	        for (Map.Entry<ColorTileEnum, Scalar> entry : stateModel.mutableTileColors.entrySet()) {
+	            
+	            //
+	            ColorTileEnum colorTile = entry.getKey();
+	            Scalar mutableColor = entry.getValue();
+                
+                // 
+                TreeMap<Double, Object> distanceMap = new TreeMap<Double, Object>();
+                
+	            // Count up total number of this color tile across all 54 locations.
+	            for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values()) {
+
+	                for(int n=0; n<3; n++) {
+	                    for(int m=0; m<3; m++) {
+
+	                        
+	                        /*
+	                         * =+=
+	                         * 
+	                         * This suggest we need:
+	                         *  Tile Class
+	                         *  o Referenced from:  RubikFace.tiles[n][m]
+	                         *  o Member Data:
+	                         *      - Rohmbi      rhombi
+	                         *      - ColorEnum   originalDesignation
+	                         *      - ColorEnum   transposedDesignation
+	                         *      - Scalar      measuredColor
+	                         *      - float       distanceToMutableDesignation
+	                         *      
+	                         * 
+	                         */
+	                        
+	                        // This location has color tile of current interest.
+	                        if(rubikFace.observedTileArray[n][m] == colorTile) {
+	                       
+	                            double[] measuredColor = rubikFace.measuredColorArray[n][m];
+	                            
+	                            // Calculate distance
+	                            double distance =
+	                                    (measuredColor[0] - mutableColor.val[0]) * (measuredColor[0] - mutableColor.val[0]) +
+	                                    (measuredColor[1] - mutableColor.val[1]) * (measuredColor[1] - mutableColor.val[1]) +
+	                                    (measuredColor[2] - mutableColor.val[2]) * (measuredColor[2] - mutableColor.val[2]);
+	                            
+	                            
+	                            distanceMap.put(distance, null);
+	                        }
+	                    }
+	                }
+
+	            }
+
+	            // Obtain averaged measured color of closest 5 tiles to colorTile.
+	            for(@SuppressWarnings("unused") Object object : distanceMap.values() ) {
+
+
+
+	            }
+
+	            // Migrate mutable color values for this color tile type.
+
+
+	            // Update
+	            entry.setValue(null);
+
+
+	        }  // End loop over color tiles
+	    }  // End while loop
+	}  // End function
+
+
+	private static void assignColorToTiles(RubikFace rubikFace, HashMap<ColorTileEnum, Scalar> mutableTileColors) {
+	    
+	    for(int n=0; n<3; n++) {
+	        for(int m=0; m<3; m++) {
+
+	            double [] measuredColor = rubikFace.measuredColorArray[n][m];
+
+	            double smallestError = Double.MAX_VALUE;
+	            ColorTileEnum bestCandidate = null;
+
+	            // Loop over available tile colors
+	            for (Map.Entry<ColorTileEnum, Scalar> entry : mutableTileColors.entrySet()) {
+	                ColorTileEnum candidateColorTile = entry.getKey();
+	                Scalar mutableColor = entry.getValue();
+
+	                double error =
+	                        (measuredColor[0] - mutableColor.val[0]) * (measuredColor[0] - mutableColor.val[0]) +
+	                        (measuredColor[1] - mutableColor.val[1]) * (measuredColor[1] - mutableColor.val[1]) +
+	                        (measuredColor[2] - mutableColor.val[2]) * (measuredColor[2] - mutableColor.val[2]);
+
+	                if(error < smallestError) {
+	                    bestCandidate = candidateColorTile;
+	                    smallestError = error;
+	                }
+	            }
+
+	            //	              Log.d(Constants.TAG, String.format( "Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.character, smallestError));
+
+	            // Assign best candidate to this tile location.
+	            rubikFace.observedTileArray[n][m] = bestCandidate;
+	        }
+	    }
 	}
 
 
