@@ -357,23 +357,26 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 			Matrix.rotateM(mvpMatrix, 0, 30f, 0.0f, 0.0f, 1.0f);  // looks better
 			break;
 		}
-
-	     Matrix.rotateM(mvpMatrix, 0, arrowRotationInDegrees, 0.0f, 0.0f, 1.0f);  // 0->90 degrees Z rotation
-
+		
 	      
-		// Specify direction of arrow
+		// Add animated rotation and specify direction of arrow
 		if(direction == Direction.NEGATIVE)  {
+		    Matrix.rotateM(mvpMatrix, 0, arrowRotationInDegrees, 0.0f, 0.0f, 1.0f);  // 0 -> +90 degrees Z rotation
+
 			Matrix.rotateM(mvpMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
 			Matrix.rotateM(mvpMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
 		}
+
+		else
+	         Matrix.rotateM(mvpMatrix, 0, -1 * arrowRotationInDegrees, 0.0f, 0.0f, 1.0f);  // 0 -> -90 degrees Z rotation
 		
  
-		
 		if(amount == Amount.QUARTER_TURN)
 			arrowQuarterTurn.draw(mvpMatrix, color, programID);
 		else
 			arrowHalfTurn.draw(mvpMatrix, color, programID);
 	}
+	
 
 
 	/**
