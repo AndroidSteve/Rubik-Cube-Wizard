@@ -70,7 +70,7 @@ public class GLUtil {
 
         if (shaderObjectId == 0) {
             if (Constants.LOGGER) {
-                Log.w(Constants.TAG_SHADER, "Could not create new shader.");
+                Log.w(Constants.TAG_OPENGL, "Could not create new shader.");
             }
 
             return 0;
@@ -88,7 +88,7 @@ public class GLUtil {
 
         if (Constants.LOGGER) {
             // Print the shader info log to the Android log output.
-            Log.v(Constants.TAG_SHADER, "Results of compiling source:" + "\n" + shaderCode + "\n:"
+            Log.v(Constants.TAG_OPENGL, "Results of compiling source:" + "\n" + shaderCode + "\n:"
                     + glGetShaderInfoLog(shaderObjectId));
         }
 
@@ -98,7 +98,7 @@ public class GLUtil {
             glDeleteShader(shaderObjectId);
 
             if (Constants.LOGGER) {
-                Log.w(Constants.TAG_SHADER, "Compilation of shader failed.");
+                Log.w(Constants.TAG_OPENGL, "Compilation of shader failed.");
             }
 
             return 0;
@@ -134,7 +134,7 @@ public class GLUtil {
 
         // Print the program info log to the Android log output.
         if (Constants.LOGGER)
-            Log.v(Constants.TAG_SHADER, "Results of linking program:\n" + glGetProgramInfoLog(programID));
+            Log.v(Constants.TAG_OPENGL, "Results of linking program:\n" + glGetProgramInfoLog(programID));
 
         // Verify the link status.
         if (linkStatus[0] == 0) {
@@ -143,7 +143,7 @@ public class GLUtil {
             glDeleteProgram(programID);
 
             if (Constants.LOGGER) {
-                Log.e(Constants.TAG_SHADER, "Linking of program failed.");
+                Log.e(Constants.TAG_OPENGL, "Linking of program failed.");
             }
         }
 
@@ -159,7 +159,7 @@ public class GLUtil {
         glValidateProgram(programObjectId);
         final int[] validateStatus = new int[1];
         glGetProgramiv(programObjectId, GL_VALIDATE_STATUS, validateStatus, 0);
-        Log.v(Constants.TAG_SHADER, "Results of validating program: " + validateStatus[0] + "\nLog:" + glGetProgramInfoLog(programObjectId));
+        Log.v(Constants.TAG_OPENGL, "Results of validating program: " + validateStatus[0] + "\nLog:" + glGetProgramInfoLog(programObjectId));
         return validateStatus[0] != 0;
     }
     

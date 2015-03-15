@@ -34,12 +34,21 @@ import org.opencv.core.Scalar;
 
 
 public class Constants {
+    
+    // Turn on and off all Log Cat logging (=+= not yet completed)
+    public final static boolean LOGGER = true;
 
+    // General Log Cat Tag
 	public static final String TAG = "RubikSolver";
 
-	public static final String TAG_CNTRL = "RubikCntrl";
+	// Log Cat Tag for State Machine related diagnostics
+	public static final String TAG_STATE = "RubikState";
 	
-    public static final String TAG_SHADER = "ShaderHelper";
+	// Log Cat Tag for Color Recognition diagnostics
+    public static final String TAG_COLOR = "RubikColor";
+	
+	// Log Cat Tag for OpenGL related diagnostics.
+    public static final String TAG_OPENGL = "RubikOpenGL";
 
     
 	public enum AppStateEnum { 
@@ -162,6 +171,4 @@ public class Constants {
 
 	// Any OpenCV font
 	public final static int FontFace = Core.FONT_HERSHEY_PLAIN;
-	
-	public final static boolean LOGGER = true;
 }

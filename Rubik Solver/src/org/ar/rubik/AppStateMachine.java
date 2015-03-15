@@ -104,7 +104,7 @@ public class AppStateMachine {
 		// Threshold for the number of times a face must be seen in order to declare it stable.
 		final int consecutiveCandidateCountThreashold = 3;	
 
-		Log.d(Constants.TAG_CNTRL, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.gestureRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.myHashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.myHashCode) );   	 
+		Log.d(Constants.TAG_STATE, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.gestureRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.myHashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.myHashCode) );   	 
 
 		// Reset Application State.  All past is forgotten.
 		if(scheduleReset == true) {
@@ -266,7 +266,7 @@ public class AppStateMachine {
 	 */
 	private void onStableFaceEvent(RubikFace rubikFace) {
 
-		Log.i(Constants.TAG_CNTRL, "+onStableRubikFaceRecognized: last=" + (lastNewStableRubikFace == null ? 0 : lastNewStableRubikFace.myHashCode) + " new=" + rubikFace.myHashCode);
+		Log.i(Constants.TAG_STATE, "+onStableRubikFaceRecognized: last=" + (lastNewStableRubikFace == null ? 0 : lastNewStableRubikFace.myHashCode) + " new=" + rubikFace.myHashCode);
 
 		switch (stateModel.appState) {
 
@@ -293,7 +293,7 @@ public class AppStateMachine {
      */
 	public void offStableFaceEvent() {
 
-		Log.i(Constants.TAG_CNTRL, "-offStableRubikFaceRecognized: previous=" + lastNewStableRubikFace.myHashCode);
+		Log.i(Constants.TAG_STATE, "-offStableRubikFaceRecognized: previous=" + lastNewStableRubikFace.myHashCode);
 		
 		switch (stateModel.appState) {
 
@@ -319,7 +319,7 @@ public class AppStateMachine {
 	 */
 	private void onNewStableFaceEvent(RubikFace candidateRubikFace) {
 
-		Log.i(Constants.TAG_CNTRL, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel.appState);
+		Log.i(Constants.TAG_STATE, "+onNewStableRubikFaceRecognized  Previous State =" + stateModel.appState);
 
 
 		switch(stateModel.appState) {
@@ -349,7 +349,7 @@ public class AppStateMachine {
 
 			// Begin processing of cube: first check that there are exactly 9 tiles of each color.
 			else {
-				Util.reevauateSelectTileColors(stateModel);
+//				Util.reevauateSelectTileColors(stateModel);
 				if(stateModel.isTileColorsValid() == true)
 					stateModel.appState = AppStateEnum.COMPLETE;
 				else
@@ -372,7 +372,7 @@ public class AppStateMachine {
      */
 	private void offNewStableFaceEvent() {
 
-	    Log.i(Constants.TAG_CNTRL, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
+	    Log.i(Constants.TAG_STATE, "-offNewStableRubikFaceRecognition  Previous State =" + stateModel.appState);
 
 	    switch(stateModel.appState) {
 
@@ -455,8 +455,8 @@ public class AppStateMachine {
 
 			String stringErrorMessage = Util.getTwoPhaseErrorString((char)(stateModel.verificationResults * -1 + '0'));
 
-			Log.i(Constants.TAG_CNTRL, "Cube String Rep: " + cubeString);
-			Log.i(Constants.TAG_CNTRL, "Verification Results: (" + stateModel.verificationResults + ") " + stringErrorMessage);
+			Log.i(Constants.TAG_STATE, "Cube String Rep: " + cubeString);
+			Log.i(Constants.TAG_STATE, "Verification Results: (" + stateModel.verificationResults + ") " + stringErrorMessage);
 			break;
 
 
@@ -465,11 +465,11 @@ public class AppStateMachine {
 
 			// Returns 0 if solution computed
 			stateModel.solutionResults = Search.solution(cubeString2, 25, 5, false);
-			Log.i(Constants.TAG_CNTRL, "Solution Results: " + stateModel.solutionResults);
+			Log.i(Constants.TAG_STATE, "Solution Results: " + stateModel.solutionResults);
 			if (stateModel.solutionResults.contains("Error")) {
 				char solutionCode = stateModel.solutionResults.charAt(stateModel.solutionResults.length() - 1);
 				stateModel.verificationResults = solutionCode - '0';
-				Log.i(Constants.TAG_CNTRL, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
+				Log.i(Constants.TAG_STATE, "Solution Error: " + Util.getTwoPhaseErrorString(solutionCode) );
 				stateModel.appState = AppStateEnum.ERROR;
 			}
 			else {
@@ -480,7 +480,7 @@ public class AppStateMachine {
 
 		case SOLVED:
 			stateModel.solutionResultsArray = stateModel.solutionResults.split(" ");
-			Log.i(Constants.TAG_CNTRL, "Solution Results Array: " + stateModel.solutionResultsArray);
+			Log.i(Constants.TAG_STATE, "Solution Results Array: " + stateModel.solutionResultsArray);
 			stateModel.solutionResultIndex = 0;
 			stateModel.appState = AppStateEnum.DO_MOVE;
 			break;

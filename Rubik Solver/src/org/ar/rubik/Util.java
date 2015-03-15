@@ -108,19 +108,43 @@ public class Util {
 	}
 	
 	
+    /**
+     * =+=
+     * 
+     * This suggest we need:
+     *  Tile Class
+     *  o Referenced from:  RubikFace.tiles[n][m]
+     *  o Member Data:
+     *      - Rohmbi      rhombi
+     *      - ColorEnum   originalDesignation
+     *      - ColorEnum   transposedDesignation
+     *      - Scalar      measuredColor
+     *      - float       distanceToMutableDesignation
+     *
+     * @param stateModel 
+     */	
+	private static class TileLocation {
+	    RubikFace rubikFace;
+	    int n;
+	    int m;
+        public TileLocation(RubikFace rubikFace, int n, int m) {
+            this.rubikFace = rubikFace;
+            this.n = n;
+            this.m = m;
+        }
+	}
+	
+	
 	/**
 	 * Re-Evaluate Tile Colors
 	 * 
 	 * Re-examine tile colors across entire cube.  Adjust selection so that there are nine tiles
 	 * of each color.  This provides much more robustness with respect to lighting conditions.
-	 * 
+	 *
 	 * @param stateModel 
 	 */
-	@SuppressWarnings("null")
     public static void reevauateSelectTileColors(StateModel stateModel) {
-	    
-	    if(stateModel != null)
-	           return;
+
 	    
 	    // =+= this algorithm needs to run before transformedArray[][] is created.
 	    
@@ -153,18 +177,24 @@ public class Util {
 	    for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values())
 	        assignColorToTiles(rubikFace, stateModel.mutableTileColors);
 
-	    // Loop until a valid solution (i.e., mapping of measured tile colors to logical Color Tiles). 
+	    // Loop until a valid solution (i.e., mapping of measured tile colors to logical Color Tiles).
+	    int itterationCount = 0;
 	    while(stateModel.isTileColorsValid() == false) {
+	        
+	        if(itterationCount++ > 3) {
+	            Log.e(Constants.TAG_COLOR, "Error: cound not converge on correct tile color designations.");
+	            return;
+	        }
 
 	        // Loop over available tile colors.
-	        for (Map.Entry<ColorTileEnum, Scalar> entry : stateModel.mutableTileColors.entrySet()) {
+	        for (Map.Entry<ColorTileEnum, Scalar> colorTileEntry : stateModel.mutableTileColors.entrySet()) {
 	            
 	            //
-	            ColorTileEnum colorTile = entry.getKey();
-	            Scalar mutableColor = entry.getValue();
+	            ColorTileEnum colorTile = colorTileEntry.getKey();
+	            Scalar mutableColor = colorTileEntry.getValue();
                 
                 // 
-                TreeMap<Double, Object> distanceMap = new TreeMap<Double, Object>();
+                TreeMap<Double, TileLocation> distanceMap = new TreeMap<Double, TileLocation>();
                 
 	            // Count up total number of this color tile across all 54 locations.
 	            for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values()) {
@@ -172,23 +202,6 @@ public class Util {
 	                for(int n=0; n<3; n++) {
 	                    for(int m=0; m<3; m++) {
 
-	                        
-	                        /*
-	                         * =+=
-	                         * 
-	                         * This suggest we need:
-	                         *  Tile Class
-	                         *  o Referenced from:  RubikFace.tiles[n][m]
-	                         *  o Member Data:
-	                         *      - Rohmbi      rhombi
-	                         *      - ColorEnum   originalDesignation
-	                         *      - ColorEnum   transposedDesignation
-	                         *      - Scalar      measuredColor
-	                         *      - float       distanceToMutableDesignation
-	                         *      
-	                         * 
-	                         */
-	                        
 	                        // This location has color tile of current interest.
 	                        if(rubikFace.observedTileArray[n][m] == colorTile) {
 	                       
@@ -200,33 +213,51 @@ public class Util {
 	                                    (measuredColor[1] - mutableColor.val[1]) * (measuredColor[1] - mutableColor.val[1]) +
 	                                    (measuredColor[2] - mutableColor.val[2]) * (measuredColor[2] - mutableColor.val[2]);
 	                            
-	                            
-	                            distanceMap.put(distance, null);
+	                            TileLocation tileLocation = new Util.TileLocation(rubikFace, n, m);
+                                distanceMap.put(distance, tileLocation);
 	                        }
 	                    }
 	                }
-
 	            }
 
 	            // Obtain averaged measured color of closest 5 tiles to colorTile.
-	            for(@SuppressWarnings("unused") Object object : distanceMap.values() ) {
+	            int tileCount = 0;
+	            double [] meanMeasuredColor = new double[4];
+	            for( TileLocation tileLocation : distanceMap.values() ) {
 
-
-
+	                double[] measuredColor = tileLocation.rubikFace.measuredColorArray[tileLocation.n][tileLocation.m];
+	                
+	                for(int i=0; i<3; i++)
+	                    meanMeasuredColor[i] += measuredColor[i];
+	                
+	                tileCount++;
+	                if(tileCount >= 5)
+	                    break;
 	            }
+	            
+	            // Safety check in case there were no tiles assigned to this color.
+	            if(tileCount == 0)
+	                continue;
+	            
+	            // Calculate mean color
+                for(int i=0; i<3; i++)
+                    meanMeasuredColor[i] /= tileCount;	            
 
-	            // Migrate mutable color values for this color tile type.
-
-
-	            // Update
-	            entry.setValue(null);
-
+	            // Update mutable color with new mean value.
+	            colorTileEntry.setValue(new Scalar(meanMeasuredColor));
 
 	        }  // End loop over color tiles
+
 	    }  // End while loop
+	    
+	    // Assign each tile to closest mutable rubik color.
+        for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values())
+            assignColorToTiles(rubikFace, stateModel.mutableTileColors);
+	    
 	}  // End function
 
 
+	
 	private static void assignColorToTiles(RubikFace rubikFace, HashMap<ColorTileEnum, Scalar> mutableTileColors) {
 	    
 	    for(int n=0; n<3; n++) {
@@ -253,10 +284,13 @@ public class Util {
 	                }
 	            }
 
-	            //	              Log.d(Constants.TAG, String.format( "Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.character, smallestError));
+	            Log.d(Constants.TAG_COLOR, String.format( "Face %s Tile[%d][%d] has R=%3.0f, G=%3.0f B=%3.0f %c err=%4.0f", rubikFace.faceNameEnum, n, m, measuredColor[0], measuredColor[1], measuredColor[2], bestCandidate.symbol, smallestError));
 
 	            // Assign best candidate to this tile location.
-	            rubikFace.observedTileArray[n][m] = bestCandidate;
+	            if(rubikFace.observedTileArray[n][m] != bestCandidate) {
+	                Log.w(Constants.TAG_COLOR, String.format( "Changing Tile Designation for Face %s at [%d][%d] from %s to %s",rubikFace.faceNameEnum, n, m, rubikFace.observedTileArray[n][m], bestCandidate));
+	                rubikFace.observedTileArray[n][m] = bestCandidate;
+	            }
 	        }
 	    }
 	}
@@ -358,9 +392,9 @@ public class Util {
 		bool = Highgui.imwrite(filename, image);
 
 		if (bool == true)
-			Log.i(Constants.TAG_CNTRL, "SUCCESS writing image to external storage:" + filename);
+			Log.i(Constants.TAG_STATE, "SUCCESS writing image to external storage:" + filename);
 		else
-			Log.e(Constants.TAG_CNTRL, "Fail writing image to external storage");
+			Log.e(Constants.TAG_STATE, "Fail writing image to external storage");
 	}
 
 
@@ -402,9 +436,9 @@ public class Util {
 	        while (!tableLoader.loadingFinished()) { // while tables are left to load
 	            tableLoader.loadNext(); // load next pruning table
 	            appStateMachine.pruneTableLoaderCount++;
-	            Log.i(Constants.TAG_CNTRL, "Created a prune table.");
+	            Log.i(Constants.TAG_STATE, "Created a prune table.");
 	        }
-	        Log.i(Constants.TAG_CNTRL, "Completed all prune table.");
+	        Log.i(Constants.TAG_STATE, "Completed all prune table.");
 	        return null;
 	    }
 
