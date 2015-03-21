@@ -277,6 +277,8 @@ void initOpenCL
 
     for(cl_uint i = 0; i < num_of_platforms; ++i)
     {
+
+    	//******************************************************************
         // Get the length for the i-th platform name.
         size_t platform_name_length = 0;
         err = clGetPlatformInfo(
@@ -300,8 +302,40 @@ void initOpenCL
         SAMPLE_CHECK_ERRORS(err);
 
         string platform_name = &platform_name_buffer[0];
+
+
+    	//******************************************************************
+        // =+=
+        // Get the length for the i-th platform version.
+        size_t platform_version_length = 0;
+        err = clGetPlatformInfo(
+            platforms[i],
+            CL_PLATFORM_VERSION,
+            0,
+            0,
+            &platform_version_length
+        );
+        SAMPLE_CHECK_ERRORS(err);
+
+        // Get the version itself for the i-th platform.
+        vector<char> platform_version_buffer(platform_version_length);
+        err = clGetPlatformInfo(
+            platforms[i],
+            CL_PLATFORM_VERSION,
+            platform_version_length,
+            &platform_version_buffer[0],
+            0
+        );
+        SAMPLE_CHECK_ERRORS(err);
+
+        string platform_version = &platform_version_buffer[0];
+
+
+
+    	//******************************************************************
         string selection_marker;    // additional message will be printed to log
 
+        // =+= currently not active becuase name is null.
         if(!required_platform_subname.empty())
         {
             // The fist way of platform selection: by name.
@@ -319,6 +353,8 @@ void initOpenCL
                 // Do not exit here and continue the enumeration to see all available platforms,
             }
         }
+
+        // =+= currently active.
         else
         {
             // The second way of platform selection: by device type
@@ -364,9 +400,12 @@ void initOpenCL
             }
         }
 
-        // Print platform name with an optional selection marker
+        // Print platform name, version, and an optional selection marker
         LOGD("    [%u] %s", i, (platform_name + selection_marker).c_str());
+        LOGD("    [%u] %s", i, (platform_version + selection_marker).c_str());
     }
+
+
 
     if(required_platform_subname.empty())
     {
