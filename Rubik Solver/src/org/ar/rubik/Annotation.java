@@ -35,6 +35,7 @@
 package org.ar.rubik;
 
 import java.util.List;
+import java.util.Map;
 
 import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ColorTileEnum;
@@ -120,10 +121,14 @@ public class Annotation {
 				stateModel.activeRubikFace.profiler.drawTimeConsumptionMetrics(image, stateModel);
 			break;
 			
-		case COLOR:
-			drawFaceColorMetrics(image, stateModel.activeRubikFace);
-			break;
-			
+        case COLOR_FACE:
+            drawFaceColorMetrics(image, stateModel.activeRubikFace);
+            break;
+            
+        case COLOR_CUBE:
+            drawCubeColorMetrics(image);
+            break;
+            
 		case NORMAL:
 			stateModel.renderPilotCube = true;
 			break;
@@ -496,6 +501,118 @@ public class Annotation {
 		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400), rubikWhite, 3); 
     }
     
+    
+    /**
+     * Draw Cube Color Metrics
+     * 
+     * Draw a 2D representation of observed tile colors vs.  pre-defined constant rubik tile colors. 
+     * Also, right side 1D representation of measured and adjusted luminous.  See ...... for 
+     * existing luminous correction.
+     * 
+     * @param image
+     */
+    private void drawCubeColorMetrics(Mat image) {
+        
+        Core.rectangle(image, new Point(0, 0), new Point(570, 720), ColorTileEnum.BLACK.cvColor, -1);
+        
+//        if(face == null || face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
+//            return;
+
+        // Draw simple grid
+        Core.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);
+        Core.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);       
+        Core.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), ColorTileEnum.WHITE.cvColor);
+//        Core.putText(image, String.format("Luminosity Offset = %4.0f", face.luminousOffset), new Point(0, -256 + 400 - 60), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+//        Core.putText(image, String.format("Color Error Before Corr = %4.0f", face.colorErrorBeforeCorrection), new Point(0, -256 + 400 - 30), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+//        Core.putText(image, String.format("Color Error After Corr = %4.0f", face.colorErrorAfterCorrection), new Point(0, -256 + 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+
+        
+        // Draw measured tile color as solid small circles on both the UV plane and the Y axis.
+        for(RubikFace face : stateModel.nameRubikFaceMap.values()) {
+            for(int n=0; n<3; n++) {
+                for(int m=0; m<3; m++) {
+
+                    double [] measuredTileColor = face.measuredColorArray[n][m];
+                    //              Log.e(Constants.TAG, "RGB: " + logicalTileArray[n][m].character + "=" + actualTileColor[0] + "," + actualTileColor[1] + "," + actualTileColor[2] + " x=" + x + " y=" + y );
+                    double[] measuredTileColorYUV   = Util.getYUVfromRGB(measuredTileColor);
+                    //              Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + acutalTileYUV[0]);
+
+
+                    double luminousScaled     = measuredTileColorYUV[0] * 2 - 256;
+                    double uChromananceScaled = measuredTileColorYUV[1] * 2;
+                    double vChromananceScaled = measuredTileColorYUV[2] * 2;
+
+                    // Draw tile character in UV plane
+                    Core.circle(image, new Point(uChromananceScaled + 256, vChromananceScaled + 400), 10, face.observedTileArray[n][m].cvColor, -1);
+
+                    // Draw tile characters on OUTSIDE right side for Y axis as directly measured.
+                    Core.circle(image, new Point(512 + 20, luminousScaled + 400), 10, face.observedTileArray[n][m].cvColor, -1);
+                    //              Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
+                }
+            }
+        }
+
+
+        
+        // Draw original tile colors (from Constants) as a large circle in UV plane and short solid line in the Y plane.
+        for(ColorTileEnum colorTile : ColorTileEnum.values()) {
+
+            if(colorTile.isRubikColor == false)
+                continue;
+
+            // Draw Color Calibration in UV plane as rectangle
+            double x = 2*Util.getYUVfromRGB(colorTile.cvColor.val)[1] + 256;
+            double y = 2*Util.getYUVfromRGB(colorTile.cvColor.val)[2] + 400;
+            
+            // Open large circle in UV plane
+            Core.circle(image, new Point(x, y), 15, colorTile.cvColor, +3); 
+            
+            // Line in Y plane
+            Core.line(image, 
+                    new Point(502, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
+                    new Point(522, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
+                    colorTile.cvColor, 
+                    3);
+        }
+
+
+        // Draw final mutable colors as rectangles both in the UV plane and the Y plane.
+        for (Map.Entry<ColorTileEnum, Scalar> colorTileEntry : stateModel.mutableTileColors.entrySet()) {
+
+            //
+            //            ColorTileEnum colorTile = colorTileEntry.getKey();
+            Scalar mutableColor = colorTileEntry.getValue();
+
+            double x = 2*Util.getYUVfromRGB(mutableColor.val)[1] + 256;
+            double y = 2*Util.getYUVfromRGB(mutableColor.val)[2] + 400;
+//            double z = 2*Util.getYUVfromRGB(mutableColor.val)[0] + 400;
+            
+            // Rectangle in UV plane
+            Core.rectangle(
+                    image, 
+                    new Point(x + 15, y + 15),
+                    new Point(x - 15, y - 15),
+                    mutableColor,
+                    3, 8, 0 );
+            
+            // Rectangle in Y plane =+= this doesn't seem to work!
+            Core.rectangle(
+                    image, 
+                    new Point(502, -256 + 2*Util.getYUVfromRGB(mutableColor.val)[0] + 400),
+                    new Point(522, -256 + 2*Util.getYUVfromRGB(mutableColor.val)[0] + 400),
+//                    new Point(x + 15, y + 15),
+//                    new Point(x - 15, y - 15),
+                    mutableColor,
+                    3, 8, 0 );
+            
+//            Core.line(image, 
+//                    new Point(502, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
+//                    new Point(522, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
+//                    colorTile.cvColor, 
+//                    3);
+        }
+
+    }
     
 	/**
 	 * Draw Cube Diagnostic Metrics

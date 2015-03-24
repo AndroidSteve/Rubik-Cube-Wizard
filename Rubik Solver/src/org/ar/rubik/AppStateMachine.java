@@ -127,6 +127,7 @@ public class AppStateMachine {
 			allowOneMoreRotation = false;
 			stateModel.reset();
 			stateModel.recallState();
+			Util.reevauateSelectTileColors(stateModel);
 			stateModel.appState = AppStateEnum.COMPLETE;  // Assumes state stored in file is complete.
 		}
 
@@ -349,7 +350,7 @@ public class AppStateMachine {
 
 			// Begin processing of cube: first check that there are exactly 9 tiles of each color.
 			else {
-//				Util.reevauateSelectTileColors(stateModel);
+				Util.reevauateSelectTileColors(stateModel);
 				if(stateModel.isTileColorsValid() == true)
 					stateModel.appState = AppStateEnum.COMPLETE;
 				else

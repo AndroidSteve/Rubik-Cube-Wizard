@@ -253,9 +253,13 @@ public class MenuAndParams {
 				ma.stateModel.activeRubikFace.profiler.reset();
 			break;
 
-		case R.id.colorAnnotationMenuItem:
-			annotationMode = AnnotationModeEnum.COLOR;
-			break;
+        case R.id.faceColorAnnotationMenuItem:
+            annotationMode = AnnotationModeEnum.COLOR_FACE;
+            break;
+
+        case R.id.cubeColorAnnotationMenuItem:
+            annotationMode = AnnotationModeEnum.COLOR_CUBE;
+            break;
 
 
 			// Adjustable Parameters

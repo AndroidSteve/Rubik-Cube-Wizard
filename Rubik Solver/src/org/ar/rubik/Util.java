@@ -36,8 +36,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.ar.rubik.Constants.ColorTileEnum;
@@ -171,7 +173,13 @@ public class Util {
 	     * 
 	     * END WHILE
 	     */
-
+        
+        stateModel.mutableTileColors.clear();
+        for(ColorTileEnum colorTile : ColorTileEnum.values())
+            if(colorTile.isRubikColor == true) {
+                stateModel.mutableTileColors.put(colorTile, colorTile.rubikColor);
+                Log.e(Constants.TAG_COLOR, "Color Tile = " + colorTile + ", Initial Color =" + Arrays.toString(stateModel.mutableTileColors.get(colorTile).val) );
+            }
 
 	    // Assign each tile to closest mutable rubik color.
 	    for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values())
@@ -188,13 +196,16 @@ public class Util {
 
 	        // Loop over available tile colors.
 	        for (Map.Entry<ColorTileEnum, Scalar> colorTileEntry : stateModel.mutableTileColors.entrySet()) {
-	            
+           
 	            //
 	            ColorTileEnum colorTile = colorTileEntry.getKey();
 	            Scalar mutableColor = colorTileEntry.getValue();
                 
-                // 
-                TreeMap<Double, TileLocation> distanceMap = new TreeMap<Double, TileLocation>();
+//                if(colorTile.isRubikColor == false)
+//                    continue;
+                
+                // Map of color error distance (smallest to largest) mapped to location on cube for the current colorTileEnum
+                TreeMap<Double, TileLocation> colorErrorDistanceMap = new TreeMap<Double, TileLocation>();
                 
 	            // Count up total number of this color tile across all 54 locations.
 	            for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values()) {
@@ -214,7 +225,7 @@ public class Util {
 	                                    (measuredColor[2] - mutableColor.val[2]) * (measuredColor[2] - mutableColor.val[2]);
 	                            
 	                            TileLocation tileLocation = new Util.TileLocation(rubikFace, n, m);
-                                distanceMap.put(distance, tileLocation);
+                                colorErrorDistanceMap.put(distance, tileLocation);
 	                        }
 	                    }
 	                }
@@ -222,14 +233,20 @@ public class Util {
 
 	            // Obtain averaged measured color of closest 5 tiles to colorTile.
 	            int tileCount = 0;
-	            double [] meanMeasuredColor = new double[4];
-	            for( TileLocation tileLocation : distanceMap.values() ) {
+	            double [] meanMeasuredColor = {0, 0, 0, 0};
 
-	                double[] measuredColor = tileLocation.rubikFace.measuredColorArray[tileLocation.n][tileLocation.m];
+	            for( Entry<Double, TileLocation> distanceEntry : colorErrorDistanceMap.entrySet() ) {
+	                TileLocation tileLocation = distanceEntry.getValue();
+	                double distance = distanceEntry.getKey();
+
+	                Log.e(Constants.TAG_COLOR, "Color Tile = " + colorTile + ", Count = " + tileCount + ", Distance = " + distance);
 	                
+	                double[] measuredColor = tileLocation.rubikFace.measuredColorArray[tileLocation.n][tileLocation.m];
+
+	                // Accumulate RGBs into array.
 	                for(int i=0; i<3; i++)
 	                    meanMeasuredColor[i] += measuredColor[i];
-	                
+
 	                tileCount++;
 	                if(tileCount >= 5)
 	                    break;
@@ -239,12 +256,14 @@ public class Util {
 	            if(tileCount == 0)
 	                continue;
 	            
-	            // Calculate mean color
+	            // Calculate average RGB color values
                 for(int i=0; i<3; i++)
                     meanMeasuredColor[i] /= tileCount;	            
 
 	            // Update mutable color with new mean value.
 	            colorTileEntry.setValue(new Scalar(meanMeasuredColor));
+	            
+	            Log.e(Constants.TAG_COLOR, "Color Tile = " + colorTile + ", Count = " + tileCount + ", New Mean Color =" + Arrays.toString(stateModel.mutableTileColors.get(colorTile).val) );
 
 	        }  // End loop over color tiles
 

@@ -83,7 +83,7 @@ public class Constants {
 	public enum ImageProcessModeEnum { DIRECT, MONOCHROMATIC, GREYSCALE, GAUSSIAN, CANNY, DILATION, CONTOUR, POLYGON, RHOMBUS, FACE_DETECT, NORMAL}
 
 	// Specifies what annotation to add
-	public enum AnnotationModeEnum { LAYOUT, RHOMBUS, FACE_METRICS, TIME, COLOR, CUBE_METRICS, NORMAL }
+	public enum AnnotationModeEnum { LAYOUT, RHOMBUS, FACE_METRICS, TIME, COLOR_FACE, COLOR_CUBE, CUBE_METRICS, NORMAL }
 
 	// Conventional Rubik Face nomenclature
 	public enum FaceNameEnum { UP, DOWN, LEFT, RIGHT, FRONT, BACK};

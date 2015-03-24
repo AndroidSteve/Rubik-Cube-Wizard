@@ -10,8 +10,11 @@
                     android:id="@+id/normalAnnotationMenuItem" 
                     android:title="Normal" />
                 <item 
-                    android:id="@+id/colorAnnotationMenuItem" 
-                    android:title="Color Annotation" />
+                    android:id="@+id/faceColorAnnotationMenuItem" 
+                    android:title="Face Color Annotation" />
+                <item 
+                    android:id="@+id/cubeColorAnnotationMenuItem" 
+                    android:title="Cube Color Annotation" />
                 <item 
                     android:id="@+id/layoutAnnotationMenuItem" 
                     android:title="Rubik Cube Layout" />
