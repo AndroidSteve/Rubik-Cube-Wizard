@@ -543,11 +543,11 @@ public class Annotation {
                     double vChromananceScaled = measuredTileColorYUV[2] * 2;
 
                     // Draw tile character in UV plane
-                    Core.circle(image, new Point(uChromananceScaled + 256, vChromananceScaled + 400), 10, face.observedTileArray[n][m].cvColor, -1);
+                    Core.circle(image, new Point(uChromananceScaled + 256, vChromananceScaled + 400), 10, new Scalar(face.measuredColorArray[n][m]), -1);
 
                     // Draw tile characters on OUTSIDE right side for Y axis as directly measured.
-                    Core.circle(image, new Point(512 + 20, luminousScaled + 400), 10, face.observedTileArray[n][m].cvColor, -1);
-                    //              Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
+                    Core.circle(image, new Point(512 + 20, luminousScaled + 400), 10, new Scalar(face.measuredColorArray[n][m]), -1);
+                    // Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
                 }
             }
         }

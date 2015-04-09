@@ -135,8 +135,8 @@ public class Util {
             this.m = m;
         }
 	}
-	
-	
+
+    
 	/**
 	 * Re-Evaluate Tile Colors
 	 * 
@@ -190,7 +190,7 @@ public class Util {
 	    while(stateModel.isTileColorsValid() == false) {
 	        
 	        if(itterationCount++ > 3) {
-	            Log.e(Constants.TAG_COLOR, "Error: cound not converge on correct tile color designations.");
+	            Log.e(Constants.TAG_COLOR, "Error: could not converge on correct tile color designations.");
 	            return;
 	        }
 
@@ -201,8 +201,8 @@ public class Util {
 	            ColorTileEnum colorTile = colorTileEntry.getKey();
 	            Scalar mutableColor = colorTileEntry.getValue();
                 
-//                if(colorTile.isRubikColor == false)
-//                    continue;
+                if(colorTile.isRubikColor == false)
+                    continue;
                 
                 // Map of color error distance (smallest to largest) mapped to location on cube for the current colorTileEnum
                 TreeMap<Double, TileLocation> colorErrorDistanceMap = new TreeMap<Double, TileLocation>();
