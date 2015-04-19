@@ -1,0 +1,19 @@
+Environment:
+
+	* 3-21-4014 version of Eclipse ADT
+	* r9d version of Android NDK
+	* Java JDK version 1.7.0_67
+	
+	Configure Windows->Properties->Android->NDK to above
+	
+New Workspace
+
+	* New -> Android Application Project
+		Create dummy "Yada" project 
+		Should also automatically create a project named appcompat_v7 or similar
+	* Obtain OpenCV Library version 2.4.9
+	* Obtain Rubik Solver
+		Unclear how to get this from git and to control which branch
+	* Modify Project -> Properties -> Android
+		Delete any invalid paths
+		Add for about two project : appcompat_v7 and OpendCV
