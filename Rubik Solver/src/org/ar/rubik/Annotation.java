@@ -514,17 +514,11 @@ public class Annotation {
     private void drawCubeColorMetrics(Mat image) {
         
         Core.rectangle(image, new Point(0, 0), new Point(570, 720), ColorTileEnum.BLACK.cvColor, -1);
-        
-//        if(face == null || face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
-//            return;
 
         // Draw simple grid
         Core.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);
         Core.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);       
         Core.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), ColorTileEnum.WHITE.cvColor);
-//        Core.putText(image, String.format("Luminosity Offset = %4.0f", face.luminousOffset), new Point(0, -256 + 400 - 60), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-//        Core.putText(image, String.format("Color Error Before Corr = %4.0f", face.colorErrorBeforeCorrection), new Point(0, -256 + 400 - 30), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-//        Core.putText(image, String.format("Color Error After Corr = %4.0f", face.colorErrorAfterCorrection), new Point(0, -256 + 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 
         
         // Draw measured tile color as solid small circles on both the UV plane and the Y axis.
@@ -542,11 +536,15 @@ public class Annotation {
                     double uChromananceScaled = measuredTileColorYUV[1] * 2;
                     double vChromananceScaled = measuredTileColorYUV[2] * 2;
 
-                    // Draw tile character in UV plane
-                    Core.circle(image, new Point(uChromananceScaled + 256, vChromananceScaled + 400), 10, new Scalar(face.measuredColorArray[n][m]), -1);
+                    // Draw solid circle in UV plane
+                    Core.circle(image, new Point(uChromananceScaled + 256, vChromananceScaled + 400), 10, new Scalar(face.observedTileArray[n][m].cvColor.val), -1);
 
-                    // Draw tile characters on OUTSIDE right side for Y axis as directly measured.
-                    Core.circle(image, new Point(512 + 20, luminousScaled + 400), 10, new Scalar(face.measuredColorArray[n][m]), -1);
+                    // Draw line on OUTSIDE right side for Y axis as directly measured.
+                    Core.line(image,
+                    		new Point(522 + 20, luminousScaled + 400),
+                    		new Point(542 + 20, luminousScaled + 400),
+                    		face.observedTileArray[n][m].cvColor, 
+                            3);
                     // Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
                 }
             }
@@ -554,7 +552,7 @@ public class Annotation {
 
 
         
-        // Draw original tile colors (from Constants) as a large circle in UV plane and short solid line in the Y plane.
+        // Draw predicted tile colors (from Constants) as a large circle in UV plane and short solid line in the Y plane.
         for(ColorTileEnum colorTile : ColorTileEnum.values()) {
 
             if(colorTile.isRubikColor == false)
@@ -567,52 +565,17 @@ public class Annotation {
             // Open large circle in UV plane
             Core.circle(image, new Point(x, y), 15, colorTile.cvColor, +3); 
             
-            // Line in Y plane
-            Core.line(image, 
-                    new Point(502, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
-                    new Point(522, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
-                    colorTile.cvColor, 
-                    3);
+            // Open large circle in Y plane
+            Core.circle(
+            		image, 
+            		new Point(512, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
+            		15, 
+            		colorTile.cvColor, 
+            		+3); 
         }
-
-
-        // Draw final mutable colors as rectangles both in the UV plane and the Y plane.
-        for (Map.Entry<ColorTileEnum, Scalar> colorTileEntry : stateModel.mutableTileColors.entrySet()) {
-
-            //
-            //            ColorTileEnum colorTile = colorTileEntry.getKey();
-            Scalar mutableColor = colorTileEntry.getValue();
-
-            double x = 2*Util.getYUVfromRGB(mutableColor.val)[1] + 256;
-            double y = 2*Util.getYUVfromRGB(mutableColor.val)[2] + 400;
-//            double z = 2*Util.getYUVfromRGB(mutableColor.val)[0] + 400;
-            
-            // Rectangle in UV plane
-            Core.rectangle(
-                    image, 
-                    new Point(x + 15, y + 15),
-                    new Point(x - 15, y - 15),
-                    mutableColor,
-                    3, 8, 0 );
-            
-            // Rectangle in Y plane =+= this doesn't seem to work!
-            Core.rectangle(
-                    image, 
-                    new Point(502, -256 + 2*Util.getYUVfromRGB(mutableColor.val)[0] + 400),
-                    new Point(522, -256 + 2*Util.getYUVfromRGB(mutableColor.val)[0] + 400),
-//                    new Point(x + 15, y + 15),
-//                    new Point(x - 15, y - 15),
-                    mutableColor,
-                    3, 8, 0 );
-            
-//            Core.line(image, 
-//                    new Point(502, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
-//                    new Point(522, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
-//                    colorTile.cvColor, 
-//                    3);
-        }
-
     }
+    
+    
     
 	/**
 	 * Draw Cube Diagnostic Metrics
