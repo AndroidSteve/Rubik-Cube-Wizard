@@ -105,12 +105,12 @@ public class Constants {
 	 *
 	 */
 	public enum ColorTileEnum {
-	    
+	    //                     Target Measurement Colors                   Graphics (both CV and GL)  
 	    RED   ( true, 'R', new Scalar(220.0,   20.0,  30.0), new float [] {1.0f, 0.0f, 0.0f, 1.0f}),	    
 	    ORANGE( true, 'O', new Scalar(240.0,   80.0,   0.0), new float [] {0.9f, 0.4f, 0.0f, 1.0f}),
 	    YELLOW( true, 'Y', new Scalar(230.0,  230.0,  20.0), new float [] {0.9f, 0.9f, 0.2f, 1.0f}),
 	    GREEN ( true, 'G', new Scalar(0.0,    140.0,  60.0), new float [] {0.0f, 1.0f, 0.0f, 1.0f}),
-	    BLUE  ( true, 'B', new Scalar(0.0,     60.0, 220.0), new float [] {0.0f, 0.0f, 1.0f, 1.0f}),
+	    BLUE  ( true, 'B', new Scalar(0.0,     60.0, 220.0), new float [] {0.2f, 0.2f, 1.0f, 1.0f}),
         WHITE ( true, 'W', new Scalar(225.0,  225.0, 225.0), new float [] {1.0f, 1.0f, 1.0f, 1.0f}),
         
         BLACK (false, 'K', new Scalar(  0.0,    0.0,   0.0) ),    

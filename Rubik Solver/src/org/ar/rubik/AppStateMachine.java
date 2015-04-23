@@ -35,6 +35,7 @@ package org.ar.rubik;
 
 
 import org.ar.rubik.Constants.AppStateEnum;
+import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.kociemba.twophase.Search;
@@ -127,7 +128,6 @@ public class AppStateMachine {
 			allowOneMoreRotation = false;
 			stateModel.reset();
 			stateModel.recallState();
-			Util.reevauateSelectTileColors(stateModel);
 			stateModel.appState = AppStateEnum.COMPLETE;  // Assumes state stored in file is complete.
 		}
 
@@ -348,13 +348,9 @@ public class AppStateMachine {
 	            gotItCount = 0;
 			}
 
-			// Begin processing of cube: first check that there are exactly 9 tiles of each color.
+			// All faces have been observed, and cube is back in original position.  Begin processing of cube.
 			else {
-				Util.reevauateSelectTileColors(stateModel);
-				if(stateModel.isTileColorsValid() == true)
-					stateModel.appState = AppStateEnum.COMPLETE;
-				else
-					stateModel.appState = AppStateEnum.BAD_COLORS;
+				stateModel.appState = AppStateEnum.COMPLETE;
 			}
 			break;
 
@@ -443,19 +439,40 @@ public class AppStateMachine {
 
 
 		case COMPLETE:
+			// Re-asses color mapping.  Use algorithm that evaluates entire cube at once.
+			new ColorRecognition.Cube(stateModel).cubeTileColorRecognition();
+			
+			// Check if color mapping meets certain criteria.  Note, above algorithm should result in this always be being true.
+			if(Util.isTileColorsValid(stateModel) == false) {
+				stateModel.appState = AppStateEnum.BAD_COLORS;
+				break;
+			}
+			
+			// Create/update transformed tile array
+			// =+= This logic duplicated in class StateModel
+			stateModel.nameRubikFaceMap.get(FaceNameEnum.UP   ).transformedTileArray = stateModel.nameRubikFaceMap.get(FaceNameEnum.UP).observedTileArray.clone();
+			stateModel.nameRubikFaceMap.get(FaceNameEnum.RIGHT).transformedTileArray = Util.getTileArrayRotatedClockwise(stateModel.nameRubikFaceMap.get(FaceNameEnum.RIGHT).observedTileArray);
+			stateModel.nameRubikFaceMap.get(FaceNameEnum.FRONT).transformedTileArray = Util.getTileArrayRotatedClockwise(stateModel.nameRubikFaceMap.get(FaceNameEnum.FRONT).observedTileArray);
+			stateModel.nameRubikFaceMap.get(FaceNameEnum.DOWN ).transformedTileArray = Util.getTileArrayRotatedClockwise(stateModel.nameRubikFaceMap.get(FaceNameEnum.DOWN ).observedTileArray);
+			stateModel.nameRubikFaceMap.get(FaceNameEnum.LEFT ).transformedTileArray = Util.getTileArrayRotated180(      stateModel.nameRubikFaceMap.get(FaceNameEnum.LEFT ).observedTileArray);
+			stateModel.nameRubikFaceMap.get(FaceNameEnum.BACK ).transformedTileArray = Util.getTileArrayRotated180(      stateModel.nameRubikFaceMap.get(FaceNameEnum.BACK ).observedTileArray);
+
+			
+			// Build string representation of cube state
 			String cubeString = stateModel.getStringRepresentationOfCube();
 
-			// Returns 0 if cube is solvable.
+			// Perform twophase algorithm verification check.
 			stateModel.verificationResults = Tools.verify(cubeString);
 
+			// If OK, then make sure prune tables have been built.
 			if(stateModel.verificationResults == 0) {
 				stateModel.appState = AppStateEnum.WAIT_TABLES;
 			}
 			else
 				stateModel.appState = AppStateEnum.INCORRECT;
 
+			
 			String stringErrorMessage = Util.getTwoPhaseErrorString((char)(stateModel.verificationResults * -1 + '0'));
-
 			Log.i(Constants.TAG_STATE, "Cube String Rep: " + cubeString);
 			Log.i(Constants.TAG_STATE, "Verification Results: (" + stateModel.verificationResults + ") " + stringErrorMessage);
 			break;

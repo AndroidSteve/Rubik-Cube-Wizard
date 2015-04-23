@@ -111,7 +111,7 @@ public class ColorRecognition {
         // This mapping must be synchronized with the assignments in StateModel.
         // It would be possible/natural to place this data structure in State Model since it is synchronized with RubikFace[name].observedTileArray,
         // which contains the tile to color mapping state.
-        private static Map <ColorTileEnum, TreeMap <Double, TileLocation>> colorGroupMap;
+        private static Map <ColorTileEnum, TreeMap <Double, TileLocation>> observedColorGroupMap;
         private static Map <ColorTileEnum, TreeMap <Double, TileLocation>> bestColorGroupMap;
 
 
@@ -145,13 +145,13 @@ public class ColorRecognition {
          *     nine tiles assigned to each color.  A recursive algorithm is used
          *     to achieve a minimum total color error costs (i.e., distance in pixels
          *     between measured color values (RGB) and expected color values) of all 
-         *     54 tiles.
+         *     54 tiles.  Also, the cost calculation algorithm rules out any two faces 
+         *     having the same center tile color.
          * 
-         * @param stateModel
          */
         public void cubeTileColorRecognition() {
         	
-        	Log.w(Constants.TAG_COLOR, "Entering cube tile color recognition.");
+        	Log.i(Constants.TAG_COLOR, "Entering cube tile color recognition.");
         	printDiagnosticsColorTileAssignments();
 
             // Clear out all tile color mapping in state model.
@@ -160,13 +160,13 @@ public class ColorRecognition {
                     for(int m=0; m<3; m++)
                         stateModel.nameRubikFaceMap.get(faceNameEnum).observedTileArray[n][m] = null;
 
-            // Populate Color Group Map with necessary objects: i.e., tree object per color.
-            colorGroupMap = new TreeMap<ColorTileEnum, TreeMap <Double, TileLocation>>();
+            // Populate Color Group Map with necessary objects: i.e., one tree object per color.
+            observedColorGroupMap = new TreeMap<ColorTileEnum, TreeMap <Double, TileLocation>>();
             for(ColorTileEnum colorTile : ColorTileEnum.values())
                 if(colorTile.isRubikColor == true)
-                    colorGroupMap.put(colorTile, new TreeMap<Double,TileLocation>());
+                    observedColorGroupMap.put(colorTile, new TreeMap<Double,TileLocation>());
 
-            // Populate Color Group Map with necessary objects: i.e., tree object per color.
+            // Populate Best Color Group Map with necessary objects: i.e., tree object per color.
             bestColorGroupMap = new TreeMap<ColorTileEnum, TreeMap <Double, TileLocation>>();
             for(ColorTileEnum colorTile : ColorTileEnum.values())
                 if(colorTile.isRubikColor == true)
@@ -177,7 +177,7 @@ public class ColorRecognition {
                 for(int n=0; n<3; n++) {
                     for(int m=0; m<3; m++) {
                     	
-                    	/* Initialize Best Images and Objects */
+                    	/* Initialize Best Variables */
 
                         // Copy State Model to private "best assignment state" as starting point for recursive search.
                         bestAssignmentState = new TreeMap<Constants.FaceNameEnum, Constants.ColorTileEnum[][]>();  // Fresh new Map
@@ -191,8 +191,10 @@ public class ColorRecognition {
                         
                         // Copy Local State Color Group to "best color group"
                         for(ColorTileEnum colorTile2 : ColorTileEnum.values())
-                            if(colorTile2.isRubikColor == true)
-                            	bestColorGroupMap.put(colorTile2, new TreeMap<Double,TileLocation>(colorGroupMap.get(colorTile2)));
+                            if(colorTile2.isRubikColor == true) {
+								TreeMap<Double, TileLocation> colorGroupClone = new TreeMap<Double,TileLocation>(observedColorGroupMap.get(colorTile2));
+								bestColorGroupMap.put(colorTile2, colorGroupClone);
+							}
 
                         bestAssignmentCost = Double.MAX_VALUE;
                         
@@ -200,10 +202,10 @@ public class ColorRecognition {
 
                         /* Insert tile into State Model */
                         
-                        // Evaluate tile for insertion
-                        Scalar measuredColor = new Scalar(stateModel.nameRubikFaceMap.get(faceNameEnum).measuredColorArray[n][m]);
+                        // Evaluate (possibly recursive) tile for insertion
+                        // The least-cost solution shall be copied to the "best" variables.
                         TileLocation tileLocation = new TileLocation(faceNameEnum, n, m);
-                        assignTileForLowestOverallCostPossiblyReursively(tileLocation, measuredColor, new HashSet<ColorTileEnum>(9));
+                        evaluateTileAssignmentForLowestOverallCostPossiblyReursively(tileLocation, new HashSet<ColorTileEnum>(9));
 
                         
                         // Copy "best assignment state" to State Model
@@ -213,7 +215,7 @@ public class ColorRecognition {
                         // Copy "best color group" to Local State Model
                         for(ColorTileEnum colorTile2 : ColorTileEnum.values())
                             if(colorTile2.isRubikColor == true)
-                            	colorGroupMap.put(colorTile2, new TreeMap<Double,TileLocation>(bestColorGroupMap.get(colorTile2)));
+                            	observedColorGroupMap.put(colorTile2, new TreeMap<Double,TileLocation>(bestColorGroupMap.get(colorTile2)));
                         
                         printDiagnosticsColorTileAssignments();
                     }
@@ -224,20 +226,23 @@ public class ColorRecognition {
         
 
         /**
-         * Assign Tile for Lowest Overall Cost Possibly Recursive
+         * Evaluate Tile Assignment for Lowest Overall Cost Possibly Recursive
          * 
-         * Actually, does not perform assignment, but instead tries all possibilities () and
-         * keeps best in bestAssignmentMap.
+         * Attempts to assign tile in State Model to every tile color, and copies
+         * lowest cost total assignment to member data "bestAssignmentState".  If
+         * a tile is assigned to a color group, and now that group has more than
+         * nine tiles assigned to it, then remove the tile with the highest cost,
+         * and assign it to some other group recursively.
          * 
          * @param tileLocation
          * @param measuredColor
          * @param blackList
          */
-        private void assignTileForLowestOverallCostPossiblyReursively(TileLocation tileLocation, Scalar measuredColor, Set <ColorTileEnum> blackList) {
+        private void evaluateTileAssignmentForLowestOverallCostPossiblyReursively(TileLocation tileLocation, Set <ColorTileEnum> blackList) {
 
-           	Log.w(Constants.TAG_COLOR, "Assign tile with blacklist = " + blackList.size() );
-
-        	
+//           	Log.d(Constants.TAG_COLOR, "Assign tile with blacklist = " + blackList.size() );
+        	       	
+        	// Loop and evaluate cost of assigning all colors to this location.  Keep lowest cost in "best" variables.
             for(ColorTileEnum colorTile : ColorTileEnum.values()) {
 
                 if(colorTile.isRubikColor == false)
@@ -248,19 +253,21 @@ public class ColorRecognition {
                     continue;
 
 
-                // Assign to State Model
+                // Assign a color to State Model at specified location
                 assignTileToColor(tileLocation, colorTile);
 
                 // If mapping is still valid (i.e., not more than 9 tiles are assigned to any color),
                 // then do not attempt any further re-arrangement of tile mapping.
-                TreeMap<Double, TileLocation> colorGroup = colorGroupMap.get(colorTile);
+                TreeMap<Double, TileLocation> colorGroup = observedColorGroupMap.get(colorTile);
                 if(colorGroup.size() <=9 )  {
 
-                    double cost = calculateTotalColorErrorCostOfAssignment(stateModel);
+                	// This is sum of selected color errors of tiles that are assigned.  No-assigned are not considered.
+                    double cost = calculateTotalColorErrorCostOfAssignment();
 
                     // If lower costs of anything so far found, then adopt.
                     if(cost < bestAssignmentCost ) {
 
+                    	// Copy current cost to best assignment cost
                         bestAssignmentCost = cost;
 
                         // Copy State Model to Best Assignment State
@@ -275,8 +282,10 @@ public class ColorRecognition {
                         
                         // Copy Local State Color Group to "best color group"
                         for(ColorTileEnum colorTile2 : ColorTileEnum.values())
-                            if(colorTile2.isRubikColor == true)
-                            	bestColorGroupMap.put(colorTile2, new TreeMap<Double,TileLocation>(colorGroupMap.get(colorTile2)));
+                            if(colorTile2.isRubikColor == true) {
+								TreeMap<Double, TileLocation> colorGroupClone = new TreeMap<Double,TileLocation>(observedColorGroupMap.get(colorTile2));
+								bestColorGroupMap.put(colorTile2, colorGroupClone);
+							}
                     }
                 }
 
@@ -284,23 +293,26 @@ public class ColorRecognition {
                 // tile, and try moving elsewhere.
                 else {
                 	
-                	Log.w(Constants.TAG_COLOR, "Color Group " + colorTile + " has too many elements.");
+//                	Log.d(Constants.TAG_COLOR, "Color Group " + colorTile + " has too many elements.");
 
                     // Highest cost assignment is at end of list for TreeMap
-                    TileLocation tileLocation2 = colorGroup.lastEntry().getValue();
+                    TileLocation moveTileLoc = colorGroup.lastEntry().getValue();
 
                     // Remove from State Model
-                    unassignTileToColor(tileLocation2, colorTile);
+                    unassignTileToColor(moveTileLoc, colorTile);
+//                    Log.d(Constants.TAG_COLOR, "Unassign tile at location [" + moveTileLoc.faceNameEnum + "][" + moveTileLoc.n + "][" + moveTileLoc.m + "] from color group " + colorTile + " with error cost " + moveTileColorError);
 
                     // Add to blacklist
                     blackList.add(colorTile);
 
                     // Recursively assign tile 2 somewhere else.
-                    Scalar measuredColor2 = new Scalar(stateModel.nameRubikFaceMap.get(tileLocation2.faceNameEnum).measuredColorArray[tileLocation2.n][tileLocation2.m]);
-                    assignTileForLowestOverallCostPossiblyReursively(tileLocation2, measuredColor2, blackList);
+                    evaluateTileAssignmentForLowestOverallCostPossiblyReursively(moveTileLoc, blackList);
+                    
+                    // Remove from blacklist
+                    blackList.remove(colorTile);
 
                     // Replace Back to State Model
-                    assignTileToColor(tileLocation2, colorTile);
+                    assignTileToColor(moveTileLoc, colorTile);
                 }
 
                 // Remove from State Model
@@ -319,17 +331,15 @@ public class ColorRecognition {
          */
         private void unassignTileToColor(TileLocation tileLocation, ColorTileEnum colorlTile) {
             
-            stateModel.nameRubikFaceMap.get(tileLocation.faceNameEnum).observedTileArray[tileLocation.n][tileLocation.m] = null;
+            RubikFace rubikFace = stateModel.nameRubikFaceMap.get(tileLocation.faceNameEnum);
+			rubikFace.observedTileArray[tileLocation.n][tileLocation.m] = null;
             
-            TreeMap<Double, TileLocation> colorGroup = colorGroupMap.get(colorlTile);
-            
+            TreeMap<Double, TileLocation> colorGroup = observedColorGroupMap.get(colorlTile);
             Double keyOfItemToBeRemoved = null;
-            
             for(Entry<Double, TileLocation> entry : colorGroup.entrySet()) {
-                if(entry.getValue() == tileLocation)  // =+= is tile location same object?
+                if(entry.getValue() == tileLocation)  // =+= Is tile location same object?  Seems like this is true.
                 	keyOfItemToBeRemoved = entry.getKey();
             }
-            
             colorGroup.remove(keyOfItemToBeRemoved);
         }
 
@@ -346,7 +356,7 @@ public class ColorRecognition {
             RubikFace rubikFace = stateModel.nameRubikFaceMap.get(tileLocation.faceNameEnum);
             rubikFace.observedTileArray[tileLocation.n][tileLocation.m] = colorTile;
             
-            TreeMap<Double, TileLocation> colorGroup = colorGroupMap.get(colorTile);
+            TreeMap<Double, TileLocation> colorGroup = observedColorGroupMap.get(colorTile);
 			colorGroup.put(
                     calculateColorErrorCost(new Scalar(rubikFace.measuredColorArray[tileLocation.n][tileLocation.m]), colorTile.cvColor),
                     tileLocation);
@@ -357,12 +367,13 @@ public class ColorRecognition {
         /**
          * Calculate and return the Color Error Assignment costs of the provided assignment map.
          * 
-         * Return is sum of color error vectors added in a simple scalar magnitude manner.
+         * Return is sum of color error vectors added in a simple scalar magnitude manner.  Note,
+         * a cost of Double.MAX_VALUE is returned if center tile of any two faces have duplicate color.
          * =+= possibly should be sum square.
          * 
          * @return
          */
-        private double calculateTotalColorErrorCostOfAssignment(StateModel stateModel) {
+        private double calculateTotalColorErrorCostOfAssignment() {
 
             double cost = 0.0;
 
@@ -370,11 +381,28 @@ public class ColorRecognition {
             for(Constants.FaceNameEnum faceNameEnum : Constants.FaceNameEnum.values())
                 for(int n=0; n<3; n++) 
                     for(int m=0; m<3; m++) {
-                        RubikFace rubikFace = stateModel.nameRubikFaceMap.get(faceNameEnum);
+                        RubikFace rubikFace = this.stateModel.nameRubikFaceMap.get(faceNameEnum);
                         if(rubikFace.observedTileArray[n][m] != null)
                             cost += calculateColorErrorCost(new Scalar(rubikFace.measuredColorArray[n][m]), rubikFace.observedTileArray[n][m].cvColor);
                     }
 
+            
+            // Test if all six center tiles have different colors.  Return infinite cost if not true.
+            // Test if any two sides have the same center tile color.  Ignore sides that are not yet assigned.
+        	Set<ColorTileEnum> centerTileColorSet = new HashSet<ColorTileEnum>(16);
+            for(Constants.FaceNameEnum faceNameEnum : Constants.FaceNameEnum.values()) {
+            	RubikFace rubikFace = this.stateModel.nameRubikFaceMap.get(faceNameEnum);
+				ColorTileEnum centerColorTile = rubikFace.observedTileArray[1][1];
+				
+				if(centerColorTile == null)
+					continue;
+				
+            	if(centerTileColorSet.contains(centerColorTile))
+            		return Double.MAX_VALUE;
+            	else
+            		centerTileColorSet.add(centerColorTile);
+            }
+            
             return cost;
         }
         
@@ -384,34 +412,36 @@ public class ColorRecognition {
 		/**
 		 * 
 		 */
-        private void printDiagnosticsColorTileAssignments() {
+        @SuppressWarnings("unused")
+		private void printDiagnosticsColorTileAssignments() {
+        	
+        	if(true) return;
 
+        	// Print State Model Observed Tile Array
         	for(Constants.FaceNameEnum faceNameEnum2 : Constants.FaceNameEnum.values()) {
 
         		StringBuilder str = new StringBuilder();
-
         		for(int n2=0; n2<3; n2++)
         			for(int m2=0; m2<3; m2++)
         				str.append( "|" + stateModel.nameRubikFaceMap.get(faceNameEnum2).observedTileArray[n2][m2]);
 
-        		Log.w(Constants.TAG_COLOR, "State Tile at [" + faceNameEnum2 + "] " + str + "|");
+        		Log.d(Constants.TAG_COLOR, "State Tile at [" + faceNameEnum2 + "] " + str + "|");
         	}
 
         	
-        	if(colorGroupMap != null)
-        		for(ColorTileEnum colorTile : colorGroupMap.keySet()) {
+        	// Print State Model ObservedColorGroupMap
+        	if(observedColorGroupMap != null)
+        		for(ColorTileEnum colorTile : observedColorGroupMap.keySet()) {
 
-        			TreeMap<Double, TileLocation> tileColorMap = colorGroupMap.get(colorTile);
-
+        			TreeMap<Double, TileLocation> tileColorMap = observedColorGroupMap.get(colorTile);
         			StringBuilder str = new StringBuilder();
-
         			for( Entry<Double, TileLocation> entry : tileColorMap.entrySet()) {
-        				str.append("|" + String.format("%5.1f", entry.getKey()));// + ":" );//entry.getValue().toString() );
+        				str.append("|" + String.format("%5.1f", entry.getKey()));
         			}
-
-        			Log.w(Constants.TAG_COLOR, "Color Group " + colorTile + " " + tileColorMap.size() + " " + str + "|");
-
+        			Log.d(Constants.TAG_COLOR, "Color Group " + colorTile + " " + tileColorMap.size() + " " + str + "|");
         		}
+        	
+        	Log.d(Constants.TAG_COLOR, "Total Currnet Cost = " + calculateTotalColorErrorCostOfAssignment());
         }
 
     }

@@ -37,7 +37,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
-
 import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.AppStateEnum;
@@ -123,6 +122,8 @@ public class StateModel {
 	 * rotated version of the observed tile array so that the face orientations
 	 * match the convention of a cut-out rubik cube layout.
 	 * 
+	 * =+= This logic duplicated in AppStateMachine
+	 * 
 	 * @param rubikFace
 	 */
     public void adopt(RubikFace rubikFace) {
@@ -203,34 +204,6 @@ public class StateModel {
     }
 
 
-	/**
-	 * Returns true if there are exactly nine of each tile color over entire cube.
-	 * 
-	 * @return
-	 */
-    public boolean isTileColorsValid() {
-    	
-    	// Count how many tile colors entire cube has as a first check.
-    	int [] numColorTilesArray = new int[] {0, 0, 0, 0, 0, 0};
-		for(RubikFace rubikFace : nameRubikFaceMap.values() ) {
-			for(int n=0; n<3; n++) {
-				for(int m=0; m<3; m++) {
-					numColorTilesArray[ rubikFace.observedTileArray[n][m].ordinal() ]++;    // constantTileColor.ordinal() ]++;
-				}
-			}	
-		}
-		
-		// Check that we have nine of each tile color over entire cube.
-		for(ColorTileEnum colorTile : ColorTileEnum.values()) {
-		    if(colorTile.isRubikColor == true) {
-		        if( numColorTilesArray[colorTile.ordinal()] != 9)
-		            return false;
-		    }
-		}
-		return true;
-    }
-
-
     
 	/**
 	 * Get String Representation of Cube
@@ -297,6 +270,8 @@ public class StateModel {
 	 * @return
 	 */
 	private char getCharacterRepresentingColor(HashMap<ColorTileEnum, FaceNameEnum> colorTileToNameMap, ColorTileEnum colorEnum) {
+		
+//		Log.e(Constants.TAG_COLOR, "colorEnum=" + colorEnum + " colorTileToNameMap=" + colorTileToNameMap);
 
 		switch(colorTileToNameMap.get(colorEnum) ) {
 		case FRONT: return 'F';

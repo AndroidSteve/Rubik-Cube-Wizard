@@ -5,7 +5,7 @@ Email: android.steve@cl-sw.com
 
 Notice:
   This is currently work-in-progress.  A final stable version will be
-  completed around March 2015.
+  completed around June 2015.
   
   If you are interested in working or forking this code, I recommend that 
   you wait until then.  I will be much more willing to answer questions
@@ -16,12 +16,10 @@ Notice:
 
 To Do:
 
-  o  Tile Color Determination
-     - Re-evaluate after all 54 tiles have been observed.
-     - Create smarter algorithm.
-  o  Create image recognition test suite.
-  
+  o  Eliminate gaussian step: roll into edge detection.
+  o  Change scan rotation so that pilot cube is more interesting.
   o  Time and CPU measurements.  Possible use of DDMS
+  o  Create image recognition test suite.
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
   o  Refactor and clean up state machines.
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
@@ -37,4 +35,5 @@ To Do:
 Open Issues:
   o  What if hardware does not provide intrinsic camera calibration parameters? 
   
-  
+Bugs
+  o    

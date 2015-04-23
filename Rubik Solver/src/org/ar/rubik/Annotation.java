@@ -35,8 +35,6 @@
 package org.ar.rubik;
 
 import java.util.List;
-import java.util.Map;
-
 import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
@@ -552,15 +550,18 @@ public class Annotation {
 
 
         
-        // Draw predicted tile colors (from Constants) as a large circle in UV plane and short solid line in the Y plane.
+        // Draw predicted tile colors (i.e. "rubikColor" from Constants) as a large circle in UV plane and short solid line in the Y plane.
         for(ColorTileEnum colorTile : ColorTileEnum.values()) {
 
             if(colorTile.isRubikColor == false)
                 continue;
 
+            // Target color we are expecting measurement to be.
+            double[] targetColorYUV = Util.getYUVfromRGB(colorTile.rubikColor.val);
+
             // Draw Color Calibration in UV plane as rectangle
-            double x = 2*Util.getYUVfromRGB(colorTile.cvColor.val)[1] + 256;
-            double y = 2*Util.getYUVfromRGB(colorTile.cvColor.val)[2] + 400;
+			double x = 2*targetColorYUV[1] + 256;
+            double y = 2*targetColorYUV[2] + 400;
             
             // Open large circle in UV plane
             Core.circle(image, new Point(x, y), 15, colorTile.cvColor, +3); 
@@ -568,7 +569,7 @@ public class Annotation {
             // Open large circle in Y plane
             Core.circle(
             		image, 
-            		new Point(512, -256 + 2*Util.getYUVfromRGB(colorTile.cvColor.val)[0] + 400),
+            		new Point(512, -256 + 2*targetColorYUV[0] + 400),
             		15, 
             		colorTile.cvColor, 
             		+3); 

@@ -201,7 +201,8 @@ public class GLCube2 {
                 }
 
                 // Color in GL format
-                float [] colorGL = (rubikFace != null) ? rubikFace.transformedTileArray[1][1].glColor : Constants.ColorTileEnum.GREY.glColor;
+                float [] colorGL = (rubikFace != null && rubikFace.observedTileArray != null && rubikFace.observedTileArray[1][1] != null) ? 
+                		rubikFace.observedTileArray[1][1].glColor : Constants.ColorTileEnum.GREY.glColor;
 
                 // Render
                 GLES20.glUniform4fv(colorID, 1, colorGL, 0);
