@@ -1,7 +1,7 @@
 /**
  * Augmented Reality Rubik Cube Solver
  * 
- * Author: Steven P. Punte (aka Android Steve)
+ * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   Nov 1st 2014
  * 
  * Project Description:
@@ -64,7 +64,7 @@ import android.util.Log;
  *   Cube location and orientation in GL space coordinates are reconstructed from Face information.
  *   The Rubik Cube is defined as a cube centered a the origin with edge length of 2.0 units.
  * 
- * @author android.steve@testlens.com
+ * @author android.steve@cl-sw.com
  *
  */
 public class CubeReconstructor {

@@ -12,7 +12,7 @@ import android.hardware.Camera.Size;
 import android.opengl.Matrix;
 
 /**
- * @author android.steve@testlens.com
+ * @author android.steve@cl-sw.com
  * 
  * =+= Important Issue: viewing angle has a factor of 2 w.r.t. trig functions.
  *

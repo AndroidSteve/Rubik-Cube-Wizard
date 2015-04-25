@@ -1,7 +1,7 @@
 /**
  * Augmented Reality Rubik Cube Solver
  * 
- * Author: Steven P. Punte (aka Android Steve)
+ * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   Nov 1st 2014
  * 
  * Project Description:
@@ -101,7 +101,7 @@ public class Constants {
 	 * - openGL of type float[4]
 	 * - symbol of type char 
 	 * 
-	 * @author android.steve@testlens.com
+	 * @author android.steve@cl-sw.com
 	 *
 	 */
 	public enum ColorTileEnum {

@@ -1,7 +1,7 @@
 /**
  * Augmented Reality Rubik Cube Solver
  * 
- * Author: Steven P. Punte (aka Android Steve)
+ * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   Nov 1st 2014
  * 
  * Project Description:
@@ -56,7 +56,7 @@ import android.util.Log;
  *   as UserInstructionsGLRenderer but in text form) across the top when
  *   enabled.
  * 
- * @author android.steve@testlens.com
+ * @author android.steve@cl-sw.com
  *
  */
 public class Annotation {

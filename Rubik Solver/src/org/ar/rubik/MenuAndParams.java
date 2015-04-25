@@ -1,7 +1,7 @@
 /**
  * Augmented Reality Rubik Cube Solver
  * 
- * Author: Steven P. Punte (aka Android Steve)
+ * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   Nov 1st 2014
  * 
  * Project Description:
@@ -49,7 +49,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 
 /**
- * @author stevep
+ * @author android.steve@cl-sw.com
  *
  */
 public class MenuAndParams {
@@ -135,7 +135,7 @@ public class MenuAndParams {
 	 * 
 	 * This class is to support a user adjustable parameter.
 	 * 
-	 * @author android.steve@testlens.com
+	 * @author android.steve@cl-sw.com
 	 *
 	 */
 	public static class RubikMenuParam {

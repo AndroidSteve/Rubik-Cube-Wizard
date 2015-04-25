@@ -1,7 +1,7 @@
 /**
  * Augmented Reality Rubik Cube Solver
  * 
- * Author: Steven P. Punte (aka Android Steve)
+ * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   Nov 1st 2014
  * 
  * Project Description:
@@ -63,7 +63,7 @@ import android.util.Log;
 /**
  * Class Color Recognition
  * 
- * @author android.steve@testlens.com
+ * @author android.steve@cl-sw.com
  *
  */
 public class ColorRecognition {
@@ -74,7 +74,7 @@ public class ColorRecognition {
      * 
      * This is used to refer to a location of a tile on the cube
      * 
-     * @author android.steve@testlens.com
+     * @author android.steve@cl-sw.com
      *
      */
     private static class TileLocation {
@@ -99,7 +99,7 @@ public class ColorRecognition {
      *     between measured color values (RGB) and expected color values) of all 
      *     54 tiles.
      * 
-     * @author android.steve@testlens.com
+     * @author android.steve@cl-sw.com
      *
      */
     public static class Cube {
