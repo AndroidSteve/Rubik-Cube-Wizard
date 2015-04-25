@@ -2,7 +2,7 @@
  * Augmented Reality Rubik Cube Solver
  * 
  * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
- * Date:   Nov 1st 2014
+ * Date:   April 25th 2015
  * 
  * Project Description:
  *   Android application developed on a commercial Smart Phone which, when run on a pair 
