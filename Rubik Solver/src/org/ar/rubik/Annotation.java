@@ -443,9 +443,9 @@ public class Annotation {
 		Core.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);
 		Core.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);		
 		Core.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), ColorTileEnum.WHITE.cvColor);
-		Core.putText(image, String.format("Luminosity Offset = %4.0f", face.luminousOffset), new Point(0, -256 + 400 - 60), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("Color Error Before Corr = %4.0f", face.colorErrorBeforeCorrection), new Point(0, -256 + 400 - 30), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("Color Error After Corr = %4.0f", face.colorErrorAfterCorrection), new Point(0, -256 + 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+//		Core.putText(image, String.format("Luminosity Offset = %4.0f", face.luminousOffset), new Point(0, -256 + 400 - 60), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+//		Core.putText(image, String.format("Color Error Before Corr = %4.0f", face.colorErrorBeforeCorrection), new Point(0, -256 + 400 - 30), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+//		Core.putText(image, String.format("Color Error After Corr = %4.0f", face.colorErrorAfterCorrection), new Point(0, -256 + 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
@@ -466,7 +466,7 @@ public class Annotation {
 				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
 				
 				// Draw tile characters on INSIDE right side for Y axis for adjusted luminosity.
-				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
+//				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
 				
 				// Draw tile characters on OUTSIDE right side for Y axis as directly measured.
 				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
