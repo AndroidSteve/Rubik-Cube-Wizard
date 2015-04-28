@@ -207,13 +207,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    // Calculate the projection and view transformation
 	    Matrix.multiplyMM(pvMatrix, 0, mProjectionMatrix, 0, viewMatrix, 0);
 	    
-	    // Calculate arrow animation rotation.
-	    long time = System.currentTimeMillis();
-	    int arrowRotationInDegrees = (int) (( time / 10 ) % 90);
-	    
-	    
 	    // Render User Instruction Arrows and possibly Overlay Cube
-        if( (MenuAndParams.cubeOverlayDisplay == true) || (stateModel.appState == AppStateEnum.ROTATE) || (stateModel.appState == AppStateEnum.DO_MOVE) ) {
+        if( (MenuAndParams.cubeOverlayDisplay == true) || (stateModel.appState == AppStateEnum.ROTATE_CUBE) || (stateModel.appState == AppStateEnum.ROTATE_FACE) ) {
             
             System.arraycopy(pvMatrix, 0, mvpMatrix, 0, pvMatrix.length);
             
@@ -245,12 +240,12 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
             switch(stateModel.appState) {
 
-            case ROTATE:
-                renderCubeFullRotationArrow(mvpMatrix, arrowRotationInDegrees);
+            case ROTATE_CUBE:
+                renderCubeFullRotationArrow(mvpMatrix, getRotationInDegrees());
                 break;
 
-            case DO_MOVE:
-                renderCubeEdgeRotationArrow(mvpMatrix, arrowRotationInDegrees);
+            case ROTATE_FACE:
+                renderCubeEdgeRotationArrow(mvpMatrix, getRotationInDegrees());
                 break;
 
             default:
@@ -277,6 +272,41 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             pilotGLCube.draw(mvpMatrix, Transparency.OPAQUE, programID);
         }
 	}
+
+
+	/**
+	 * Get Rotation In Degrees
+	 * 
+	 * Calculate a 0 to 90 degrees rotation for a more pleasing
+	 * graphical rotation instructions.
+	 * 
+	 * Note, this is call from the GL thread on every frame.  Logic is 
+	 * added so that return value starts at 0 when app state change
+	 * is noticed.
+	 * 
+	 * @return
+	 */
+	private int getRotationInDegrees() {
+
+		long time = System.currentTimeMillis();
+
+		// Set member data timeReference when graphic arrow turns on.
+		if( (stateModel.appState == AppStateEnum.ROTATE_CUBE) || (stateModel.appState == AppStateEnum.ROTATE_FACE) ){
+			if(rotationActive == false) {
+				timeReference = time;
+				rotationActive = true;
+			}
+		}
+		else
+			rotationActive = false;
+
+
+		// Calculate arrow animation rotation.
+		int arrowRotationInDegrees = (int) (( (time - timeReference) / 10 ) % 90);
+		return arrowRotationInDegrees;
+	}
+	private boolean rotationActive = false;
+	private long timeReference = 0;;
 	
 	
     

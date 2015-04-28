@@ -52,20 +52,20 @@ public class Constants {
 
     
 	public enum AppStateEnum { 
-		START,     // Ready
-		GOT_IT,    // A Cube Face has been recognized and captured.
-		ROTATE,    // Request user to rotate Cube.
-		SEARCHING, // Attempting to lock onto new Cube Face.
-		COMPLETE,  // All six faces have been captured, and we seem to have valid color.
-		BAD_COLORS,// All six faces have been captured, but we do not have properly nine tiles of each color.
-		VERIFIED,  // Two Phase solution has verified that the cube tile/colors/positions are a valid cube.
+		START,         // Ready
+		GOT_IT,        // A Cube Face has been recognized and captured.
+		ROTATE_CUBE,   // Request user to rotate Cube.
+		SEARCHING,     // Attempting to lock onto new Cube Face.
+		COMPLETE,      // All six faces have been captured, and we seem to have valid color.
+		BAD_COLORS,    // All six faces have been captured, but we do not have properly nine tiles of each color.
+		VERIFIED,      // Two Phase solution has verified that the cube tile/colors/positions are a valid cube.
 		WAIT_TABLES,   // Waiting for TwoPhase Prune Tree generation to complete.
-		INCORRECT, // Two Phase solution could not produce a solution; see error code.
-		ERROR,     // Two Phase solution has analyzed the cube and found it to be invalid.
-		SOLVED,    // Two Phase solution has analyzed the cube and found a solution.
-		DO_MOVE,   // Inform user to perform a face rotation
-		WAITING_MOVE, // Wait for face rotation to complete
-		DONE       // Cube should be completely physically solved.
+		INCORRECT,     // Two Phase solution could not produce a solution; see error code.
+		ERROR,         // Two Phase solution has analyzed the cube and found it to be invalid.
+		SOLVED,        // Two Phase solution has analyzed the cube and found a solution.
+		ROTATE_FACE,   // Inform user to perform a face rotation
+		WAITING_MOVE,  // Wait for face rotation to complete
+		DONE           // Cube should be completely physically solved.
 	};
 
 	public enum GestureRecogniztionStateEnum { 

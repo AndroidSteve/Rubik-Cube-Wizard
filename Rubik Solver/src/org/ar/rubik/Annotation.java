@@ -639,7 +639,7 @@ public class Annotation {
    				Core.putText(image, "OK, Got It", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
 
-   		case ROTATE:
+   		case ROTATE_CUBE:
    			if(MenuAndParams.userTextDisplay == true)
    				Core.putText(image, "Please Rotate: " + stateModel.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
@@ -684,7 +684,7 @@ public class Annotation {
    			}
    			break;
 
-   		case DO_MOVE:
+   		case ROTATE_FACE:
    			String moveNumonic = stateModel.solutionResultsArray[stateModel.solutionResultIndex];
    			Log.d(Constants.TAG, "Move:" + moveNumonic + ":");
    			StringBuffer moveDescription = new StringBuffer("Rotate ");

@@ -272,7 +272,7 @@ public class AppStateMachine {
 		switch (stateModel.appState) {
 
 		case WAITING_MOVE:
-			stateModel.appState = AppStateEnum.DO_MOVE;
+			stateModel.appState = AppStateEnum.ROTATE_FACE;
 			stateModel.solutionResultIndex++;
 			if(stateModel.solutionResultIndex == stateModel.solutionResultsArray.length)
 				stateModel.appState = AppStateEnum.DONE;
@@ -298,7 +298,7 @@ public class AppStateMachine {
 		
 		switch (stateModel.appState) {
 
-		case DO_MOVE:		
+		case ROTATE_FACE:		
 			stateModel.appState = AppStateEnum.WAITING_MOVE;
 			break;
 
@@ -373,7 +373,7 @@ public class AppStateMachine {
 
 	    switch(stateModel.appState) {
 
-	    case ROTATE:
+	    case ROTATE_CUBE:
 	        stateModel.appState = AppStateEnum.SEARCHING;
 	        break;
 
@@ -432,7 +432,7 @@ public class AppStateMachine {
 			if(gotItCount < 3)
 				gotItCount++;
 			else {
-				stateModel.appState = AppStateEnum.ROTATE;
+				stateModel.appState = AppStateEnum.ROTATE_CUBE;
 				gotItCount = 0;
 			}
 			break;
@@ -500,7 +500,7 @@ public class AppStateMachine {
 			stateModel.solutionResultsArray = stateModel.solutionResults.split(" ");
 			Log.i(Constants.TAG_STATE, "Solution Results Array: " + stateModel.solutionResultsArray);
 			stateModel.solutionResultIndex = 0;
-			stateModel.appState = AppStateEnum.DO_MOVE;
+			stateModel.appState = AppStateEnum.ROTATE_FACE;
 			break;
 
 
