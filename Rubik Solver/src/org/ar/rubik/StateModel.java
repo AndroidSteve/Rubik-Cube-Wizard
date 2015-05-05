@@ -102,7 +102,9 @@ public class StateModel {
 
 	// Intrinsic Camera Calibration Parameters from hardware.
 	public CameraCalibration cameraParameters;
-	
+
+	// Processes OpenCV Pose results and maintains 3D Model.
+	public KalmanFilter kalmanFilter;
 	
 	/**
 	 * Default State Model Constructor

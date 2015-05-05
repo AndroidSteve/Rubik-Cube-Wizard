@@ -399,6 +399,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				CubeReconstructor cubeReconstructor = new CubeReconstructor();
 				cubeReconstructor.poseEstimation(rubikFace, image, stateModel);
 				stateModel.cubeReconstructor = cubeReconstructor;
+				if(stateModel.kalmanFilter != null) 
+					stateModel.kalmanFilter.measurementUpdate();
 			}
 			else
 				stateModel.cubeReconstructor = null;

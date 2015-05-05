@@ -357,6 +357,9 @@ public class AppStateMachine {
 		default:
 			break;
 		}
+		
+		// Create a new Kalman Filter with current state
+		stateModel.kalmanFilter = new KalmanFilter(stateModel);
 	}
 	
 	
