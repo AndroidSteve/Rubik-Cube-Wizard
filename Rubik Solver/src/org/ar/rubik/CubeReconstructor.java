@@ -183,13 +183,17 @@ public class CubeReconstructor {
 		
 		
 	    // Convert Rotation Vector from OpenCL polarity axes definition to OpenGL definition
-        rvec.put(1, 0, -1.0f * rvec.get(1, 0)[0]);
-        rvec.put(2, 0, -1.0f * rvec.get(2, 0)[0]);
+        // Note, polarity of x-axis is OK, no need to invert.
+        rvec.put(1, 0, -1.0f * rvec.get(1, 0)[0]);  // y-axis
+        rvec.put(2, 0, -1.0f * rvec.get(2, 0)[0]);  // z-axis
  
         // =+= Add manual offset correction to Rotation
         rvec.put(0, 0, rvec.get(0, 0)[0] + MenuAndParams.xRotationOffsetParam.value * Math.PI / 180.0);  // X rotation
         rvec.put(1, 0, rvec.get(1, 0)[0] + MenuAndParams.yRotationOffsetParam.value * Math.PI / 180.0);  // Y rotation
         rvec.put(2, 0, rvec.get(2, 0)[0] + MenuAndParams.zRotationOffsetParam.value * Math.PI / 180.0);  // Z rotation
+        
+       
+        // =+= Now want just angle values as state, push Rodrigues elsewhere.
         
 		// Create an OpenCV Rotation Matrix from a Rotation Vector
 		Mat rMatrix = new Mat(4, 4, CvType.CV_32FC2);

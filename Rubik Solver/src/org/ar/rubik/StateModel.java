@@ -97,14 +97,18 @@ public class StateModel {
 	// True if it is OK to render GL Pilot Cube
 	public boolean renderPilotCube = true;
 
-	// Cube Location and Orientation deduced from Face.
-	public CubeReconstructor cubeReconstructor;
-
 	// Intrinsic Camera Calibration Parameters from hardware.
 	public CameraCalibration cameraParameters;
 
 	// Processes OpenCV Pose results and maintains 3D Model.
-	public KalmanFilter kalmanFilter;
+	public transient KalmanFilter kalmanFilter;
+
+	// Cube Location and Orientation deduced from Face.
+	public CubeReconstructor cubeReconstructor;
+	
+	// =+= DO
+	// Objects Kalman filter and Cube Reconstructor should be member data of Image Recognizer
+	// Position and Rotation should be stored as Cube Pose objects here.
 	
 	/**
 	 * Default State Model Constructor

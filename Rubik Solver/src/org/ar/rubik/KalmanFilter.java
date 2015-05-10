@@ -54,6 +54,11 @@ package org.ar.rubik;
  *    frame rate: ~60 Hz.
  * o  Start up sequence as described above.
  * 
+ * Initial design:
+ * o  Is simply a fixed Kalman Filter Gain matrix.
+ * o  Also records timestamp of last measurement update.
+ * o  Forward, Kalman Gain, and Output are time-variant matrices, but linear to time.
+ * 
  * 
  * @author android.steve@cl-sw.com
  *
@@ -70,22 +75,72 @@ public class KalmanFilter {
 		X_AXIS_ROTATION,
 		Y_AXIS_ROTATION,
 		Z_AXIS_ROTATION,
-		X_AXIS_RATE_OF_ROTATION,
-		Y_AXIS_RATE_OF_ROTATION,
-		Z_AXIS_RATE_OF_ROTATION
+		X_AXIS_ANGULAR_ROTATION,
+		Y_AXIS_ANGULAR_ROTATION,
+		Z_AXIS_ANGULAR_ROTATION
 	};
 	
-	public float[] state = new float[12];
-	
-	private StateModel stateModel;
 
+	private StateModel stateModel;
+	
+	// Timestamp reference of state
+	private long t;
+
+	// State Matrix
+	private float[] x = new float[12];
+	
+	// Feed Forward Matrix
+	private final float[][] a = { { 0.0f } };
+
+	// State to Output Matrix
+	private final float[][] c = { { 0.0f } };
+
+	// Kalman Gain Matrix
+	private final float[][] k = { { 0.0f } };
+	
+	
+	/**
+	 * Kalman Filter Constructor
+	 * 
+	 * Begin a new Kalman FIlter (actually, really new and fresh state variables).
+	 * Initialze all state variables.
+	 * 
+	 * @param stateModel
+	 */
 	public KalmanFilter(StateModel stateModel) {
 		this.stateModel = stateModel;
 	}
 
-	public void measurementUpdate() {
-		// TODO Auto-generated method stub
+	
+	/**
+	 * 
+	 * 
+	 * Supply Kalman Filter with a new measurement update and a timestamp of when
+	 * the measurements were valid.
+	 * 
+	 * @param cubeReconstructor
+	 * @param time
+	 */
+	public void measurementUpdate(CubePose cubePose, long time) {
 		
+		// =+=
+		// X(K+1) = A(t) * X(k) + K(t) * Y(k)
+	}
+	
+	
+	/**
+	 * 
+	 * Return state as per the specified time stamp.
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public CubePose getState(long time) {
+		
+		// =+=
+		// Y(k) = C(t) * X(k)
+		
+		return null;
 	}
 
 }
