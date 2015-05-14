@@ -1,4 +1,4 @@
-Rubik-Cube_Wizard
+Rubik-Cube-Wizard
 ============
 
 Augmented Reality Android Rubik Cube Wizard
