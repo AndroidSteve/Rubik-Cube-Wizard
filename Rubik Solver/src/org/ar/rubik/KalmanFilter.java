@@ -142,5 +142,32 @@ public class KalmanFilter {
 		
 		return null;
 	}
+	
+    // return C = A * B
+    private static float[][] multiply(float[][] A, float[][] B) {
+        int mA = A.length;
+        int nA = A[0].length;
+        int mB = B.length;
+        int nB = B[0].length;
+        if (nA != mB) throw new RuntimeException("Illegal matrix dimensions.");
+        float[][] C = new float[mA][nB];
+        for (int i = 0; i < mA; i++)
+            for (int j = 0; j < nB; j++)
+                for (int k = 0; k < nA; k++)
+                    C[i][j] += (A[i][k] * B[k][j]);
+        return C;
+    }
+
+    // matrix-vector multiplication (y = A * x)
+    private static float[] multiply(float[][] A, float[] x) {
+        int m = A.length;
+        int n = A[0].length;
+        if (x.length != n) throw new RuntimeException("Illegal matrix dimensions.");
+        float[] y = new float[m];
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                y[i] += (A[i][j] * x[j]);
+        return y;
+    }
 
 }
