@@ -186,6 +186,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.GREYSCALE) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
+				image.release();
 				return annotation.drawAnnotation(greyscale_image);
 			}
 
@@ -204,9 +205,11 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 					blur_image, 
 					new Size(kernelSize, kernelSize), -1, -1);
 			rubikFace.profiler.markTime(Profiler.Event.GAUSSIAN);
+			greyscale_image.release();
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.GAUSSIAN) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
+				image.release();
 				return annotation.drawAnnotation(blur_image);
 			}
 
@@ -226,9 +229,11 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 					3,         // Sobel Aperture size.  This seems to be typically value used in the literature: i.e., a 3x3 Sobel Matrix.
 					false);    // use cheap gradient calculation: norm =|dI/dx|+|dI/dy|
 			rubikFace.profiler.markTime(Profiler.Event.EDGE);
+			blur_image.release();
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.CANNY) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
+				image.release();
 				return annotation.drawAnnotation(canny_image);
 			}
 
@@ -248,9 +253,11 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 									MenuAndParams.dilationKernelSizeParam.value, 
 									MenuAndParams.dilationKernelSizeParam.value)));
 			rubikFace.profiler.markTime(Profiler.Event.DILATION);
+			canny_image.release();
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.DILATION) {
 				stateModel.activeRubikFace = rubikFace;
 				rubikFace.profiler.markTime(Profiler.Event.TOTAL);
+				image.release();
 				return annotation.drawAnnotation(dilate_image);
 			}
 
@@ -269,6 +276,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 					Imgproc.RETR_LIST,
 					Imgproc.CHAIN_APPROX_SIMPLE); // Note: tried other TC89 options, but no significant change or improvement on cpu time.
 			rubikFace.profiler.markTime(Profiler.Event.CONTOUR);
+			dilate_image.release();
 
 			// Create gray scale image but in RGB format, and then added yellow colored contours on top.
 			if(MenuAndParams.imageProcessMode == ImageProcessModeEnum.CONTOUR) {
@@ -280,6 +288,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				Imgproc.cvtColor(gray_image, rgba_gray_image, Imgproc.COLOR_GRAY2BGRA, 3);
 				Imgproc.drawContours(rgba_gray_image, contours, -1, ColorTileEnum.YELLOW.cvColor, 3);
 				Core.putText(rgba_gray_image, "Num Contours: " + contours.size(),  new Point(500, 50), Constants.FontFace, 4, ColorTileEnum.RED.cvColor, 4);
+				gray_image.release();
+				image.release();
 				return annotation.drawAnnotation(rgba_gray_image);
 			}
 			
@@ -316,7 +326,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 						true);                                             // Resulting polygon representation is "closed:" its first and last vertices are connected.
 				polygone2f.convertTo(polygon, CvType.CV_32S);
 
-				polygonList.add(new Rhombus(polygon, image));
+				polygonList.add(new Rhombus(polygon));
 			}
 
 			rubikFace.profiler.markTime(Profiler.Event.POLYGON);
@@ -367,6 +377,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				for(Rhombus rhombus : rhombusList)
 					rhombus.draw(rgba_gray_image, ColorTileEnum.YELLOW.cvColor);
 				Core.putText(rgba_gray_image, "Num Rhombus: " + rhombusList.size(),  new Point(500, 50), Constants.FontFace, 4, ColorTileEnum.RED.cvColor, 4);
+				gray_image.release();
+				image.release();
 				return annotation.drawAnnotation(rgba_gray_image);
 			}
 

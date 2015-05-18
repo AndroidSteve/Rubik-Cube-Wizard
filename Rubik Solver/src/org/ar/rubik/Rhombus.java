@@ -107,9 +107,8 @@ public class Rhombus {
 	 * 
 	 * 
 	 * @param polygon
-	 * @param original_image 
 	 */
-	public Rhombus(MatOfPoint polygon, Mat original_image) {
+	public Rhombus(MatOfPoint polygon) {
 
 		this.polygonMatrix = polygon;
 		polygonPointList = polygon.toList();
