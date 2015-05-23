@@ -412,9 +412,9 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				// =+= or not ??
 				// Make Cube Reconstructor a member variable of this class.
 				// Change to stateModel.cubePose
-				CubeReconstructor cubeReconstructor = new CubeReconstructor();
-				cubeReconstructor.poseEstimation(rubikFace, image, stateModel);
-				stateModel.cubeReconstructor = cubeReconstructor;
+				CubePoseEstimator cubePoseEstimator = new CubePoseEstimator();
+				cubePoseEstimator.poseEstimation(rubikFace, image, stateModel);
+				stateModel.cubePoseEstimator = cubePoseEstimator;
 // =+=
 //				CubePose cubePose = cubeReconstructor.poseEstimation(rubikFace, image, stateModel);
 //				stateModel.cubePose = cubePose;
@@ -425,7 +425,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			}
 			else {
 				stateModel.cubePose = null;
-				stateModel.cubeReconstructor = null;
+				stateModel.cubePoseEstimator = null;
 			}
             rubikFace.profiler.markTime(Profiler.Event.POSE);
 			

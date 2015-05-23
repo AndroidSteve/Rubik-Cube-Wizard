@@ -67,7 +67,7 @@ import android.util.Log;
  * @author android.steve@cl-sw.com
  *
  */
-public class CubeReconstructor {
+public class CubePoseEstimator {
 	
 	// Translation and Rotation as computed from OpenCV Pose Estimator
     // but expressed in OpenGL World Coordinate System.

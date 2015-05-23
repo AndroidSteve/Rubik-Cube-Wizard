@@ -39,7 +39,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.ColorTileEnum;
-import org.ar.rubik.CubeReconstructor;
+import org.ar.rubik.CubePoseEstimator;
 import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
@@ -197,7 +197,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         
 	    // Make copy reference to Cube Reconstructor.
         // This is to avoid asynchronous OpenGL and OpenCV problems. 
-        CubeReconstructor myCubeReconstructor = stateModel.cubeReconstructor;
+        CubePoseEstimator myCubeReconstructor = stateModel.cubePoseEstimator;
 
         // Check and if null don't render.
         if(myCubeReconstructor == null)

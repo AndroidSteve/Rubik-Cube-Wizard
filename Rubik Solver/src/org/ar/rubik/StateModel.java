@@ -104,7 +104,7 @@ public class StateModel {
 	public transient KalmanFilter kalmanFilter;
 
 	// Cube Location and Orientation deduced from Face.
-	public CubeReconstructor cubeReconstructor;
+	public CubePoseEstimator cubePoseEstimator;
 	public transient CubePose cubePose;
 	
 	// =+= DO
@@ -396,7 +396,7 @@ public class StateModel {
 		renderPilotCube = true;
 
 		// Cube Location and Orientation deduced from Face.
-		cubeReconstructor = null;
+		cubePoseEstimator = null;
 
         // Set additional GL cube rotation to Identity Rotation Matrix
         Matrix.setIdentityM(additionalGLCubeRotation, 0);
