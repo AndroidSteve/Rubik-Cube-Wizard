@@ -98,6 +98,9 @@ public class KalmanFilter {
 	// Kalman Gain Matrix
 	private final float[][] k = { { 0.0f } };
 	
+	// =+=
+	private CubePose tempCubePoseState;
+	
 	
 	/**
 	 * Kalman Filter Constructor
@@ -125,6 +128,8 @@ public class KalmanFilter {
 		
 		// =+=
 		// X(K+1) = A(t) * X(k) + K(t) * Y(k)
+		
+		tempCubePoseState = cubePose;
 	}
 	
 	
@@ -140,11 +145,14 @@ public class KalmanFilter {
 		// =+=
 		// Y(k) = C(t) * X(k)
 		
-		return null;
+		// =+= For now, simple use last provided pose.
+		return tempCubePoseState;
 	}
 	
+	
     // return C = A * B
-    private static float[][] multiply(float[][] A, float[][] B) {
+    @SuppressWarnings("unused")
+	private static float[][] multiply(float[][] A, float[][] B) {
         int mA = A.length;
         int nA = A[0].length;
         int mB = B.length;
@@ -158,8 +166,10 @@ public class KalmanFilter {
         return C;
     }
 
+    
     // matrix-vector multiplication (y = A * x)
-    private static float[] multiply(float[][] A, float[] x) {
+    @SuppressWarnings("unused")
+	private static float[] multiply(float[][] A, float[] x) {
         int m = A.length;
         int n = A[0].length;
         if (x.length != n) throw new RuntimeException("Illegal matrix dimensions.");

@@ -105,6 +105,7 @@ public class StateModel {
 
 	// Cube Location and Orientation deduced from Face.
 	public CubeReconstructor cubeReconstructor;
+	public transient CubePose cubePose;
 	
 	// =+= DO
 	// Objects Kalman filter and Cube Reconstructor should be member data of Image Recognizer

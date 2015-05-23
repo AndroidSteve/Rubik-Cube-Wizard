@@ -409,19 +409,24 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			 */
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 				
-				// =+=
+				// =+= or not ??
 				// Make Cube Reconstructor a member variable of this class.
 				// Change to stateModel.cubePose
 				CubeReconstructor cubeReconstructor = new CubeReconstructor();
 				cubeReconstructor.poseEstimation(rubikFace, image, stateModel);
 				stateModel.cubeReconstructor = cubeReconstructor;
-				
+// =+=
+//				CubePose cubePose = cubeReconstructor.poseEstimation(rubikFace, image, stateModel);
+//				stateModel.cubePose = cubePose;
+
 				KalmanFilter kalmanFilter = stateModel.kalmanFilter;
 				if(kalmanFilter != null) 
 					kalmanFilter.measurementUpdate(new CubePose(), 0);
 			}
-			else
+			else {
+				stateModel.cubePose = null;
 				stateModel.cubeReconstructor = null;
+			}
             rubikFace.profiler.markTime(Profiler.Event.POSE);
 			
 			

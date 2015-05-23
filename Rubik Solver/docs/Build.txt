@@ -12,7 +12,7 @@ New Workspace
 		Create dummy "Yada" project 
 		Should also automatically create a project named appcompat_v7 or similar
 	* Obtain OpenCV Library version 2.4.9
-	* Obtain Rubik Solver
+	* Obtain Rubik Wizard
 		Unclear how to get this from git and to control which branch
 	* Modify Project -> Properties -> Android
 		Delete any invalid paths

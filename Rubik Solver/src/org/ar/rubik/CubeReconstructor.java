@@ -87,23 +87,24 @@ public class CubeReconstructor {
      * @param rubikFace
      * @param image 
      * @param stateModel 
+     * @return 
      */
-    public void poseEstimation(RubikFace rubikFace, Mat image, StateModel stateModel) {
+    public CubePose poseEstimation(RubikFace rubikFace, Mat image, StateModel stateModel) {
     	
 		if(rubikFace == null)
-			return;
+			return null;
 		
 		if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
-			return;
+			return null;
 		
 		LeastMeansSquare lmsResult = rubikFace.lmsResult;
 		
 		if(lmsResult == null)
-			return;
+			return null;
 		
 		// OpenCV Pose Estimate requires at least four points.
 		if(rubikFace.rhombusList.size() <= 4)
-			return;
+			return null;
 		
 		// List of real world point and screen points that correspond.
     	List<Point3> objectPointsList    = new ArrayList<Point3>(9);
@@ -234,6 +235,8 @@ public class CubeReconstructor {
 //		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
 //		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
 //		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
+        
+        return new CubePose();
     }
 
 }
