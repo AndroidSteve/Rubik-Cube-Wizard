@@ -1,5 +1,5 @@
 /**
- * Augmented Reality Rubik Cube Solver
+ * Augmented Reality Rubik Cube Wizard
  *
  * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   April 25th 2015

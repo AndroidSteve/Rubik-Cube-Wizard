@@ -1,5 +1,5 @@
 /**
- * Augmented Reality Rubik Cube Solver
+ * Augmented Reality Rubik Cube Wizard
  * 
  * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   April 25th 2015
@@ -39,7 +39,7 @@ public class Constants {
     public final static boolean LOGGER = true;
 
     // General Log Cat Tag
-	public static final String TAG = "RubikSolver";
+	public static final String TAG = "RubikWizard";
 
 	// Log Cat Tag for State Machine related diagnostics
 	public static final String TAG_STATE = "RubikState";

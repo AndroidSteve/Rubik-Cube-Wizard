@@ -1,5 +1,5 @@
 /**
- * Augmented Reality Rubik Cube Solver
+ * Augmented Reality Rubik Cube Wizard
  * 
  * Author: Steven P. Punte (aka Android Steve : android.steve@cl-sw.com)
  * Date:   April 25th 2015
@@ -9,7 +9,7 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
- *   This file global configuration and parameters used throughout the Rubik Cube Solver
+ *   This file global configuration and parameters used throughout the Rubik Cube Wizard
  *   program, and also the menu processing system to support the associated UI.
  * 
  * License:

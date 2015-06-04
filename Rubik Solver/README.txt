@@ -1,4 +1,4 @@
-Augmented Reality Android Rubik Cube Solver
+Augmented Reality Android Rubik Cube Wizard
 
 By:    Android Steve
 Email: android.steve@cl-sw.com

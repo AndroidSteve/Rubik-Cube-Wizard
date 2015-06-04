@@ -16,4 +16,4 @@ New Workspace
 		Unclear how to get this from git and to control which branch
 	* Modify Project -> Properties -> Android
 		Delete any invalid paths
-		Add for about two project : appcompat_v7 and OpendCV
+		Add for about two project : appcompat_v7 and OpendCV Solver
