@@ -403,29 +403,21 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			
 			/* **********************************************************************
 			 * **********************************************************************
-			 * Cube Recognition
+			 * Cube Pose Estimation
 			 * 
 			 * Reconstruct the Rubik Cube 3D location and orientation in GL space coordinates.
 			 */
 			if(rubikFace.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED) {
 				
-				// =+= or not ??
-				// Make Cube Reconstructor a member variable of this class.
-				// Change to stateModel.cubePose
-				CubePoseEstimator cubePoseEstimator = new CubePoseEstimator();
-				cubePoseEstimator.poseEstimation(rubikFace, image, stateModel);
-				stateModel.cubePoseEstimator = cubePoseEstimator;
-// =+=
-//				CubePose cubePose = cubeReconstructor.poseEstimation(rubikFace, image, stateModel);
-//				stateModel.cubePose = cubePose;
+				// Obtain Cube Pose from Face Grid information.
+				stateModel.cubePose = CubePoseEstimator.poseEstimation(rubikFace, image, stateModel);
 
 				KalmanFilter kalmanFilter = stateModel.kalmanFilter;
 				if(kalmanFilter != null) 
-					kalmanFilter.measurementUpdate(new CubePose(), 0);
+					kalmanFilter.measurementUpdate(stateModel.cubePose, 0);
 			}
 			else {
 				stateModel.cubePose = null;
-				stateModel.cubePoseEstimator = null;
 			}
             rubikFace.profiler.markTime(Profiler.Event.POSE);
 			

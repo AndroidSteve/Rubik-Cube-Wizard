@@ -46,7 +46,6 @@ import java.util.List;
 
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
 import org.opencv.calib3d.Calib3d;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.MatOfPoint2f;
@@ -68,16 +67,6 @@ import android.util.Log;
  *
  */
 public class CubePoseEstimator {
-	
-	// Translation and Rotation as computed from OpenCV Pose Estimator
-    // but expressed in OpenGL World Coordinate System.
-	public float x;  // real world units
-	public float y;  // real world units
-	public float z;  // real world units
-	
-	// Open GL Rotation Matrix that expresses object to world rotation
-    public float[] poseRotationMatrix = new float[16];
-    
     
     /**
      * Pose Estimation
@@ -89,7 +78,7 @@ public class CubePoseEstimator {
      * @param stateModel 
      * @return 
      */
-    public CubePose poseEstimation(RubikFace rubikFace, Mat image, StateModel stateModel) {
+    public static CubePose poseEstimation(RubikFace rubikFace, Mat image, StateModel stateModel) {
     	
 		if(rubikFace == null)
 			return null;
@@ -173,9 +162,9 @@ public class CubePoseEstimator {
 	    Log.v(Constants.TAG, String.format("Open CV Rotation Vector x=%4.2f y=%4.2f z=%4.2f", rvec.get(0, 0)[0], rvec.get(1, 0)[0], rvec.get(2, 0)[0] ));
 		
 		// Convert from OpenCV to OpenGL World Coordinates
-		x = +1.0f * (float) tvec.get(0, 0)[0];
-		y = -1.0f * (float) tvec.get(1, 0)[0];
-		z = -1.0f * (float) tvec.get(2, 0)[0];
+		float x = +1.0f * (float) tvec.get(0, 0)[0];
+		float y = -1.0f * (float) tvec.get(1, 0)[0];
+		float z = -1.0f * (float) tvec.get(2, 0)[0];
 		
         // =+= Add manual offset correction to translation  
         x += MenuAndParams.xTranslationOffsetParam.value;
@@ -193,38 +182,14 @@ public class CubePoseEstimator {
         rvec.put(1, 0, rvec.get(1, 0)[0] + MenuAndParams.yRotationOffsetParam.value * Math.PI / 180.0);  // Y rotation
         rvec.put(2, 0, rvec.get(2, 0)[0] + MenuAndParams.zRotationOffsetParam.value * Math.PI / 180.0);  // Z rotation
         
-       
-        // =+= Now want just angle values as state, push Rodrigues elsewhere.
-        
-		// Create an OpenCV Rotation Matrix from a Rotation Vector
-		Mat rMatrix = new Mat(4, 4, CvType.CV_32FC2);
-		Calib3d.Rodrigues(rvec, rMatrix);
-		Log.v(Constants.TAG, "Rodrigues Matrix: " + rMatrix.dump());
-
-
-		/*
-		 * Create an OpenGL Rotation Matrix
-		 * Notes:
-		 *   o  OpenGL is in column-row order (correct?).
-		 *   o  OpenCV Rodrigues Rotation Matrix is 3x3 where OpenGL Rotation Matrix is 4x4.
-		 */
-
-        // Initialize all Rotational Matrix elements to zero.
-		for(int i=0; i<16; i++)
-		    poseRotationMatrix[i] = 0.0f; // Initialize to zero
-
-		// Initialize element [3,3] to 1.0: i.e., "w" component in homogenous coordinates
-        poseRotationMatrix[3*4 + 3] = 1.0f;
-
-        // Copy OpenCV matrix to OpenGL matrix element by element.
-        for(int r=0; r<3; r++)
-            for(int c=0; c<3; c++)
-                poseRotationMatrix[r + c*4] = (float)(rMatrix.get(r, c)[0]);
-        
-        // Diagnostics
-        for(int r=0; r<4; r++)
-            Log.v(Constants.TAG, String.format("Rotation Matrix  r=%d  [%5.2f  %5.2f  %5.2f  %5.2f]", r, poseRotationMatrix[r + 0], poseRotationMatrix[r+4], poseRotationMatrix[r+8], poseRotationMatrix[r+12]));
-
+        // Package up as CubePose object
+        CubePose cubePose = new CubePose();
+        cubePose.x = x;
+        cubePose.y = y;
+        cubePose.z = z;
+        cubePose.xRotation = rvec.get(0, 0)[0];
+        cubePose.yRotation = rvec.get(1, 0)[0];
+        cubePose.zRotation = rvec.get(2, 0)[0];
 		
 //		Log.e(Constants.TAG, "Result: " + result);
 //		Log.e(Constants.TAG, "Camera: " + cameraMatrix.dump());
@@ -236,7 +201,9 @@ public class CubePoseEstimator {
 //		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
 //		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
         
-        return new CubePose();
+	    Log.v(Constants.TAG, "Cube Pose: " + cubePose);
+
+        return cubePose;
     }
 
 }

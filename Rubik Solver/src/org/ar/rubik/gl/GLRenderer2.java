@@ -39,13 +39,17 @@ import javax.microedition.khronos.opengles.GL10;
 
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.ColorTileEnum;
-import org.ar.rubik.CubePoseEstimator;
+import org.ar.rubik.CubePose;
+import org.ar.rubik.KalmanFilter;
 import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
 import org.ar.rubik.Util;
 import org.ar.rubik.gl.GLArrow2.Amount;
 import org.ar.rubik.gl.GLCube2.Transparency;
+import org.opencv.calib3d.Calib3d;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 
 import android.content.Context;
@@ -189,19 +193,16 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    // Draw background color
 	    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 	    
+	    KalmanFilter kalmanFilter = stateModel.kalmanFilter;
+	    if(kalmanFilter == null)
+	    	return;
 	    
-	    // =+= DO
-	    // Get Cube Pose instead of Cube Reconstructor
-	    // Calculate Rodrigues here
-
-        
-	    // Make copy reference to Cube Reconstructor.
-        // This is to avoid asynchronous OpenGL and OpenCV problems. 
-        CubePoseEstimator myCubeReconstructor = stateModel.cubePoseEstimator;
-
-        // Check and if null don't render.
-        if(myCubeReconstructor == null)
+	    // Get Cube Pose and check if null: don't render.
+	    CubePose cubePose = kalmanFilter.getState(0);
+        if(cubePose == null)
             return;
+        
+        float[] poseRotationMatrix = computePoseRotationMatrix(cubePose);
 
 	    // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0,
@@ -219,12 +220,13 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             
             // Translate Cube per Pose Estimator
             Matrix.translateM(mvpMatrix, 0, 
-                    myCubeReconstructor.x, 
-                    myCubeReconstructor.y, 
-                    myCubeReconstructor.z);
+                    cubePose.x, 
+                    cubePose.y, 
+                    cubePose.z);
             
+                       
             // Rotation Cube per Pose Estimator
-            GLUtil.rotateMatrix(mvpMatrix, myCubeReconstructor.poseRotationMatrix);
+            GLUtil.rotateMatrix(mvpMatrix, poseRotationMatrix);
             
             // Rotation Cube per additional requests 
             // =+= Don't use: screws up arrows with present code, and not really important.
@@ -269,7 +271,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             Matrix.translateM(mvpMatrix, 0, -6.0f, 0.0f, -10.0f);
 
             // Rotation Cube per Pose Estimator 
-            GLUtil.rotateMatrix(mvpMatrix, myCubeReconstructor.poseRotationMatrix);
+            GLUtil.rotateMatrix(mvpMatrix, poseRotationMatrix);
 
             // Rotation Cube per additional requests 
             GLUtil.rotateMatrix(mvpMatrix, stateModel.additionalGLCubeRotation);
@@ -278,6 +280,59 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         }
 	}
 
+
+	/**
+	 * Compute Pose Rotation Matrix and return it.
+	 * 
+	 * @param cubePose
+	 * @return Pose Rotation Matrix
+	 */
+	private float[] computePoseRotationMatrix(CubePose cubePose) {
+		
+		// Rotational matrix suitable for consumption by OpenGL
+		float[] poseRotationMatrix = new float[16];
+		
+		// Recreate Open CV matrix for processing by Rodriques algorithm.
+		Mat rvec = new Mat(3, 1, CvType.CV_64FC1);
+        rvec.put(0, 0, new double[]{cubePose.xRotation});
+        rvec.put(1, 0, new double[]{cubePose.yRotation});
+        rvec.put(2, 0, new double[]{cubePose.zRotation});
+//		Log.v(Constants.TAG, "Rotation Vector: " + rvec.dump());
+        
+		// Create an OpenCV Rotation Matrix from a Rotation Vector
+		Mat rMatrix = new Mat(4, 4, CvType.CV_64FC1);
+		Calib3d.Rodrigues(rvec, rMatrix);
+//		Log.v(Constants.TAG, "Rodrigues Matrix: " + rMatrix.dump());
+
+
+		/*
+		 * Create an OpenGL Rotation Matrix
+		 * Notes:
+		 *   o  OpenGL is in column-row order (correct?).
+		 *   o  OpenCV Rodrigues Rotation Matrix is 3x3 where OpenGL Rotation Matrix is 4x4.
+		 *   o  OpenGL Rotation Matrix is simple float array variable
+		 */
+
+        // Initialize all Rotational Matrix elements to zero.
+		for(int i=0; i<16; i++)
+		    poseRotationMatrix[i] = 0.0f; // Initialize to zero
+
+		// Initialize element [3,3] to 1.0: i.e., "w" component in homogenous coordinates
+        poseRotationMatrix[3*4 + 3] = 1.0f;
+
+        // Copy OpenCV matrix to OpenGL matrix element by element.
+        for(int r=0; r<3; r++)
+            for(int c=0; c<3; c++)
+                poseRotationMatrix[r + c*4] = (float)(rMatrix.get(r, c)[0]);
+        
+        // Diagnostics
+//        for(int r=0; r<4; r++)
+//            Log.v(Constants.TAG, String.format("Rotation Matrix  r=%d  [%5.2f  %5.2f  %5.2f  %5.2f]", r, poseRotationMatrix[r + 0], poseRotationMatrix[r+4], poseRotationMatrix[r+8], poseRotationMatrix[r+12]));
+
+        return poseRotationMatrix;
+	}
+
+	
 
 	/**
 	 * Get Rotation In Degrees
