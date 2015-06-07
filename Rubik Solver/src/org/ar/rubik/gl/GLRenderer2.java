@@ -198,7 +198,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    	return;
 	    
 	    // Get Cube Pose and check if null: don't render.
-	    CubePose cubePose = kalmanFilter.getState(0);
+	    CubePose cubePose = kalmanFilter.projectState(System.currentTimeMillis());
         if(cubePose == null)
             return;
         

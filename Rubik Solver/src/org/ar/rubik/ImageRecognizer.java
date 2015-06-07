@@ -414,7 +414,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 
 				KalmanFilter kalmanFilter = stateModel.kalmanFilter;
 				if(kalmanFilter != null) 
-					kalmanFilter.measurementUpdate(stateModel.cubePose, 0);
+					kalmanFilter.measurementUpdate(stateModel.cubePose, System.currentTimeMillis());
 			}
 			else {
 				stateModel.cubePose = null;

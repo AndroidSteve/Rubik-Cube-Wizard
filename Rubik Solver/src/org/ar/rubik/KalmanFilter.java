@@ -65,48 +65,75 @@ package org.ar.rubik;
  */
 public class KalmanFilter {
 	
-	public enum STATE {
-		X_POS,
-		Y_POS,
-		Z_POS,
-		X_POS_VELOCITY,
-		Y_POS_VELOCITY,
-		Z_POS_VELOCITY,
-		X_AXIS_ROTATION,
-		Y_AXIS_ROTATION,
-		Z_AXIS_ROTATION,
-		X_AXIS_ANGULAR_ROTATION,
-		Y_AXIS_ANGULAR_ROTATION,
-		Z_AXIS_ANGULAR_ROTATION
-	};
-	
+//	public enum STATE {
+//		X_POS,
+//		Y_POS,
+//		Z_POS,
+//		X_POS_VELOCITY,
+//		Y_POS_VELOCITY,
+//		Z_POS_VELOCITY,
+//		X_AXIS_ROTATION,
+//		Y_AXIS_ROTATION,
+//		Z_AXIS_ROTATION,
+//		X_AXIS_ANGULAR_ROTATION,
+//		Y_AXIS_ANGULAR_ROTATION,
+//		Z_AXIS_ANGULAR_ROTATION
+//	};
+//	
 
+	@SuppressWarnings("unused")
 	private StateModel stateModel;
 	
 	// Timestamp reference of state
-	private long t;
+	private long measUpateTime;
+	
+	// Feeback (or gain) Coefficient
+	private double alpha = 1.0;
 
 	// State Matrix
-	private float[] x = new float[12];
+	private double[] xMatrix = new double[12];
 	
 	// Feed Forward Matrix
-	private final float[][] a = { { 0.0f } };
+	private final double[][] aMatrix = idenity(12);
+
+	// Project State Forward Matrix (But do not change state)
+	private final double[][] bMatrix = idenity(12);
 
 	// State to Output Matrix
-	private final float[][] c = { { 0.0f } };
+//	private final double[][] hMatrix = { { 0.0f } };
+	
+	// Input to State Matrix
+	// =+= 6x12 matrix
+	private final double[][] cMatrix = { 
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+			};
 
 	// Kalman Gain Matrix
-	private final float[][] k = { { 0.0f } };
+//	private final double[][] kMatrix = { { 0.0f } };
 	
 	// =+=
 	private CubePose tempCubePoseState;
+	
+	// Set true to activate filter
+	private boolean flag = false;
 	
 	
 	/**
 	 * Kalman Filter Constructor
 	 * 
 	 * Begin a new Kalman FIlter (actually, really new and fresh state variables).
-	 * Initialze all state variables.
+	 * Initialize all state variables.
 	 * 
 	 * @param stateModel
 	 */
@@ -124,12 +151,89 @@ public class KalmanFilter {
 	 * @param cubeReconstructor
 	 * @param time
 	 */
-	public void measurementUpdate(CubePose cubePose, long time) {
+	public void measurementUpdate(CubePose cubePoseMeasure, long time) {
 		
-		// =+=
-		// X(K+1) = A(t) * X(k) + K(t) * Y(k)
+		tempCubePoseState = cubePoseMeasure;
 		
-		tempCubePoseState = cubePose;
+		if(flag == false)
+			return;
+		
+		// Calculate duration between last update.
+		long tau = time - measUpateTime;
+		
+		// Record this time for future reference.
+		measUpateTime = time;
+		
+		// Input is 6 element column vector
+		double [] u = {
+				cubePoseMeasure.x, 
+				cubePoseMeasure.y, 
+				cubePoseMeasure.z, 
+				cubePoseMeasure.xRotation, 
+				cubePoseMeasure.yRotation, 
+				cubePoseMeasure.zRotation};
+		
+		// Set coefficients of A matrix
+		aMatrix[0][0] =  1.0 - alpha;
+		aMatrix[0][1] = -1.0 * alpha * tau;
+		aMatrix[1][0] = -1.0 * alpha / tau;
+		aMatrix[1][1] =  1.0 - alpha;
+		aMatrix[2][2] =  1.0 - alpha;
+		aMatrix[2][3] = -1.0 * alpha * tau;
+		aMatrix[3][2] = -1.0 * alpha / tau;
+		aMatrix[3][3] =  1.0 - alpha;
+		aMatrix[4][4] =  1.0 - alpha;
+		aMatrix[4][5] = -1.0 * alpha * tau;
+		aMatrix[5][4] = -1.0 * alpha / tau;
+		aMatrix[5][5] =  1.0 - alpha;
+		aMatrix[6][6] =  1.0 - alpha;
+		aMatrix[6][7] = -1.0 * alpha * tau;
+		aMatrix[7][6] = -1.0 * alpha / tau;
+		aMatrix[7][7] =  1.0 - alpha;
+		aMatrix[8][8] =  1.0 - alpha;
+		aMatrix[8][9] = -1.0 * alpha * tau;
+		aMatrix[9][8] = -1.0 * alpha / tau;
+		aMatrix[9][9] =  1.0 - alpha;
+		aMatrix[10][10] =  1.0 - alpha;
+		aMatrix[10][11] = -1.0 * alpha * tau;
+		aMatrix[11][10] = -1.0 * alpha / tau;
+		aMatrix[11][11] =  1.0 - alpha;
+		
+		
+		// Set coefficients of C matrix
+		cMatrix[0][0] = alpha;
+		cMatrix[1][0] = alpha;
+		cMatrix[2][1] = alpha;
+		cMatrix[3][1] = alpha;
+		cMatrix[4][2] = alpha;
+		cMatrix[5][2] = alpha;
+		cMatrix[6][3] = alpha;
+		cMatrix[7][3] = alpha;
+		cMatrix[8][4] = alpha;
+		cMatrix[9][4] = alpha;
+		cMatrix[10][5] = alpha;
+		cMatrix[11][5] = alpha;
+		
+		
+		// 
+		// X(K+1) = A(alpha,tau) * X(k) + C(alpha) * U(k)
+		double[] newState = add( multiply(aMatrix, xMatrix), multiply(cMatrix, u) );
+		
+		xMatrix = newState;
+		
+		CubePose newCubeState = new CubePose();
+		newCubeState.x = (float) newState[0];
+		newCubeState.y = (float) newState[2];
+		newCubeState.x = (float) newState[4];
+		newCubeState.xRotation = newState[6];
+		newCubeState.yRotation = newState[8];
+		newCubeState.zRotation = newState[10];
+		
+		// =+= crude control of feedback: goes from 100% to 25% and then stays there.
+		if(alpha > 0.5)
+			alpha = 0.5;
+		else if(alpha > 0.25)
+			alpha = 0.25;
 	}
 	
 	
@@ -140,25 +244,52 @@ public class KalmanFilter {
 	 * @param time
 	 * @return
 	 */
-	public CubePose getState(long time) {
+	public CubePose projectState(long time) {
 		
-		// =+=
-		// Y(k) = C(t) * X(k)
+		long tau = time - measUpateTime;
 		
-		// =+= For now, simple use last provided pose.
-		return tempCubePoseState;
+		if(flag == false)
+			return tempCubePoseState;
+		
+		bMatrix[0][1] = tau;
+		bMatrix[2][3] = tau;
+		bMatrix[4][5] = tau;
+		bMatrix[6][7] = tau;
+		bMatrix[8][9] = tau;
+		bMatrix[10][11] = tau;
+		
+		
+		// X(t + tau) = B(tau) * X(tau) 
+		double [] projectedState =  multiply(bMatrix, xMatrix);
+		
+		CubePose cubePose = new CubePose();
+		
+		cubePose.x = (float) projectedState[0];
+		cubePose.y = (float) projectedState[2];
+		cubePose.z = (float) projectedState[4];
+		cubePose.xRotation = projectedState[6];
+		cubePose.yRotation = projectedState[8];
+		cubePose.zRotation = projectedState[10];
+		
+		return cubePose;
 	}
+	
+	
+	
+	
+	
+	
 	
 	
     // return C = A * B
     @SuppressWarnings("unused")
-	private static float[][] multiply(float[][] A, float[][] B) {
+	private static double[][] multiply(double[][] A, double[][] B) {
         int mA = A.length;
         int nA = A[0].length;
         int mB = B.length;
         int nB = B[0].length;
         if (nA != mB) throw new RuntimeException("Illegal matrix dimensions.");
-        float[][] C = new float[mA][nB];
+        double[][] C = new double[mA][nB];
         for (int i = 0; i < mA; i++)
             for (int j = 0; j < nB; j++)
                 for (int k = 0; k < nA; k++)
@@ -168,16 +299,57 @@ public class KalmanFilter {
 
     
     // matrix-vector multiplication (y = A * x)
-    @SuppressWarnings("unused")
-	private static float[] multiply(float[][] A, float[] x) {
+    /**
+     * @param A  : [column][row] Matrix of size [m][n]
+     * @param x  : column vector of length n
+     * @return
+     */
+    private static double[] multiply(double[][] A, double[] x) {
         int m = A.length;
         int n = A[0].length;
         if (x.length != n) throw new RuntimeException("Illegal matrix dimensions.");
-        float[] y = new float[m];
+        double[] y = new double[m];
         for (int i = 0; i < m; i++)
             for (int j = 0; j < n; j++)
                 y[i] += (A[i][j] * x[j]);
         return y;
+    }
+    
+    // matrix-addition
+    @SuppressWarnings("unused")
+	private static double [][] add(double[][] A, double[][] B) {
+        int mA = A.length;
+        int nA = A[0].length;
+        int mB = B.length;
+        int nB = B[0].length;
+        if (nA != mB) throw new RuntimeException("Illegal matrix dimensions.");
+        double[][] C = new double[mA][nB];
+        for (int i = 0; i < mA; i++)
+            for (int j = 0; j < nB; j++)
+                C[i][j] += (A[i][j] + B[i][j]);
+        
+    	return C;
+    }
+    
+    // matrix-addition
+    private static double [] add(double[] A, double[] B) {
+        int mA = A.length;
+        int mB = B.length;
+        if (mA != mB) throw new RuntimeException("Illegal matrix dimensions.");
+        double[] C = new double[mA];
+        for (int i = 0; i < mA; i++)
+                C[i] += (A[i] + B[i]);
+        
+    	return C;
+    }
+    
+    // Return new idenity matrix
+    private static double[][] idenity(int n) {
+        double[][] M = new double[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+            	M[i][j] = (i == j) ? 1.0 : 0.0;
+        return M;
     }
 
 }
