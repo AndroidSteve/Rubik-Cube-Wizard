@@ -55,7 +55,7 @@ package org.ar.rubik;
  * o  Start up sequence as described above.
  * 
  * Initial design:
- * o  Is simply a fixed Kalman Filter Gain matrix.
+ * o  Is simply a fixed, but time-interval-variant Kalman Filter Gain matrix.
  * o  Also records timestamp of last measurement update.
  * o  Forward, Kalman Gain, and Output are time-variant matrices, but linear to time.
  * 
@@ -91,7 +91,7 @@ public class KalmanFilter {
 	private double alpha = 1.0;
 
 	// State Matrix
-	private double[] xMatrix = new double[12];
+	private double[] xMatrix; // = new double[12];
 	
 	// Feed Forward Matrix
 	private final double[][] aMatrix = idenity(12);
@@ -103,7 +103,7 @@ public class KalmanFilter {
 //	private final double[][] hMatrix = { { 0.0f } };
 	
 	// Input to State Matrix
-	// =+= 6x12 matrix
+	// 6x12 matrix
 	private final double[][] cMatrix = { 
 			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
@@ -122,12 +122,9 @@ public class KalmanFilter {
 	// Kalman Gain Matrix
 //	private final double[][] kMatrix = { { 0.0f } };
 	
-	// =+=
-	private CubePose tempCubePoseState;
-	
-	// Set true to activate filter
-	private boolean flag = false;
-	
+	// Last reported (i.e., measured) cube pose
+	private CubePose lastCubePoseState;
+		
 	
 	/**
 	 * Kalman Filter Constructor
@@ -153,10 +150,38 @@ public class KalmanFilter {
 	 */
 	public void measurementUpdate(CubePose cubePoseMeasure, long time) {
 		
-		tempCubePoseState = cubePoseMeasure;
+		lastCubePoseState = cubePoseMeasure;
 		
-		if(flag == false)
+		// If Kalman Filter not active, then just return.  Pose above will simply be used.
+		if(MenuAndParams.kalmanFilter == false)
 			return;
+		
+		// Sometimes happens when face is solved, but pose algorithm has problems.
+		if(cubePoseMeasure == null)
+			return;
+		
+		// Don't do any more if Kalman Filter is not active
+		if(MenuAndParams.kalmanFilter == false)
+			return;
+		
+		// First time through, simply set state to measurement.
+		if(xMatrix == null) {
+			double [] initialState = {
+					cubePoseMeasure.x,
+					0,
+					cubePoseMeasure.y,
+					0,
+					cubePoseMeasure.z,
+					0,
+					cubePoseMeasure.xRotation,
+					0,
+					cubePoseMeasure.yRotation,
+					0,
+					cubePoseMeasure.zRotation,
+					0};
+			xMatrix = initialState;
+			return;
+		}
 		
 		// Calculate duration between last update.
 		long tau = time - measUpateTime;
@@ -175,61 +200,55 @@ public class KalmanFilter {
 		
 		// Set coefficients of A matrix
 		aMatrix[0][0] =  1.0 - alpha;
-		aMatrix[0][1] = -1.0 * alpha * tau;
+		aMatrix[0][1] = (1.0 - alpha) * tau;
 		aMatrix[1][0] = -1.0 * alpha / tau;
 		aMatrix[1][1] =  1.0 - alpha;
 		aMatrix[2][2] =  1.0 - alpha;
-		aMatrix[2][3] = -1.0 * alpha * tau;
+		aMatrix[2][3] = (1.0 - alpha) * tau;
 		aMatrix[3][2] = -1.0 * alpha / tau;
 		aMatrix[3][3] =  1.0 - alpha;
 		aMatrix[4][4] =  1.0 - alpha;
-		aMatrix[4][5] = -1.0 * alpha * tau;
+		aMatrix[4][5] = (1.0 - alpha) * tau;
 		aMatrix[5][4] = -1.0 * alpha / tau;
 		aMatrix[5][5] =  1.0 - alpha;
 		aMatrix[6][6] =  1.0 - alpha;
-		aMatrix[6][7] = -1.0 * alpha * tau;
+		aMatrix[6][7] = (1.0 - alpha) * tau;
 		aMatrix[7][6] = -1.0 * alpha / tau;
 		aMatrix[7][7] =  1.0 - alpha;
 		aMatrix[8][8] =  1.0 - alpha;
-		aMatrix[8][9] = -1.0 * alpha * tau;
+		aMatrix[8][9] = (1.0 - alpha) * tau;
 		aMatrix[9][8] = -1.0 * alpha / tau;
 		aMatrix[9][9] =  1.0 - alpha;
 		aMatrix[10][10] =  1.0 - alpha;
-		aMatrix[10][11] = -1.0 * alpha * tau;
+		aMatrix[10][11] = (1.0 - alpha) * tau;
 		aMatrix[11][10] = -1.0 * alpha / tau;
 		aMatrix[11][11] =  1.0 - alpha;
 		
-		
 		// Set coefficients of C matrix
 		cMatrix[0][0] = alpha;
-		cMatrix[1][0] = alpha;
+		cMatrix[1][0] = alpha/tau;
 		cMatrix[2][1] = alpha;
-		cMatrix[3][1] = alpha;
+		cMatrix[3][1] = alpha/tau;
 		cMatrix[4][2] = alpha;
-		cMatrix[5][2] = alpha;
+		cMatrix[5][2] = alpha/tau;
 		cMatrix[6][3] = alpha;
-		cMatrix[7][3] = alpha;
+		cMatrix[7][3] = alpha/tau;
 		cMatrix[8][4] = alpha;
-		cMatrix[9][4] = alpha;
+		cMatrix[9][4] = alpha/tau;
 		cMatrix[10][5] = alpha;
-		cMatrix[11][5] = alpha;
+		cMatrix[11][5] = alpha/tau;
 		
-		
-		// 
+		// Calculate new state
 		// X(K+1) = A(alpha,tau) * X(k) + C(alpha) * U(k)
 		double[] newState = add( multiply(aMatrix, xMatrix), multiply(cMatrix, u) );
 		
+		// Update State
 		xMatrix = newState;
+//		Log.v(Constants.KALMAN, String.format("xPos = %6f xVel = %6f", xMatrix[0], xMatrix[1]));
+
 		
-		CubePose newCubeState = new CubePose();
-		newCubeState.x = (float) newState[0];
-		newCubeState.y = (float) newState[2];
-		newCubeState.x = (float) newState[4];
-		newCubeState.xRotation = newState[6];
-		newCubeState.yRotation = newState[8];
-		newCubeState.zRotation = newState[10];
-		
-		// =+= crude control of feedback: goes from 100% to 25% and then stays there.
+		// =+= Crude control of feedback: goes from 100% to 25% and then stays there.
+		// =+= Kalman Gain is supposed to be calculated algorithmically.
 		if(alpha > 0.5)
 			alpha = 0.5;
 		else if(alpha > 0.25)
@@ -238,7 +257,6 @@ public class KalmanFilter {
 	
 	
 	/**
-	 * 
 	 * Return state as per the specified time stamp.
 	 * 
 	 * @param time
@@ -248,8 +266,11 @@ public class KalmanFilter {
 		
 		long tau = time - measUpateTime;
 		
-		if(flag == false)
-			return tempCubePoseState;
+		if(MenuAndParams.kalmanFilter == false)
+			return lastCubePoseState;
+		
+		if(xMatrix == null)
+			return null;
 		
 		bMatrix[0][1] = tau;
 		bMatrix[2][3] = tau;
@@ -258,12 +279,12 @@ public class KalmanFilter {
 		bMatrix[8][9] = tau;
 		bMatrix[10][11] = tau;
 		
-		
+		// Calculate projected state for specified time, but do not update state matrix.
 		// X(t + tau) = B(tau) * X(tau) 
 		double [] projectedState =  multiply(bMatrix, xMatrix);
 		
+		// Package up
 		CubePose cubePose = new CubePose();
-		
 		cubePose.x = (float) projectedState[0];
 		cubePose.y = (float) projectedState[2];
 		cubePose.z = (float) projectedState[4];

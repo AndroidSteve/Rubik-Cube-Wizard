@@ -104,7 +104,6 @@ public class StateModel {
 	public transient KalmanFilter kalmanFilter;
 
 	// Cube Location and Orientation deduced from Face.
-//	public CubePoseEstimator cubePoseEstimator;
 	public transient CubePose cubePose;
 	
 	// =+= DO

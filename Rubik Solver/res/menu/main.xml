@@ -176,6 +176,9 @@
     			<item
         			android:id="@+id/togglePilotCubeMenuItem"
         			android:title="Toggle Pilot Cube"/>
+    			<item
+        			android:id="@+id/toggleKalmanFilterMenuItem"
+        			android:title="Toggle Kalman Filter"/>
             </group>   
         </menu>
     </item>

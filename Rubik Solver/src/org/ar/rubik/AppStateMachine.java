@@ -305,6 +305,8 @@ public class AppStateMachine {
 		default:
 			break;
 		}
+		
+		stateModel.kalmanFilter = null;
 	}
 
 

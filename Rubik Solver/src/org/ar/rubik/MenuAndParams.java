@@ -71,6 +71,9 @@ public class MenuAndParams {
 
     // Toggle Face Overlay
     public static boolean pilotCubeDisplay = true;
+    
+    // Toggle Kalman Filter Activity
+    public static boolean kalmanFilter = true;
         
     // Specifies where image comes from
     public static ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
@@ -364,6 +367,10 @@ public class MenuAndParams {
 
         case R.id.togglePilotCubeMenuItem:
             pilotCubeDisplay ^= true;
+            break;
+
+        case R.id.toggleKalmanFilterMenuItem:
+            kalmanFilter ^= true;
             break;
 		}
 

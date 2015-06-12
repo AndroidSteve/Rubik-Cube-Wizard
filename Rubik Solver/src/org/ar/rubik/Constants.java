@@ -49,6 +49,9 @@ public class Constants {
 	
 	// Log Cat Tag for OpenGL related diagnostics.
     public static final String TAG_OPENGL = "RubikOpenGL";
+    
+    // Log Cat for Kalman Filter related diagnostics
+	public static final String KALMAN = "RubikKalman";
 
     
 	public enum AppStateEnum { 
@@ -171,4 +174,5 @@ public class Constants {
 
 	// Any OpenCV font
 	public final static int FontFace = Core.FONT_HERSHEY_PLAIN;
+
 }

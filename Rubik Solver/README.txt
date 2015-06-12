@@ -16,8 +16,11 @@ Notice:
 
 To Do:
 
-  o  Eliminate gaussian step: roll into edge detection.
-  o  Change scan rotation so that pilot cube is more interesting.
+  o  Calculate true Kalman Filter Gain feedback matrix
+  o  Change scan rotation so that pilot cube is more interesting
+  o  Setup device configuration support
+  o  
+  o  Perform Edge detection on all three colors, drop grey scale step
   o  Time and CPU measurements.  Possible use of DDMS
   o  Create image recognition test suite.
   o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.

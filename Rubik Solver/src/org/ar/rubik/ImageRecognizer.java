@@ -218,7 +218,6 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 			/* **********************************************************************
 			 * **********************************************************************
 			 * Canny Edge Detection
-			 * =+= sometimes a std:bad_alloc exception occurs here.
 			 */
 			Mat canny_image = new Mat();    	    
 			Imgproc.Canny(
