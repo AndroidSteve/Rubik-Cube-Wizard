@@ -73,7 +73,7 @@ public class MenuAndParams {
     public static boolean pilotCubeDisplay = true;
     
     // Toggle Kalman Filter Activity
-    public static boolean kalmanFilter = true;
+    public static boolean kalmanFilter = false;
         
     // Specifies where image comes from
     public static ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;

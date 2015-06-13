@@ -81,8 +81,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	// GL Objects that can be rendered
 	private GLArrow2 arrowQuarterTurn;
 	private GLArrow2 arrowHalfTurn;
-	private GLCube2  overlayGLCube;
+	private GLCube2  occlusionGLCube;
     private GLCube2  pilotGLCube;
+	private GLCube2  overlayGLCube;
 
     // Projection Matrix:  basically defines a Frustum 
     private final float[] mProjectionMatrix = new float[16];
@@ -129,6 +130,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    // Create the GL pilot cube
 	    pilotGLCube = new GLCube2(stateModel);
 
+	    // Create the GL occlusion cube
+	    occlusionGLCube = new GLCube2(stateModel);
+	    
 	    // Create the GL overlay cube
 	    overlayGLCube = new GLCube2(stateModel);
 	    
@@ -169,8 +173,9 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
      * Possibly Render:
      *  1) An arrow to rotate the entire cube.
      *  2) An arrow to rotate an edge of the cube.
-     *  3) An Overlay Cube (i.e., should be observed as exactly over the physical cube).
+     *  3) A Transparent Occlusion Cube (i.e., should be observed as exactly over the physical cube).
      *  4) An Pilot Cube off to the right, at a fixed size and location, but with rotation of the physical cube.
+     *  5) A Wire Frame Overlay Cube for the purpose of diagnostics
      * 
 	 *  (non-Javadoc)
 	 * @see android.opengl.GLSurfaceView.Renderer#onDrawFrame(javax.microedition.khronos.opengles.GL10)
@@ -236,20 +241,22 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
             // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
             float scale = (float) MenuAndParams.scaleOffsetParam.value;
             Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
-
-            // Render, either fully transparent or translucent, the cube in the actual position and orientation from OpenCV Pose Estimator.
-            if(MenuAndParams.cubeOverlayDisplay == true)
-                overlayGLCube.draw(mvpMatrix, Transparency.TRANSLUCENT, programID);
-            else
-                overlayGLCube.draw(mvpMatrix, Transparency.TRANSPARENT, programID);
+                
+            // Render overlay cube at actual position and orientation as transparent.
+            // This properly achieves occlusion, but I'm not exactly sure why.
+            occlusionGLCube.draw(mvpMatrix, Transparency.TRANSPARENT, programID);
             
+            // Render wire frame cube overlay
+            if(MenuAndParams.cubeOverlayDisplay == true)
+            	overlayGLCube.draw(mvpMatrix, Transparency.WIREFRAME, programID);
             
             // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
             switch(stateModel.appState) {
 
             case ROTATE_CUBE:
-                renderCubeFullRotationArrow(mvpMatrix, getRotationInDegrees());
-                break;
+            	if(MenuAndParams.cubeOverlayDisplay == false)  // Don't draw arrows if we are examining pose: too confusing.
+            		renderCubeFullRotationArrow(mvpMatrix, getRotationInDegrees());
+            	break;
 
             case ROTATE_FACE:
                 renderCubeEdgeRotationArrow(mvpMatrix, getRotationInDegrees());

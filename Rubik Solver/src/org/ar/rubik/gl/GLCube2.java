@@ -55,7 +55,7 @@ import android.opengl.GLES20;
  */
 public class GLCube2 {
     
-    public enum Transparency { OPAQUE, TRANSLUCENT, TRANSPARENT };
+    public enum Transparency { OPAQUE, TRANSLUCENT, TRANSPARENT, WIREFRAME };
     
     // Buffer for vertex-array
     private FloatBuffer vertexBuffer;
@@ -80,6 +80,9 @@ public class GLCube2 {
     
     // A grey translucent OpenGL color
     private static float [] translusentGrey = { 0.5f, 0.5f, 0.5f, 0.5f};
+
+    // An opaque white OpenGL color
+    private static float [] opaqueWhite = { 1.0f, 1.0f, 1.0f, 1.0f};
     
     private static float[] vertices = {  // Vertices of the 6 faces
             // FRONT
@@ -181,6 +184,7 @@ public class GLCube2 {
         // Render all the faces
         for (int faceIndex = 0; faceIndex < NUM_FACES; faceIndex++) {
             
+        	// Specify color
             switch (transparencyMode) {
 
             case TRANSPARENT:
@@ -211,14 +215,39 @@ public class GLCube2 {
             case TRANSLUCENT:
                 GLES20.glUniform4fv(colorID, 1, translusentGrey, 0);
                 break;
+                
+            case WIREFRAME:
+                GLES20.glUniform4fv(colorID, 1, opaqueWhite, 0);
+                break;
             }
 
+            // Draw 
+            switch (transparencyMode) {
 
-            // Draw Triangles
-            GLES20.glDrawArrays(
-                    GLES20.GL_TRIANGLE_STRIP, 
-                    faceIndex*BYTES_PER_FLOAT, 
-                    BYTES_PER_FLOAT);
+            case WIREFRAME:
+            	
+            	 GLES20.glLineWidth(10.0f);
+            	
+            	// Draw Lines
+            	GLES20.glDrawArrays(
+            			GLES20.GL_LINE_LOOP,
+            			faceIndex*BYTES_PER_FLOAT, 
+            			BYTES_PER_FLOAT);
+
+            	break;
+
+            case  OPAQUE:
+            case TRANSLUCENT:
+            case TRANSPARENT: 
+
+            	// Draw Triangles
+            	GLES20.glDrawArrays(
+            			GLES20.GL_TRIANGLE_STRIP, 
+            			faceIndex*BYTES_PER_FLOAT, 
+            			BYTES_PER_FLOAT);
+
+            	break;
+            }
         }
 
         // Disable vertex array
