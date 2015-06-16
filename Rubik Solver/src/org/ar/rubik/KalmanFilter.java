@@ -31,6 +31,8 @@
  */
 package org.ar.rubik;
 
+import org.ejml.simple.SimpleMatrix;
+
 /**
  * Class Kalman Filter
  * 
@@ -263,6 +265,55 @@ public class KalmanFilter {
 	 * @return
 	 */
 	public CubePose projectState(long time) {
+		
+		long tau = time - measUpateTime;
+		
+		if(MenuAndParams.kalmanFilter == false)
+			return lastCubePoseState;
+		
+		if(xMatrix == null)
+			return null;
+		
+		bMatrix[0][1] = tau;
+		bMatrix[2][3] = tau;
+		bMatrix[4][5] = tau;
+		bMatrix[6][7] = tau;
+		bMatrix[8][9] = tau;
+		bMatrix[10][11] = tau;
+		
+		// b Matrix is [row][column]
+		SimpleMatrix bSimpleMatrix = new SimpleMatrix(bMatrix);
+//		bSimpleMatrix.print();
+		
+		SimpleMatrix xSimpleMatrix = new SimpleMatrix(12, 1, true, xMatrix);
+//		xSimpleMatrix.print();
+		
+//		// Calculate projected state for specified time, but do not update state matrix.
+//		// X(t + tau) = B(tau) * X(tau) 
+		// Should be a 12 x 1
+		SimpleMatrix projectedStateSimpleMatrix = bSimpleMatrix.mult(xSimpleMatrix);
+		projectedStateSimpleMatrix.print();
+		
+		// Package up
+		CubePose cubePose = new CubePose();
+		cubePose.x = (float) projectedStateSimpleMatrix.get(0);
+		cubePose.y = (float) projectedStateSimpleMatrix.get(2);
+		cubePose.z = (float) projectedStateSimpleMatrix.get(4);
+		cubePose.xRotation = projectedStateSimpleMatrix.get(6);
+		cubePose.yRotation = projectedStateSimpleMatrix.get(8);
+		cubePose.zRotation = projectedStateSimpleMatrix.get(10);
+		
+		return cubePose;
+	}
+	
+	
+	/**
+	 * Return state as per the specified time stamp.
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public CubePose projectStateOld(long time) {
 		
 		long tau = time - measUpateTime;
 		
