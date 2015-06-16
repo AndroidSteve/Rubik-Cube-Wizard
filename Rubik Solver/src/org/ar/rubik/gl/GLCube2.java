@@ -226,8 +226,9 @@ public class GLCube2 {
 
             case WIREFRAME:
             	
-            	 GLES20.glLineWidth(10.0f);
+            	GLES20.glLineWidth(10.0f);
             	
+            	// =+= This is not as exected: need's its own vertex set.
             	// Draw Lines
             	GLES20.glDrawArrays(
             			GLES20.GL_LINE_LOOP,
