@@ -68,6 +68,7 @@ import org.ejml.simple.SimpleMatrix;
  */
 public class KalmanFilter {
 	
+// =+= not accurate
 //	public enum STATE {
 //		X_POS,
 //		Y_POS,
@@ -93,11 +94,11 @@ public class KalmanFilter {
 	// Feeback (or gain) Coefficient
 	private double alpha = 1.0;
 
-	// State Matrix
-	private double[] xMatrix; // = new double[12];
+	// State Matrix.  State is 12 elements long: x_pos, x_vel, 
+	private SimpleMatrix xSimpleMatrix;
 	
 	// Feed Forward Matrix
-	private final double[][] aMatrix = idenity(12);
+	private SimpleMatrix aSimpleMatrix = SimpleMatrix.identity(12);
 
 	// Project State Forward Matrix (But do not change state)
 	private SimpleMatrix bSimpleMatrix = SimpleMatrix.identity(12);
@@ -106,21 +107,7 @@ public class KalmanFilter {
 //	private final double[][] hMatrix = { { 0.0f } };
 	
 	// Input to State Matrix
-	// 6x12 matrix
-	private final double[][] cMatrix = { 
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-			};
+	private SimpleMatrix cSimpleMatrix = new SimpleMatrix(12, 6);
 
 	// Kalman Gain Matrix
 //	private final double[][] kMatrix = { { 0.0f } };
@@ -140,6 +127,7 @@ public class KalmanFilter {
 	 */
 	public KalmanFilter(StateModel stateModel) {
 		this.stateModel = stateModel;
+		cSimpleMatrix.zero();  // Maybe (or should be) done by constructor, but docs don't say.
 	}
 
 	
@@ -169,21 +157,16 @@ public class KalmanFilter {
 			return;
 		
 		// First time through, simply set state to measurement.
-		if(xMatrix == null) {
-			double [] initialState = {
-					cubePoseMeasure.x,
-					0,
-					cubePoseMeasure.y,
-					0,
-					cubePoseMeasure.z,
-					0,
-					cubePoseMeasure.xRotation,
-					0,
-					cubePoseMeasure.yRotation,
-					0,
-					cubePoseMeasure.zRotation,
-					0};
-			xMatrix = initialState;
+		if(xSimpleMatrix == null) {
+
+			xSimpleMatrix = new SimpleMatrix(12, 1, true, new double [] {
+					cubePoseMeasure.x, 0,
+					cubePoseMeasure.y, 0,
+					cubePoseMeasure.z, 0,
+					cubePoseMeasure.xRotation, 0,
+					cubePoseMeasure.yRotation, 0,
+					cubePoseMeasure.zRotation, 0 } );
+
 			return;
 		}
 		
@@ -194,62 +177,60 @@ public class KalmanFilter {
 		measUpateTime = time;
 		
 		// Input is 6 element column vector
-		double [] u = {
+		SimpleMatrix uSimpleMatrix = new SimpleMatrix(6, 1, true, new double [] {
 				cubePoseMeasure.x, 
 				cubePoseMeasure.y, 
 				cubePoseMeasure.z, 
 				cubePoseMeasure.xRotation, 
 				cubePoseMeasure.yRotation, 
-				cubePoseMeasure.zRotation};
+				cubePoseMeasure.zRotation} );
 		
 		// Set coefficients of A matrix
-		aMatrix[0][0] =  1.0 - alpha;
-		aMatrix[0][1] = (1.0 - alpha) * tau;
-		aMatrix[1][0] = -1.0 * alpha / tau;
-		aMatrix[1][1] =  1.0 - alpha;
-		aMatrix[2][2] =  1.0 - alpha;
-		aMatrix[2][3] = (1.0 - alpha) * tau;
-		aMatrix[3][2] = -1.0 * alpha / tau;
-		aMatrix[3][3] =  1.0 - alpha;
-		aMatrix[4][4] =  1.0 - alpha;
-		aMatrix[4][5] = (1.0 - alpha) * tau;
-		aMatrix[5][4] = -1.0 * alpha / tau;
-		aMatrix[5][5] =  1.0 - alpha;
-		aMatrix[6][6] =  1.0 - alpha;
-		aMatrix[6][7] = (1.0 - alpha) * tau;
-		aMatrix[7][6] = -1.0 * alpha / tau;
-		aMatrix[7][7] =  1.0 - alpha;
-		aMatrix[8][8] =  1.0 - alpha;
-		aMatrix[8][9] = (1.0 - alpha) * tau;
-		aMatrix[9][8] = -1.0 * alpha / tau;
-		aMatrix[9][9] =  1.0 - alpha;
-		aMatrix[10][10] =  1.0 - alpha;
-		aMatrix[10][11] = (1.0 - alpha) * tau;
-		aMatrix[11][10] = -1.0 * alpha / tau;
-		aMatrix[11][11] =  1.0 - alpha;
-		
+		aSimpleMatrix.set(0, 0,  1.0 - alpha);
+		aSimpleMatrix.set(0, 1, (1.0 - alpha) * tau);
+		aSimpleMatrix.set(1, 0, -1.0 * alpha / tau);
+		aSimpleMatrix.set(1, 1,  1.0 - alpha);
+		aSimpleMatrix.set(2, 2,  1.0 - alpha);
+		aSimpleMatrix.set(2, 3, (1.0 - alpha) * tau);
+		aSimpleMatrix.set(3, 2, -1.0 * alpha / tau);
+		aSimpleMatrix.set(3, 3,  1.0 - alpha);
+		aSimpleMatrix.set(4, 4,  1.0 - alpha);
+		aSimpleMatrix.set(4, 5, (1.0 - alpha) * tau);
+		aSimpleMatrix.set(5, 4, -1.0 * alpha / tau);
+		aSimpleMatrix.set(5, 5,  1.0 - alpha);
+		aSimpleMatrix.set(6, 6,  1.0 - alpha);
+		aSimpleMatrix.set(6, 7, (1.0 - alpha) * tau);
+		aSimpleMatrix.set(7, 6, -1.0 * alpha / tau);
+		aSimpleMatrix.set(7, 7,  1.0 - alpha);
+		aSimpleMatrix.set(8, 8,  1.0 - alpha);
+		aSimpleMatrix.set(8, 9, (1.0 - alpha) * tau);
+		aSimpleMatrix.set(9, 8, -1.0 * alpha / tau);
+		aSimpleMatrix.set(9, 9,  1.0 - alpha);
+		aSimpleMatrix.set(10, 10,  1.0 - alpha);
+		aSimpleMatrix.set(10, 11, (1.0 - alpha) * tau);
+		aSimpleMatrix.set(11, 10, -1.0 * alpha / tau);
+		aSimpleMatrix.set(11, 11,  1.0 - alpha);
+
 		// Set coefficients of C matrix
-		cMatrix[0][0] = alpha;
-		cMatrix[1][0] = alpha/tau;
-		cMatrix[2][1] = alpha;
-		cMatrix[3][1] = alpha/tau;
-		cMatrix[4][2] = alpha;
-		cMatrix[5][2] = alpha/tau;
-		cMatrix[6][3] = alpha;
-		cMatrix[7][3] = alpha/tau;
-		cMatrix[8][4] = alpha;
-		cMatrix[9][4] = alpha/tau;
-		cMatrix[10][5] = alpha;
-		cMatrix[11][5] = alpha/tau;
+		cSimpleMatrix.set(0, 0, alpha);
+		cSimpleMatrix.set(1, 0, alpha/tau);
+		cSimpleMatrix.set(2, 1, alpha);
+		cSimpleMatrix.set(3, 1, alpha/tau);
+		cSimpleMatrix.set(4, 2, alpha);
+		cSimpleMatrix.set(5, 2, alpha/tau);
+		cSimpleMatrix.set(6, 3, alpha);
+		cSimpleMatrix.set(7, 3, alpha/tau);
+		cSimpleMatrix.set(8, 4, alpha);
+		cSimpleMatrix.set(9, 4, alpha/tau);
+		cSimpleMatrix.set(10, 5, alpha);
+		cSimpleMatrix.set(11, 5, alpha/tau);
 		
 		// Calculate new state
-		// X(K+1) = A(alpha,tau) * X(k) + C(alpha) * U(k)
-		double[] newState = add( multiply(aMatrix, xMatrix), multiply(cMatrix, u) );
+		// X(K+1) = A(alpha,tau) * X(k) + C(alpha) * U(k)		
+		SimpleMatrix newState = (aSimpleMatrix.mult(xSimpleMatrix)).plus(cSimpleMatrix.mult(uSimpleMatrix));
 		
 		// Update State
-		xMatrix = newState;
-//		Log.v(Constants.KALMAN, String.format("xPos = %6f xVel = %6f", xMatrix[0], xMatrix[1]));
-
+		xSimpleMatrix = newState;
 		
 		// =+= Crude control of feedback: goes from 100% to 25% and then stays there.
 		// =+= Kalman Gain is supposed to be calculated algorithmically.
@@ -273,7 +254,7 @@ public class KalmanFilter {
 		if(MenuAndParams.kalmanFilter == false)
 			return lastCubePoseState;
 		
-		if(xMatrix == null)
+		if(xSimpleMatrix == null)
 			return null;
 		
 		bSimpleMatrix.set(0, 1, tau);
@@ -281,17 +262,10 @@ public class KalmanFilter {
 		bSimpleMatrix.set(4, 5, tau);
 		bSimpleMatrix.set(6, 7, tau);
 		bSimpleMatrix.set(8, 9, tau);
-		bSimpleMatrix.set(10, 11, tau);
-//		bSimpleMatrix.print();
 		
-		SimpleMatrix xSimpleMatrix = new SimpleMatrix(12, 1, true, xMatrix);
-//		xSimpleMatrix.print();
-		
-//		// Calculate projected state for specified time, but do not update state matrix.
-//		// X(t + tau) = B(tau) * X(tau) 
-		// Should be a 12 x 1
+		// Calculate projected state for specified time, but do not update state matrix.
+		// X(t + tau) = B(tau) * X(tau) 
 		SimpleMatrix projectedStateSimpleMatrix = bSimpleMatrix.mult(xSimpleMatrix);
-		projectedStateSimpleMatrix.print();
 		
 		// Package up
 		CubePose cubePose = new CubePose();
@@ -305,122 +279,4 @@ public class KalmanFilter {
 		return cubePose;
 	}
 	
-	
-//	/**
-//	 * Return state as per the specified time stamp.
-//	 * 
-//	 * @param time
-//	 * @return
-//	 */
-//	public CubePose projectStateOld(long time) {
-//		
-//		long tau = time - measUpateTime;
-//		
-//		if(MenuAndParams.kalmanFilter == false)
-//			return lastCubePoseState;
-//		
-//		if(xMatrix == null)
-//			return null;
-//		
-//		bMatrix[0][1] = tau;
-//		bMatrix[2][3] = tau;
-//		bMatrix[4][5] = tau;
-//		bMatrix[6][7] = tau;
-//		bMatrix[8][9] = tau;
-//		bMatrix[10][11] = tau;
-//		
-//		// Calculate projected state for specified time, but do not update state matrix.
-//		// X(t + tau) = B(tau) * X(tau) 
-//		double [] projectedState =  multiply(bMatrix, xMatrix);
-//		
-//		// Package up
-//		CubePose cubePose = new CubePose();
-//		cubePose.x = (float) projectedState[0];
-//		cubePose.y = (float) projectedState[2];
-//		cubePose.z = (float) projectedState[4];
-//		cubePose.xRotation = projectedState[6];
-//		cubePose.yRotation = projectedState[8];
-//		cubePose.zRotation = projectedState[10];
-//		
-//		return cubePose;
-//	}
-	
-	
-	
-	
-	
-	
-	
-	
-    // return C = A * B
-    @SuppressWarnings("unused")
-	private static double[][] multiply(double[][] A, double[][] B) {
-        int mA = A.length;
-        int nA = A[0].length;
-        int mB = B.length;
-        int nB = B[0].length;
-        if (nA != mB) throw new RuntimeException("Illegal matrix dimensions.");
-        double[][] C = new double[mA][nB];
-        for (int i = 0; i < mA; i++)
-            for (int j = 0; j < nB; j++)
-                for (int k = 0; k < nA; k++)
-                    C[i][j] += (A[i][k] * B[k][j]);
-        return C;
-    }
-
-    
-    // matrix-vector multiplication (y = A * x)
-    /**
-     * @param A  : [column][row] Matrix of size [m][n]
-     * @param x  : column vector of length n
-     * @return
-     */
-    private static double[] multiply(double[][] A, double[] x) {
-        int m = A.length;
-        int n = A[0].length;
-        if (x.length != n) throw new RuntimeException("Illegal matrix dimensions.");
-        double[] y = new double[m];
-        for (int i = 0; i < m; i++)
-            for (int j = 0; j < n; j++)
-                y[i] += (A[i][j] * x[j]);
-        return y;
-    }
-    
-    // matrix-addition
-    @SuppressWarnings("unused")
-	private static double [][] add(double[][] A, double[][] B) {
-        int mA = A.length;
-        int nA = A[0].length;
-        int mB = B.length;
-        int nB = B[0].length;
-        if (nA != mB) throw new RuntimeException("Illegal matrix dimensions.");
-        double[][] C = new double[mA][nB];
-        for (int i = 0; i < mA; i++)
-            for (int j = 0; j < nB; j++)
-                C[i][j] += (A[i][j] + B[i][j]);
-        
-    	return C;
-    }
-    
-    // matrix-addition
-    private static double [] add(double[] A, double[] B) {
-        int mA = A.length;
-        int mB = B.length;
-        if (mA != mB) throw new RuntimeException("Illegal matrix dimensions.");
-        double[] C = new double[mA];
-        for (int i = 0; i < mA; i++)
-                C[i] += (A[i] + B[i]);
-        
-    	return C;
-    }
-    
-    // Return new idenity matrix
-    private static double[][] idenity(int n) {
-        double[][] M = new double[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-            	M[i][j] = (i == j) ? 1.0 : 0.0;
-        return M;
-    }
-
 }
