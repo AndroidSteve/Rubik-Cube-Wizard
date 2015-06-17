@@ -55,6 +55,7 @@ import org.ejml.simple.SimpleMatrix;
  * o  Rendering requests will be asynchronous and typically at a higher 
  *    frame rate: ~60 Hz.
  * o  Start up sequence as described above.
+ * o  Note: matrices are row major.
  * 
  * Initial design:
  * o  Is simply a fixed, but time-interval-variant Kalman Filter Gain matrix.
@@ -99,8 +100,8 @@ public class KalmanFilter {
 	private final double[][] aMatrix = idenity(12);
 
 	// Project State Forward Matrix (But do not change state)
-	private final double[][] bMatrix = idenity(12);
-
+	private SimpleMatrix bSimpleMatrix = SimpleMatrix.identity(12);
+	
 	// State to Output Matrix
 //	private final double[][] hMatrix = { { 0.0f } };
 	
@@ -126,6 +127,7 @@ public class KalmanFilter {
 	
 	// Last reported (i.e., measured) cube pose
 	private CubePose lastCubePoseState;
+
 		
 	
 	/**
@@ -274,15 +276,12 @@ public class KalmanFilter {
 		if(xMatrix == null)
 			return null;
 		
-		bMatrix[0][1] = tau;
-		bMatrix[2][3] = tau;
-		bMatrix[4][5] = tau;
-		bMatrix[6][7] = tau;
-		bMatrix[8][9] = tau;
-		bMatrix[10][11] = tau;
-		
-		// b Matrix is [row][column]
-		SimpleMatrix bSimpleMatrix = new SimpleMatrix(bMatrix);
+		bSimpleMatrix.set(0, 1, tau);
+		bSimpleMatrix.set(2, 3, tau);
+		bSimpleMatrix.set(4, 5, tau);
+		bSimpleMatrix.set(6, 7, tau);
+		bSimpleMatrix.set(8, 9, tau);
+		bSimpleMatrix.set(10, 11, tau);
 //		bSimpleMatrix.print();
 		
 		SimpleMatrix xSimpleMatrix = new SimpleMatrix(12, 1, true, xMatrix);
@@ -307,44 +306,44 @@ public class KalmanFilter {
 	}
 	
 	
-	/**
-	 * Return state as per the specified time stamp.
-	 * 
-	 * @param time
-	 * @return
-	 */
-	public CubePose projectStateOld(long time) {
-		
-		long tau = time - measUpateTime;
-		
-		if(MenuAndParams.kalmanFilter == false)
-			return lastCubePoseState;
-		
-		if(xMatrix == null)
-			return null;
-		
-		bMatrix[0][1] = tau;
-		bMatrix[2][3] = tau;
-		bMatrix[4][5] = tau;
-		bMatrix[6][7] = tau;
-		bMatrix[8][9] = tau;
-		bMatrix[10][11] = tau;
-		
-		// Calculate projected state for specified time, but do not update state matrix.
-		// X(t + tau) = B(tau) * X(tau) 
-		double [] projectedState =  multiply(bMatrix, xMatrix);
-		
-		// Package up
-		CubePose cubePose = new CubePose();
-		cubePose.x = (float) projectedState[0];
-		cubePose.y = (float) projectedState[2];
-		cubePose.z = (float) projectedState[4];
-		cubePose.xRotation = projectedState[6];
-		cubePose.yRotation = projectedState[8];
-		cubePose.zRotation = projectedState[10];
-		
-		return cubePose;
-	}
+//	/**
+//	 * Return state as per the specified time stamp.
+//	 * 
+//	 * @param time
+//	 * @return
+//	 */
+//	public CubePose projectStateOld(long time) {
+//		
+//		long tau = time - measUpateTime;
+//		
+//		if(MenuAndParams.kalmanFilter == false)
+//			return lastCubePoseState;
+//		
+//		if(xMatrix == null)
+//			return null;
+//		
+//		bMatrix[0][1] = tau;
+//		bMatrix[2][3] = tau;
+//		bMatrix[4][5] = tau;
+//		bMatrix[6][7] = tau;
+//		bMatrix[8][9] = tau;
+//		bMatrix[10][11] = tau;
+//		
+//		// Calculate projected state for specified time, but do not update state matrix.
+//		// X(t + tau) = B(tau) * X(tau) 
+//		double [] projectedState =  multiply(bMatrix, xMatrix);
+//		
+//		// Package up
+//		CubePose cubePose = new CubePose();
+//		cubePose.x = (float) projectedState[0];
+//		cubePose.y = (float) projectedState[2];
+//		cubePose.z = (float) projectedState[4];
+//		cubePose.xRotation = projectedState[6];
+//		cubePose.yRotation = projectedState[8];
+//		cubePose.zRotation = projectedState[10];
+//		
+//		return cubePose;
+//	}
 	
 	
 	
