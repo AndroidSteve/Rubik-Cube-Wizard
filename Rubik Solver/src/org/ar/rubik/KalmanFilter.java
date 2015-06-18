@@ -31,6 +31,8 @@
  */
 package org.ar.rubik;
 
+import org.ejml.equation.Equation;
+import org.ejml.equation.Sequence;
 import org.ejml.simple.SimpleMatrix;
 
 /**
@@ -111,9 +113,20 @@ public class KalmanFilter {
 
 	// Kalman Gain Matrix
 //	private final double[][] kMatrix = { { 0.0f } };
+
+	// Projected state
+	private SimpleMatrix zSimpleMatrix = new SimpleMatrix(12, 1);
+
 	
 	// Last reported (i.e., measured) cube pose
 	private CubePose lastCubePoseState;
+	
+	// EJML Equations object
+	private Equation equations = new Equation();
+
+	// Equation z = B * x : calculate projected state.
+	private Sequence projectStateEquation;
+	
 
 		
 	
@@ -126,8 +139,11 @@ public class KalmanFilter {
 	 * @param stateModel
 	 */
 	public KalmanFilter(StateModel stateModel) {
+		
 		this.stateModel = stateModel;
-		cSimpleMatrix.zero();  // Maybe (or should be) done by constructor, but docs don't say.
+		
+		// Maybe (or should be) done by constructor, but docs don't say.
+		cSimpleMatrix.zero();
 	}
 
 	
@@ -231,6 +247,7 @@ public class KalmanFilter {
 		
 		// Update State
 		xSimpleMatrix = newState;
+		equations.alias( xSimpleMatrix, "x");
 		
 		// =+= Crude control of feedback: goes from 100% to 25% and then stays there.
 		// =+= Kalman Gain is supposed to be calculated algorithmically.
@@ -263,18 +280,27 @@ public class KalmanFilter {
 		bSimpleMatrix.set(6, 7, tau);
 		bSimpleMatrix.set(8, 9, tau);
 		
+		if(projectStateEquation == null) {
+
+			// Aliases for EJML
+			equations.alias( xSimpleMatrix, "x", bSimpleMatrix, "B", zSimpleMatrix, "z");
+
+			// Compile project state linear algebra equation
+			projectStateEquation = equations.compile("z = B*x");
+		}
+		
 		// Calculate projected state for specified time, but do not update state matrix.
-		// X(t + tau) = B(tau) * X(tau) 
-		SimpleMatrix projectedStateSimpleMatrix = bSimpleMatrix.mult(xSimpleMatrix);
+		// z(t + tau) = B(tau) * x(t) 
+		projectStateEquation.perform();
 		
 		// Package up
 		CubePose cubePose = new CubePose();
-		cubePose.x = (float) projectedStateSimpleMatrix.get(0);
-		cubePose.y = (float) projectedStateSimpleMatrix.get(2);
-		cubePose.z = (float) projectedStateSimpleMatrix.get(4);
-		cubePose.xRotation = projectedStateSimpleMatrix.get(6);
-		cubePose.yRotation = projectedStateSimpleMatrix.get(8);
-		cubePose.zRotation = projectedStateSimpleMatrix.get(10);
+		cubePose.x = (float) zSimpleMatrix.get(0);
+		cubePose.y = (float) zSimpleMatrix.get(2);
+		cubePose.z = (float) zSimpleMatrix.get(4);
+		cubePose.xRotation = zSimpleMatrix.get(6);
+		cubePose.yRotation = zSimpleMatrix.get(8);
+		cubePose.zRotation = zSimpleMatrix.get(10);
 		
 		return cubePose;
 	}
