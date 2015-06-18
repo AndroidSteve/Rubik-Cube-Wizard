@@ -96,8 +96,11 @@ public class KalmanFilter {
 	// Feeback (or gain) Coefficient
 	private double alpha = 1.0;
 
-	// State Matrix.  State is 12 elements long: x_pos, x_vel, 
+	// State Vector. State is 12 elements long: x_pos, x_vel, 
 	private SimpleMatrix xSimpleMatrix;
+	
+	// The next calculated state; above variable shall be set to this object to complete update.
+	private SimpleMatrix rSimpleMatrix = new SimpleMatrix(12, 1);
 	
 	// Feed Forward Matrix
 	private SimpleMatrix aSimpleMatrix = SimpleMatrix.identity(12);
@@ -124,9 +127,11 @@ public class KalmanFilter {
 	// EJML Equations object
 	private Equation equations = new Equation();
 
-	// Equation z = B * x : calculate projected state.
+	// Compiled Equation z = B * x : calculate projected state.
 	private Sequence projectStateEquation;
 	
+	// Compiled Equation: x(k+1) = A(alpha,tau) * x(k) + C(alpha) * u(k)		
+	private Sequence updateEquation;
 
 		
 	
@@ -189,9 +194,6 @@ public class KalmanFilter {
 		// Calculate duration between last update.
 		long tau = time - measUpateTime;
 		
-		// Record this time for future reference.
-		measUpateTime = time;
-		
 		// Input is 6 element column vector
 		SimpleMatrix uSimpleMatrix = new SimpleMatrix(6, 1, true, new double [] {
 				cubePoseMeasure.x, 
@@ -200,6 +202,8 @@ public class KalmanFilter {
 				cubePoseMeasure.xRotation, 
 				cubePoseMeasure.yRotation, 
 				cubePoseMeasure.zRotation} );
+		
+		equations.alias( uSimpleMatrix, "u");  // =+= hack because we are creating a new uSimpleMatrix each call.
 		
 		// Set coefficients of A matrix
 		aSimpleMatrix.set(0, 0,  1.0 - alpha);
@@ -241,13 +245,31 @@ public class KalmanFilter {
 		cSimpleMatrix.set(10, 5, alpha);
 		cSimpleMatrix.set(11, 5, alpha/tau);
 		
+
+		if(updateEquation == null) {
+			
+			// Aliases for EJML
+			equations.alias(
+					rSimpleMatrix, "r",
+					aSimpleMatrix, "A",
+					xSimpleMatrix, "x",
+					cSimpleMatrix, "C",
+					uSimpleMatrix, "u");
+
+			// Compile project state linear algebra equation
+			updateEquation = equations.compile("r = A*x + C*u");
+		}
+
 		// Calculate new state
-		// X(K+1) = A(alpha,tau) * X(k) + C(alpha) * U(k)		
-		SimpleMatrix newState = (aSimpleMatrix.mult(xSimpleMatrix)).plus(cSimpleMatrix.mult(uSimpleMatrix));
+		// x(k+1) = A(alpha,tau) * x(k) + C(alpha) * u(k)
+		updateEquation.perform();
 		
+		// =+= next three lines of code should be semaphore locked with projectState() and GL thread.
 		// Update State
-		xSimpleMatrix = newState;
+		xSimpleMatrix = rSimpleMatrix;
 		equations.alias( xSimpleMatrix, "x");
+		// Record this time for future reference.
+		measUpateTime = time;
 		
 		// =+= Crude control of feedback: goes from 100% to 25% and then stays there.
 		// =+= Kalman Gain is supposed to be calculated algorithmically.
@@ -266,6 +288,7 @@ public class KalmanFilter {
 	 */
 	public CubePose projectState(long time) {
 		
+		// =+= this and x matrix object should really be semaphore locked with a portion of updateState() running camera thread.
 		long tau = time - measUpateTime;
 		
 		if(MenuAndParams.kalmanFilter == false)
