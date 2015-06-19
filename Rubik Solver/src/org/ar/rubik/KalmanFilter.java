@@ -44,7 +44,7 @@ import org.ejml.simple.SimpleMatrix;
  * 
  * A new Kalman Filter object is created when Gesture Recognition State
  * transitions to NEW_STABLE.  The current position and orientation are 
- * accepted into state; all first derivative state variables are set to
+ * accepted into state and all first derivative state variables are set to
  * zero.
  * 
  * Upon the second Pose measurement, position and orientation are adopted,
@@ -70,31 +70,31 @@ import org.ejml.simple.SimpleMatrix;
  */
 public class KalmanFilter {
 	
-// =+= not accurate
-//	public enum STATE {
-//		X_POS,
-//		Y_POS,
-//		Z_POS,
-//		X_POS_VELOCITY,
-//		Y_POS_VELOCITY,
-//		Z_POS_VELOCITY,
-//		X_AXIS_ROTATION,
-//		Y_AXIS_ROTATION,
-//		Z_AXIS_ROTATION,
-//		X_AXIS_ANGULAR_ROTATION,
-//		Y_AXIS_ANGULAR_ROTATION,
-//		Z_AXIS_ANGULAR_ROTATION
-//	};
-//	
+	/*
+	 *  Defines elements of primary state vector.
+	 *  However, not used that much.
+	 */
+	private enum STATE {
+		X_POS,
+		X_POS_VELOCITY,
+		Y_POS,
+		Y_POS_VELOCITY,
+		Z_POS,
+		Z_POS_VELOCITY,
+		X_AXIS_ROTATION,
+		X_AXIS_ROTATION_RATE,
+		Y_AXIS_ROTATION,
+		Y_AXIS_ROTATION_RATE,
+		Z_AXIS_ROTATION,
+		Z_AXIS_ROTATION_RATE
+	};
+	
+	/*
+	 * EJML Matricies are mostly declared as member data instead of local variables, and mostly
+	 * instantiated here instead of on the fly, so that it is easier for EJML to properly
+	 * track these objects and compile equations using them.
+	 */
 
-	@SuppressWarnings("unused")
-	private StateModel stateModel;
-	
-	// Timestamp reference of state
-	private long measUpateTime;
-	
-	// Feeback (or gain) Coefficient
-	private double alpha = 1.0;
 
 	// State Vector. State is 12 elements long: x_pos, x_vel, 
 	private SimpleMatrix xSimpleMatrix;
@@ -121,7 +121,17 @@ public class KalmanFilter {
 	private SimpleMatrix zSimpleMatrix = new SimpleMatrix(12, 1);
 
 	
-	// Last reported (i.e., measured) cube pose
+	/*
+	 * Other Member Data
+	 */
+	
+	// Timestamp reference of state
+	private long measUpateTime;
+	
+	// Feeback (or gain) Coefficient
+	private double alpha = 1.0;
+	
+	// Last reported (i.e., measured) cube pose.  Last cube position is always reported when Kalman Filter is turned off.
 	private CubePose lastCubePoseState;
 	
 	// EJML Equations object
@@ -138,19 +148,16 @@ public class KalmanFilter {
 	/**
 	 * Kalman Filter Constructor
 	 * 
-	 * Begin a new Kalman FIlter (actually, really new and fresh state variables).
-	 * Initialize all state variables.
-	 * 
-	 * @param stateModel
+	 * Begin a new Kalman FIlter.
+	 * Initialize all state variables are initialized.
 	 */
-	public KalmanFilter(StateModel stateModel) {
-		
-		this.stateModel = stateModel;
+	public KalmanFilter() {
 		
 		// Maybe (or should be) done by constructor, but docs don't say.
 		cSimpleMatrix.zero();
 	}
 
+	
 	
 	/**
 	 * 
@@ -181,12 +188,18 @@ public class KalmanFilter {
 		if(xSimpleMatrix == null) {
 
 			xSimpleMatrix = new SimpleMatrix(12, 1, true, new double [] {
-					cubePoseMeasure.x, 0,
-					cubePoseMeasure.y, 0,
-					cubePoseMeasure.z, 0,
-					cubePoseMeasure.xRotation, 0,
-					cubePoseMeasure.yRotation, 0,
-					cubePoseMeasure.zRotation, 0 } );
+					cubePoseMeasure.x,
+					0,
+					cubePoseMeasure.y,
+					0,
+					cubePoseMeasure.z,
+					0,
+					cubePoseMeasure.xRotation,
+					0,
+					cubePoseMeasure.yRotation,
+					0,
+					cubePoseMeasure.zRotation,
+					0 } );
 
 			return;
 		}
@@ -267,6 +280,8 @@ public class KalmanFilter {
 		// =+= next three lines of code should be semaphore locked with projectState() and GL thread.
 		// Update State
 		xSimpleMatrix = rSimpleMatrix;
+		
+		// Re=alias for x
 		equations.alias( xSimpleMatrix, "x");
 		// Record this time for future reference.
 		measUpateTime = time;
@@ -318,12 +333,12 @@ public class KalmanFilter {
 		
 		// Package up
 		CubePose cubePose = new CubePose();
-		cubePose.x = (float) zSimpleMatrix.get(0);
-		cubePose.y = (float) zSimpleMatrix.get(2);
-		cubePose.z = (float) zSimpleMatrix.get(4);
-		cubePose.xRotation = zSimpleMatrix.get(6);
-		cubePose.yRotation = zSimpleMatrix.get(8);
-		cubePose.zRotation = zSimpleMatrix.get(10);
+		cubePose.x = (float) zSimpleMatrix.get( STATE.X_POS.ordinal());
+		cubePose.y = (float) zSimpleMatrix.get( STATE.Y_POS.ordinal());
+		cubePose.z = (float) zSimpleMatrix.get( STATE.Z_POS.ordinal());
+		cubePose.xRotation = zSimpleMatrix.get( STATE.X_AXIS_ROTATION.ordinal());
+		cubePose.yRotation = zSimpleMatrix.get( STATE.Y_AXIS_ROTATION.ordinal());
+		cubePose.zRotation = zSimpleMatrix.get( STATE.Z_AXIS_ROTATION.ordinal());
 		
 		return cubePose;
 	}
