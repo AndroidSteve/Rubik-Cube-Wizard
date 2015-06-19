@@ -102,6 +102,9 @@ public class StateModel {
 
 	// Processes OpenCV Pose results and maintains 3D Model.
 	public transient KalmanFilter kalmanFilter;
+	
+	// For the purpose of running the Autocovariance Least Squares Method to object Kalman Filter Covariance Matrices
+	public KalmanFilterALSM kalmanFilterALSM;
 
 	// Cube Location and Orientation deduced from Face.
 	public transient CubePose cubePose;

@@ -411,9 +411,15 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 				// Obtain Cube Pose from Face Grid information.
 				stateModel.cubePose = CubePoseEstimator.poseEstimation(rubikFace, image, stateModel);
 
+				// Process measurement update on Kalman Filter (if it exists).
 				KalmanFilter kalmanFilter = stateModel.kalmanFilter;
 				if(kalmanFilter != null) 
 					kalmanFilter.measurementUpdate(stateModel.cubePose, System.currentTimeMillis());
+				
+				// Process measurement update on Kalman Filter ALSM (if it exists).
+				KalmanFilterALSM kalmanFilterALSM = stateModel.kalmanFilterALSM;
+				if(kalmanFilter != null) 
+					kalmanFilterALSM.measurementUpdate(stateModel.cubePose, System.currentTimeMillis());
 			}
 			else {
 				stateModel.cubePose = null;

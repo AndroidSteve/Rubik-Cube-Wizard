@@ -74,6 +74,9 @@ public class MenuAndParams {
     
     // Toggle Kalman Filter Activity
     public static boolean kalmanFilter = false;
+    
+    // Toggle Kalman Filter ALSM Activity
+    public static boolean kalmanFilterASLM = false;
         
     // Specifies where image comes from
     public static ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;

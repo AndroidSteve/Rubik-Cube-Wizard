@@ -307,6 +307,8 @@ public class AppStateMachine {
 		}
 		
 		stateModel.kalmanFilter = null;
+		stateModel.kalmanFilterALSM.calculateResults();
+		stateModel.kalmanFilterALSM = null;
 	}
 
 
@@ -360,8 +362,11 @@ public class AppStateMachine {
 			break;
 		}
 		
-		// Create a new Kalman Filter with current state
+		// Create a new Kalman Filter
 		stateModel.kalmanFilter = new KalmanFilter();
+		
+		// Create a new Kalman Filter ALSM machine
+		stateModel.kalmanFilterALSM = new KalmanFilterALSM();
 	}
 	
 	
