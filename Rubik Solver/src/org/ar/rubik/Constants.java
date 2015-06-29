@@ -49,9 +49,12 @@ public class Constants {
 	
 	// Log Cat Tag for OpenGL related diagnostics.
     public static final String TAG_OPENGL = "RubikOpenGL";
+	
+	// Log Cat Tag for Camera Calibration related diagnostics.
+    public static final String TAG_CAL = "RubikCal";
     
     // Log Cat for Kalman Filter related diagnostics
-	public static final String KALMAN = "RubikKalman";
+	public static final String TAG_KALMAN = "RubikKalman";
 
     
 	public enum AppStateEnum { 

@@ -307,7 +307,8 @@ public class AppStateMachine {
 		}
 		
 		stateModel.kalmanFilter = null;
-		stateModel.kalmanFilterALSM.calculateResults();
+		if(stateModel.kalmanFilterALSM != null)
+			stateModel.kalmanFilterALSM.calculateResults();
 		stateModel.kalmanFilterALSM = null;
 	}
 

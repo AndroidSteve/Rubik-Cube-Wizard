@@ -148,7 +148,7 @@ public class CubePoseEstimator {
 		objectPoints.fromList(objectPointsList);
 
 		Mat cameraMatrix          = stateModel.cameraParameters.getOpenCVCameraMatrix();
-		MatOfDouble distCoeffs    = new MatOfDouble();
+		MatOfDouble distCoeffs    = new MatOfDouble(stateModel.cameraParameters.getDistortionCoefficients());
 		Mat rvec                  = new Mat();
 		Mat tvec                  = new Mat();	
 		
