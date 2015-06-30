@@ -64,10 +64,10 @@ public class MenuAndParams {
 	public static boolean userTextDisplay = true;
 	
     // Toggle Cube Overlay
-    public static boolean cubeOverlayDisplay = true;
+    public static boolean cubeOverlayDisplay = false;
 
     // Toggle Face Overlay
-    public static boolean faceOverlayDisplay = false;
+    public static boolean faceOverlayDisplay = true;
 
     // Toggle Face Overlay
     public static boolean pilotCubeDisplay = true;

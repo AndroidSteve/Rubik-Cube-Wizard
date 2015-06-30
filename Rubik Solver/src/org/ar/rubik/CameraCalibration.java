@@ -76,6 +76,7 @@ public class CameraCalibration {
 		
 		Camera camera = Camera.open();
 		parameters = camera.getParameters();
+		parameters.setPictureSize(1280, 720);  // Or 1920 x 1080
 		camera.release();
 		
 		size = parameters.getPictureSize();
@@ -83,32 +84,18 @@ public class CameraCalibration {
         heightPixels = size.height;
         
         Log.v(Constants.TAG_CAL, "Reported image size from camera parameters: width=" + size.width + " height=" + size.height);
-        
-//        // =+= above produces camera dimensions.  Below is screen dimensions.
-//        // =+= we have some confusions as to when to use which.
-//        widthPixels = 1280;
-//        heightPixels = 720;
 
 		// Will be in radians
 		fovY = parameters.getVerticalViewAngle() * (float)(Math.PI / 180.0);
 		fovX = parameters.getHorizontalViewAngle() * (float)(Math.PI / 180.0);
 		
-//		// Will be in degrees
-//		projectionFieldOfView = parameters.getVerticalViewAngle();
-//		projectionAspect = widthPixels / heightPixels;
-
-//		// Make calculations across diagonal
-//		double diagonalPixels = Math.sqrt( widthPixels * widthPixels + heightPixels * heightPixels);
-//		double diagnoalFOV = Math.sqrt(fovX * fovX + fovY * fovY);
-//		
-//		// =+= Why?  The formula obtained from "Android Applications Programming with OpenCV" book.
-//		focalLengthPixels = diagonalPixels / ( 2.0 * Math.tan(0.5 * diagnoalFOV));
 
 //      Log.e(Constants.TAG, "Width = " + widthPixels + " Height = " + heightPixels);  // 1920 by 1080 reported.
 //      Log.e(Constants.TAG, "dPOV=" + diagnoalFOV + " dPx=" + diagonalPixels);
 //		Log.e(Constants.TAG, "Camera Focal Length in Pixels Calibration: " + focalLengthPixels);
 	}
 	
+
 	
 	/**
 	 * Get OpenCV Camera Matrix
@@ -125,7 +112,6 @@ public class CameraCalibration {
 	 *    Cx := X Optical Center
 	 *    Cy := Y Optical Center
 	 * 
-	 * =+= NOTE: Screen dimensions used below.  However, 
 	 * 
 	 * @return
 	 */
@@ -145,23 +131,25 @@ public class CameraCalibration {
 	    cameraMatrix.put(2, 1, 0.0);
 	    cameraMatrix.put(2, 2, 1.0);
 	    
-	    Log.v(Constants.TAG_CAL, "Samsung Camera Calibration Matrix: ");
+	    Log.v(Constants.TAG_CAL, "Android Camera Calibration Matrix: ");
 	    Log.v(Constants.TAG_CAL, cameraMatrix.dump());
 
-	    
-	    cameraMatrix.put(0, 0, 1686.1);
-	    cameraMatrix.put(0, 1, 0.0);
-	    cameraMatrix.put(0, 2, 959.5);
-	    cameraMatrix.put(1, 0, 0.0);
-	    cameraMatrix.put(1, 1, 1686.1);
-	    cameraMatrix.put(1, 2, 539.5);
-	    cameraMatrix.put(2, 0, 0.0);
-	    cameraMatrix.put(2, 1, 0.0);
-	    cameraMatrix.put(2, 2, 1.0);
-
-	    Log.v(Constants.TAG_CAL, "Live Camera Calibration Matrix: ");
-	    Log.v(Constants.TAG_CAL, cameraMatrix.dump());
-	    
+//	    // =+= PROBLEM
+//	    // =+= these numbers reflect a 1920 x 1080 screen.
+//	    // =+= Open CV is processing a 1200 x 780
+//	    // =+= And what is OpenGL doing????
+//	    cameraMatrix.put(0, 0, 1686.1);
+//	    cameraMatrix.put(0, 1, 0.0);
+//	    cameraMatrix.put(0, 2, 959.5);
+//	    cameraMatrix.put(1, 0, 0.0);
+//	    cameraMatrix.put(1, 1, 1686.1);
+//	    cameraMatrix.put(1, 2, 539.5);
+//	    cameraMatrix.put(2, 0, 0.0);
+//	    cameraMatrix.put(2, 1, 0.0);
+//	    cameraMatrix.put(2, 2, 1.0);
+//
+//	    Log.v(Constants.TAG_CAL, "Camera Calibration App Matrix: ");
+//	    Log.v(Constants.TAG_CAL, cameraMatrix.dump());
 	    
 	    return cameraMatrix;
 	}
@@ -172,40 +160,16 @@ public class CameraCalibration {
 	 */
 	public double[] getDistortionCoefficients() {
 		
-		double [] distCoeff =  { 
-				0.0940951391875556,
-				0.856988256473992,
-				0,
-				0,
-				-4.559694183079539};
-
-		return distCoeff;
+//		double [] distCoeff =  { 
+//				0.0940951391875556,
+//				0.856988256473992,
+//				0,
+//				0,
+//				-4.559694183079539};
+//
+//		return distCoeff;
+		
+		return null;
 
 	}
-
-//    /**
-//     * Get OpenGL Projection Matrix
-//     * 
-//     * This is derived from the Android Camera Parameters.
-//     * 
-//     * @return
-//     */
-//    public float[] getOpenGLProjectionMatrix() {
-//
-//        float near = 1.0f;
-//        float far  = 100.0f;
-//        
-//        float top =   (float)Math.tan(fovY * 0.5f);
-//        float right = (float)Math.tan(fovX * 0.5f);
-//
-//        float [] glProjectionMatrix = new float[16];
-//        
-//        Matrix.frustumM( glProjectionMatrix, 0, -right, right, -top, top, near, far);
-//        
-//        Log.e(Constants.TAG_CAL, "GL Projection Matrix: " + glProjectionMatrix.toString() );
-//
-//        return glProjectionMatrix;
-//    }
-	
-
 }

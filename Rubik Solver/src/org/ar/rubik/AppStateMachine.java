@@ -332,8 +332,10 @@ public class AppStateMachine {
 
 		case START:
 			stateModel.adopt(candidateRubikFace);
-			stateModel.appState = AppStateEnum.GOT_IT;
-            gotItCount = 0;
+			if( MenuAndParams.cubeOverlayDisplay == false) {  // If true, we are in a diagnostic mode.
+				stateModel.appState = AppStateEnum.GOT_IT;
+				gotItCount = 0;
+			}
 			break;
 
 		case SEARCHING:

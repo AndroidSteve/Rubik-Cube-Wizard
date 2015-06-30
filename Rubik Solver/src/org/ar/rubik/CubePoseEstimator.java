@@ -95,13 +95,26 @@ public class CubePoseEstimator {
 		if(rubikFace.rhombusList.size() <= 4)
 			return null;
 		
+		
+		/*
+		 * For the purposes of external camera calibration: i.e., where the cube is 
+		 * located in camera coordinates, we define the geometry of the face of a
+		 * cube composed of nine 3D locations each representing the center of each tile.
+		 * Correspondence between these points and nine 2D points from the actual
+		 * camera image, along with camera calibration data, are using to calculate
+		 * the Pose of the Cube (i.e. "Cube Pose").
+		 * 
+		 * The geometry of the cube here is defined as having center at {0,0,0},
+		 * and edge size of 2 units (i.e., +/- 1.0).
+		 */
+		
 		// List of real world point and screen points that correspond.
     	List<Point3> objectPointsList    = new ArrayList<Point3>(9);
 		List<Point> imagePointsList      = new ArrayList<Point>(9);
 		
 		
 		// Create list of image (in 2D) and object (in 3D) points.
-		// Loop over Rubik Face Tiles/Rhombi
+		// Loop over Rubik Face Tiles
     	for(int n = 0; n<3; n++) {
     		for(int m=0; m<3; m++) {
     			
@@ -115,6 +128,7 @@ public class CubePoseEstimator {
     			    //  o X is zero on the left, and increases to the right.
     			    //  o Y is zero on the top and increases downward.
     				Point imagePoint = new Point( rhombus.center.x, rhombus.center.y);
+//    				Point imagePoint = new Point( 1.5 * rhombus.center.x, 1.5 * rhombus.center.y);
     				imagePointsList.add(imagePoint);
     				
     				// N and M are actual not conceptual (as in design doc).
@@ -133,7 +147,8 @@ public class CubePoseEstimator {
     				float x  = (1 - mm) * 0.66666f;
     				float y  = -1.0f;
     				float z  = -1.0f * (1 - nn) * 0.666666f;
-    				Point3 objectPoint = new Point3(x, y, z);
+//    				Point3 objectPoint = new Point3(x, y, z);
+    				Point3 objectPoint = new Point3(x/1.33, y/1.33, z/1.33); // =+= hack: 33% fudge factor
     				objectPointsList.add(objectPoint);
     			}
     		}
@@ -147,7 +162,7 @@ public class CubePoseEstimator {
 		MatOfPoint3f objectPoints = new MatOfPoint3f();
 		objectPoints.fromList(objectPointsList);
 
-		Mat cameraMatrix          = stateModel.cameraParameters.getOpenCVCameraMatrix();
+		Mat cameraMatrix          = stateModel.cameraParameters.getOpenCVCameraMatrix();  // =+= This is reference for a screen of 1920 x 1080, but OpenCV image is smaller: 1200 x 780 !!!
 		MatOfDouble distCoeffs    = new MatOfDouble(stateModel.cameraParameters.getDistortionCoefficients());
 		Mat rvec                  = new Mat();
 		Mat tvec                  = new Mat();	
@@ -184,8 +199,8 @@ public class CubePoseEstimator {
         
         // Package up as CubePose object
         CubePose cubePose = new CubePose();
-        cubePose.x = x;
-        cubePose.y = y;
+        cubePose.x = x * 1.33f;  // =+= hack: 33% fudge factor
+        cubePose.y = y * 1.33f;
         cubePose.z = z;
         cubePose.xRotation = rvec.get(0, 0)[0];
         cubePose.yRotation = rvec.get(1, 0)[0];
