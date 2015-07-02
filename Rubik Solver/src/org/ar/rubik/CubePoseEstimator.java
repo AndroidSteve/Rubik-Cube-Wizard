@@ -147,8 +147,8 @@ public class CubePoseEstimator {
     				float x  = (1 - mm) * 0.66666f;
     				float y  = -1.0f;
     				float z  = -1.0f * (1 - nn) * 0.666666f;
-//    				Point3 objectPoint = new Point3(x, y, z);
-    				Point3 objectPoint = new Point3(x/1.33, y/1.33, z/1.33); // =+= hack: 33% fudge factor
+    				Point3 objectPoint = new Point3(x, y, z);
+//    				Point3 objectPoint = new Point3(x/1.33, y/1.33, z/1.33); // =+= hack: 33% fudge factor
     				objectPointsList.add(objectPoint);
     			}
     		}
@@ -199,8 +199,8 @@ public class CubePoseEstimator {
         
         // Package up as CubePose object
         CubePose cubePose = new CubePose();
-        cubePose.x = x * 1.33f;  // =+= hack: 33% fudge factor
-        cubePose.y = y * 1.33f;
+        cubePose.x = x;// * 1.33f;  // =+= hack: 33% fudge factor
+        cubePose.y = y;// * 1.33f;
         cubePose.z = z;
         cubePose.xRotation = rvec.get(0, 0)[0];
         cubePose.yRotation = rvec.get(1, 0)[0];
