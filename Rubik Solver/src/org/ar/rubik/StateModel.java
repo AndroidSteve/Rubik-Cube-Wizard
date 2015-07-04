@@ -98,7 +98,7 @@ public class StateModel {
 	public boolean renderPilotCube = true;
 
 	// Intrinsic Camera Calibration Parameters from hardware.
-	public CameraCalibration cameraParameters;
+	public CameraCalibration cameraCalibration;
 
 	// Processes OpenCV Pose results and maintains 3D Model.
 	public transient KalmanFilter kalmanFilter;

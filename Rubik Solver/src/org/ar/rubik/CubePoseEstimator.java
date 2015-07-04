@@ -128,7 +128,6 @@ public class CubePoseEstimator {
     			    //  o X is zero on the left, and increases to the right.
     			    //  o Y is zero on the top and increases downward.
     				Point imagePoint = new Point( rhombus.center.x, rhombus.center.y);
-//    				Point imagePoint = new Point( 1.5 * rhombus.center.x, 1.5 * rhombus.center.y);
     				imagePointsList.add(imagePoint);
     				
     				// N and M are actual not conceptual (as in design doc).
@@ -148,7 +147,6 @@ public class CubePoseEstimator {
     				float y  = -1.0f;
     				float z  = -1.0f * (1 - nn) * 0.666666f;
     				Point3 objectPoint = new Point3(x, y, z);
-//    				Point3 objectPoint = new Point3(x/1.33, y/1.33, z/1.33); // =+= hack: 33% fudge factor
     				objectPointsList.add(objectPoint);
     			}
     		}
@@ -162,8 +160,8 @@ public class CubePoseEstimator {
 		MatOfPoint3f objectPoints = new MatOfPoint3f();
 		objectPoints.fromList(objectPointsList);
 
-		Mat cameraMatrix          = stateModel.cameraParameters.getOpenCVCameraMatrix();  // =+= This is reference for a screen of 1920 x 1080, but OpenCV image is smaller: 1200 x 780 !!!
-		MatOfDouble distCoeffs    = new MatOfDouble(stateModel.cameraParameters.getDistortionCoefficients());
+		Mat cameraMatrix          = stateModel.cameraCalibration.getOpenCVCameraMatrix();  // =+= This is reference for a screen of 1920 x 1080, but OpenCV image is smaller: 1200 x 780 !!!
+		MatOfDouble distCoeffs    = new MatOfDouble(stateModel.cameraCalibration.getDistortionCoefficients());
 		Mat rvec                  = new Mat();
 		Mat tvec                  = new Mat();	
 		
@@ -199,8 +197,8 @@ public class CubePoseEstimator {
         
         // Package up as CubePose object
         CubePose cubePose = new CubePose();
-        cubePose.x = x;// * 1.33f;  // =+= hack: 33% fudge factor
-        cubePose.y = y;// * 1.33f;
+        cubePose.x = x;
+        cubePose.y = y;
         cubePose.z = z;
         cubePose.xRotation = rvec.get(0, 0)[0];
         cubePose.yRotation = rvec.get(1, 0)[0];

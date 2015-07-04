@@ -37,6 +37,7 @@ package org.ar.rubik.gl;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import org.ar.rubik.Constants;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.CubePose;
@@ -56,6 +57,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 
 /**
@@ -86,7 +88,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	private GLCube2  overlayGLCube;
 
     // Projection Matrix:  basically defines a Frustum 
-    private final float[] mProjectionMatrix = new float[16];
+    private float[] mProjectionMatrix = new float[16];
 
 
 
@@ -150,24 +152,21 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 */
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-	    
-	       if (height == 0) height = 1;   // To prevent divide by zero
 
-	        // Adjust the viewport based on geometry changes
-	        // such as screen rotations
-	        GLES20.glViewport(0, 0, width, height);
-	        
-	        // Calculate screen aspect ratio.  Should be the same as cameras
-	        float ratio = (float) width / height;
+		Log.e(Constants.TAG_CAL, "GLRenderer2.onSurfaceChange: width=" + width + " height=" + height);
 
-	        // this projection matrix is applied to object coordinates
-	        // in the onDrawFrame() method
-	        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 2, 100);
+		if (height == 0) height = 1;   // To prevent divide by zero
+
+		// Adjust the viewport based on geometry changes such as screen rotation
+		// This information must match and parallel the Camera Calibration Matrix used by solvePnp() in CubePoseEstimator.
+		GLES20.glViewport(0, 0, width, height);
+		
+		mProjectionMatrix = stateModel.cameraCalibration.calculateOpenGLProjectionMatrix(width, height);
 	}
 
 
 
-    /**
+	/**
      * On Draw Frame
      * 
      * Possibly Render:
@@ -216,6 +215,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
                 0f, 1.0f, 0.0f);  // Specifies rotation of camera: in this case, standard upwards orientation.
 
 	    // Calculate the projection and view transformation
+        // pvMatrix = mProjectionMatrix * viewMatrix
 	    Matrix.multiplyMM(pvMatrix, 0, mProjectionMatrix, 0, viewMatrix, 0);
 	    
 	    // Render User Instruction Arrows and possibly Overlay Cube
@@ -239,8 +239,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
             // Scale
             // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
-            float scale = (float) MenuAndParams.scaleOffsetParam.value;
-            Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
+//            float scale = (float) MenuAndParams.scaleOffsetParam.value;
+//            Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
                 
             // Render overlay cube at actual position and orientation as transparent.
             // This properly achieves occlusion, but I'm not exactly sure why.
