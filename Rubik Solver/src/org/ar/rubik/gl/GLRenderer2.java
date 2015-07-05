@@ -153,14 +153,15 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 
-		Log.e(Constants.TAG_CAL, "GLRenderer2.onSurfaceChange: width=" + width + " height=" + height);
+		Log.v(Constants.TAG_CAL, "GLRenderer2.onSurfaceChange: width=" + width + " height=" + height);
 
 		if (height == 0) height = 1;   // To prevent divide by zero
 
 		// Adjust the viewport based on geometry changes such as screen rotation
 		// This information must match and parallel the Camera Calibration Matrix used by solvePnp() in CubePoseEstimator.
 		GLES20.glViewport(0, 0, width, height);
-		
+			
+		// Projection Matrix primarily represents field-of-view.
 		mProjectionMatrix = stateModel.cameraCalibration.calculateOpenGLProjectionMatrix(width, height);
 	}
 
@@ -208,7 +209,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
         
         float[] poseRotationMatrix = computePoseRotationMatrix(cubePose);
 
-	    // Set the camera position (View matrix)
+	    // Set the camera position (View matrix), a 4x4 matrix is created.
         Matrix.setLookAtM(viewMatrix, 0,
                 0,    0,    0,    // Camera Location
                 0f,   0f,  -1f,   // Camera points down Z axis.

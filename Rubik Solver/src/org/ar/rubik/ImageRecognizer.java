@@ -127,7 +127,7 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 
 		Mat image = inputFrame.rgba();
 		Size imageSize = image.size();
-		Log.e(Constants.TAG_CAL, "Input Frame width=" + imageSize.width + " height=" + imageSize.height);
+		Log.v(Constants.TAG_CAL, "Input Frame width=" + imageSize.width + " height=" + imageSize.height);
 		
 		// Save or Recall image as requested
 		switch( MenuAndParams.imageSourceMode) {

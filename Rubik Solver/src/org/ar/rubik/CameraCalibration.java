@@ -89,7 +89,7 @@ public class CameraCalibration {
         widthPixels = size.width;
         heightPixels = size.height;
         
-        Log.e(Constants.TAG_CAL, "Reported image size from camera parameters: width=" + size.width + " height=" + size.height);
+        Log.v(Constants.TAG_CAL, "Reported image size from camera parameters: width=" + size.width + " height=" + size.height);
 
 		// Field of View in Radians
 		fovY = parameters.getVerticalViewAngle() * (float)(Math.PI / 180.0);
@@ -192,31 +192,45 @@ public class CameraCalibration {
 		
 		float[] mProjectionMatrix = new float[16];
 		
+//		/*
+//		 * Method 1
+//		 * 
+//		 * Use aspect ratio of reported openGL screen width and height.
+//		 * This produces a nice looking cube, but size is off by 1/3.
+//		 */
+//		float ratio = (float) width / height;
+//		Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 2, 100);
+//		Log.v(Constants.TAG_CAL, "Method 1 Projection Matrix: " + Arrays.toString(mProjectionMatrix));
+//		
+//		
+//		/*
+//		 * Method 2
+//		 * 
+//		 * This uses camera reported Fields of View, and produces a roughly
+//		 * correct size cube, but a bit off and looking a bit funny.
+//		 * 
+//		 * =+= I believe this method is the closer to the correct solution.
+//		 */
+//		float near = 1.0f;
+//		float far  = 20.f;
+//		float right = (float) (Math.tan((double) fovX/2) * near);
+//		float top = (float) (Math.tan((double) fovY/2) * near);
+//		Matrix.frustumM(mProjectionMatrix, 0, -right, right, -top, right, near, far);
+//		Log.v(Constants.TAG_CAL, "Method 2 Projection Matrix: " + Arrays.toString(mProjectionMatrix));
+		
+		
 		/*
-		 * Method 1
+		 * Method 3
 		 * 
-		 * Use aspect ratio of reported openGL screen width and height.
-		 * This produces a nice looking cube, but size is off by 1/3.
+		 * Use camera reported Field of View and screen aspect ratio with the android.opengl.Matrix
+		 * provided member function perspectiveM().  This produces excellent results at 
+		 * screen resolution 1920 x 1080. 
 		 */
 		float ratio = (float) width / height;
-		Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 2, 100);
-		Log.e(Constants.TAG_CAL, "Method 1 Projection Matrix: " + Arrays.toString(mProjectionMatrix));
-		
-		
-		/*
-		 * Method 2
-		 * 
-		 * This uses camera reported Fields of View, and produces a roughly
-		 * correct size cube, but a bit off and looking a bit funny.
-		 * 
-		 * =+= I believe this method is the closer to the correct solution.
-		 */
 		float near = 1.0f;
 		float far  = 20.f;
-		float right = (float) (Math.tan((double) fovX/2) * near);
-		float top = (float) (Math.tan((double) fovY/2) * near);
-		Matrix.frustumM(mProjectionMatrix, 0, -right, right, -top, right, near, far);
-		Log.e(Constants.TAG_CAL, "Method 2 Projection Matrix: " + Arrays.toString(mProjectionMatrix));
+		Matrix.perspectiveM(mProjectionMatrix, 0, (float) (fovY * 180.0 / Math.PI), ratio, near, far);
+		Log.v(Constants.TAG_CAL, "Method 3 Projection Matrix: " + Arrays.toString(mProjectionMatrix));
 		
 		
 		return mProjectionMatrix;
