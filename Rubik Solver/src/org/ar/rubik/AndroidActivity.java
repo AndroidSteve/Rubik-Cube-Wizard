@@ -97,19 +97,9 @@ public class AndroidActivity extends Activity {
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i(Constants.TAG, "OpenCV loaded successfully");
-
-                    
-//            		Camera camera = Camera.open();
-//            		Parameters parameters = camera.getParameters();
-////            		parameters.setPreviewFpsRange(30000, 30000);
-////            		parameters.setPictureSize(1920, 1080);
-//            		parameters.setPreviewSize(1920, 1080);
-//            		camera.setParameters(parameters);
-//            		camera.release();
                     
                     // From this point, eventually calculateCameraFrameSize() is called which determines preview frame size.
                     mOpenCvCameraView.enableView();
-
             		
                 } break;
                 default:
@@ -184,6 +174,7 @@ public class AndroidActivity extends Activity {
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.activity_surface_view); 
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(imageRecognizer);  // Image Recognizer is attached here.
+//        mOpenCvCameraView.setMaxFrameSize(1280, 720);  // =+= temporary for development
         
         
         // Setup and Add GL Surface View and GL Renderer

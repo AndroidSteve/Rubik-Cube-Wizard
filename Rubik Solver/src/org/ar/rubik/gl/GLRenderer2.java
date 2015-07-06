@@ -202,13 +202,19 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 	    
 	    KalmanFilter kalmanFilter = stateModel.kalmanFilter;
-	    if(kalmanFilter == null)
+	    if(kalmanFilter == null) {
+//	        Log.e(Constants.TAG_OPENGL, "GLRender2.onDrawFrame(): Cannot render, no Kalman Filter");
 	    	return;
+	    }
 	    
 	    // Get Cube Pose and check if null: don't render.
 	    CubePose cubePose = kalmanFilter.projectState(System.currentTimeMillis());
-        if(cubePose == null)
-            return;
+        if(cubePose == null) {
+//            Log.e(Constants.TAG_OPENGL, "GLRender2.onDrawFrame(): Cannot render, no Cube Pose");
+        	return;
+        }
+        
+//        Log.e(Constants.TAG_OPENGL, "GLRender2.onDrawFrame(): Good to render");
         
         float[] poseRotationMatrix = computePoseRotationMatrix(cubePose);
 

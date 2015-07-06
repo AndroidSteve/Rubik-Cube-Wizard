@@ -67,6 +67,9 @@ import android.util.Log;
  *
  */
 public class CubePoseEstimator {
+	
+	private static Mat cameraMatrix;
+	private static MatOfDouble distCoeffs;
     
     /**
      * Pose Estimation
@@ -95,6 +98,10 @@ public class CubePoseEstimator {
 		if(rubikFace.rhombusList.size() <= 4)
 			return null;
 		
+		if(cameraMatrix == null) {
+			cameraMatrix  = stateModel.cameraCalibration.getOpenCVCameraMatrix( (int)(image.size().width), (int)(image.size().height));
+			distCoeffs    = new MatOfDouble(stateModel.cameraCalibration.getDistortionCoefficients());
+		}
 		
 		/*
 		 * For the purposes of external camera calibration: i.e., where the cube is 
@@ -160,8 +167,7 @@ public class CubePoseEstimator {
 		MatOfPoint3f objectPoints = new MatOfPoint3f();
 		objectPoints.fromList(objectPointsList);
 
-		Mat cameraMatrix          = stateModel.cameraCalibration.getOpenCVCameraMatrix();  // =+= This is reference for a screen of 1920 x 1080, but OpenCV image is smaller: 1200 x 780 !!!
-		MatOfDouble distCoeffs    = new MatOfDouble(stateModel.cameraCalibration.getDistortionCoefficients());
+
 		Mat rvec                  = new Mat();
 		Mat tvec                  = new Mat();	
 		

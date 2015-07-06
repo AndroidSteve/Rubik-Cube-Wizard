@@ -105,7 +105,7 @@ public class AppStateMachine {
 		// Threshold for the number of times a face must be seen in order to declare it stable.
 		final int consecutiveCandidateCountThreashold = 3;	
 
-		Log.d(Constants.TAG_STATE, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.gestureRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.myHashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.myHashCode) );   	 
+		Log.d(Constants.TAG_STATE, "onFaceEvent() AppState=" + stateModel.appState + " FaceState=" + stateModel.gestureRecogniztionState + " GestureState=" + stateModel.gestureRecogniztionState + " Candidate=" + (candidateRubikFace == null ? 0 : candidateRubikFace.myHashCode) + " NewFace=" + (rubikFace == null ? 0 :rubikFace.myHashCode) );   	 
 
 		// Reset Application State.  All past is forgotten.
 		if(scheduleReset == true) {
@@ -281,7 +281,15 @@ public class AppStateMachine {
 		default:
 			break;
 		}
+		
+		// =+= duplicated !
+		// Create a new Kalman Filter
+		stateModel.kalmanFilter = new KalmanFilter();
+		
+		// Create a new Kalman Filter ALSM machine
+		stateModel.kalmanFilterALSM = new KalmanFilterALSM();
 	}
+	
 	
 	
 	/**
@@ -365,6 +373,7 @@ public class AppStateMachine {
 			break;
 		}
 		
+		// =+= duplicated !
 		// Create a new Kalman Filter
 		stateModel.kalmanFilter = new KalmanFilter();
 		

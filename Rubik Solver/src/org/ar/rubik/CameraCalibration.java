@@ -47,7 +47,6 @@ import org.opencv.core.Mat;
 
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
-import android.hardware.Camera.Size;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -59,9 +58,6 @@ public class CameraCalibration {
 	
 	
 //	private class CalData {
-//		
-//	    // Image size.
-//	    private Size size;
 //
 //	    // Field of horizontal axis view in radians
 //	    private float fovX;
@@ -72,9 +68,6 @@ public class CameraCalibration {
 //	}
 //	private CalData hardcodedCalData;
 //	private CalData defaultCalDada;
-    
-    // Image size.
-    private Size size;
 
     // Field of horizontal axis view in radians
     private float fovX;
@@ -90,21 +83,14 @@ public class CameraCalibration {
 		
 		Camera camera = Camera.open();
 		Parameters parameters = camera.getParameters();
-//		parameters.setPictureSize(1280, 720);  // Or 1920 x 1080
-		parameters.setPictureSize(1920, 1080);
-		parameters.setPreviewSize(1920, 1080);
-		camera.setParameters(parameters);
 		camera.release();
 		
-		size = parameters.getPictureSize();
-        
-        Log.v(Constants.TAG_CAL, "Reported image size from camera parameters: width=" + size.width + " height=" + size.height);
+//        Log.v(Constants.TAG_CAL, "Calibration Camera Parameters: width=" + size.width + " height=" + size.height);
 
 		// Field of View in Radians
 		fovY = parameters.getVerticalViewAngle() * (float)(Math.PI / 180.0);
 		fovX = parameters.getHorizontalViewAngle() * (float)(Math.PI / 180.0);
 		
-
 //      Log.e(Constants.TAG, "Width = " + size.width + " Height = " + size.height);  // 1920 by 1080 reported.
 //      Log.e(Constants.TAG, "dPOV=" + diagnoalFOV + " dPx=" + diagonalPixels);
 //		Log.e(Constants.TAG, "Camera Focal Length in Pixels Calibration: " + focalLengthPixels);
@@ -130,18 +116,20 @@ public class CameraCalibration {
 	 * 
 	 * @return
 	 */
-	public Mat getOpenCVCameraMatrix () {
+	public Mat getOpenCVCameraMatrix(int width, int height) {
+		
+	    Log.v(Constants.TAG_CAL, "CameraCalibration.getOpenCVMatrix(): width=" + width + " height=" + height);
 
-	    double focalLengthXPixels = size.width / ( 2.0 * Math.tan(0.5 * fovX));
-	    double focalLengthYPixels = size.height / ( 2.0 * Math.tan(0.5 * fovY));
+	    double focalLengthXPixels = width / ( 2.0 * Math.tan(0.5 * fovX));
+	    double focalLengthYPixels = height / ( 2.0 * Math.tan(0.5 * fovY));
 
 	    Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
 	    cameraMatrix.put(0, 0, focalLengthXPixels);   // should be X focal length in pixels.
 	    cameraMatrix.put(0, 1, 0.0);
-	    cameraMatrix.put(0, 2, size.width/2.0);
+	    cameraMatrix.put(0, 2, width/2.0);
 	    cameraMatrix.put(1, 0, 0.0);
 	    cameraMatrix.put(1, 1, focalLengthYPixels);  // should be Y focal length in pixels.
-	    cameraMatrix.put(1, 2, size.height/2.0);
+	    cameraMatrix.put(1, 2, height/2.0);
 	    cameraMatrix.put(2, 0, 0.0);
 	    cameraMatrix.put(2, 1, 0.0);
 	    cameraMatrix.put(2, 2, 1.0);
