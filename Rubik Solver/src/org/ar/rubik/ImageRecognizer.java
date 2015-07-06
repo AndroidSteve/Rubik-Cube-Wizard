@@ -89,11 +89,14 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 	/**
 	 * On Camer View Started
 	 * 
+	 * =+= is this called when screen rotates?
+	 * 
 	 *  (non-Javadoc)
 	 * @see org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2#onCameraViewStarted(int, int)
 	 */
 	@Override
 	public void onCameraViewStarted(int width, int height) {
+		stateModel.openCVSize = new Size(width, height);
 	}
 
 	
@@ -128,6 +131,8 @@ public class ImageRecognizer implements CvCameraViewListener2 {
 		Mat image = inputFrame.rgba();
 		Size imageSize = image.size();
 		Log.v(Constants.TAG_CAL, "Input Frame width=" + imageSize.width + " height=" + imageSize.height);
+		if(imageSize.width != stateModel.openCVSize.width || imageSize.height != stateModel.openCVSize.height)
+			Log.e(Constants.TAG_CAL, "State Model openCVSize does not agree with input frame!");
 		
 		// Save or Recall image as requested
 		switch( MenuAndParams.imageSourceMode) {

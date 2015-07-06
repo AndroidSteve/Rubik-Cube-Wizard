@@ -9,6 +9,17 @@
  *   of Smart Glasses, guides a user through the process of solving a Rubik Cube.
  *   
  * File Description:
+ *   
+ *   The Intrinsic Camera Calibration is express as:
+ *   1) The OpenGL Projection Matrix
+ *   2) The OpenCL Pose Camera Matrix
+ *   
+ *   The first valid calibration in the list below is used for The Intrinsic Camera Calibration Source:
+ *   1) Hard-coded (opencv data) values found in final member data hardcodedCalData.
+ *   2) Use data from OpenCV Android Camera Calibration Service if it is installed and valid.
+ *   3) Use data from device manufacturer.
+ *   4) Use hard-coded values found in final member data defaultCalData.
+ *   =+= above is not yet implemented.
  * 
  * License:
  * 
@@ -42,35 +53,35 @@ import android.util.Log;
 
 /**
  * @author android.steve@cl-sw.com
- * 
- * =+= Important Issue: viewing angle has a factor of 2 w.r.t. trig functions.
  *
  */
 public class CameraCalibration {
 	
-	public double focalLengthPixels;
 	
-	// Android Camera Parameters
-    private Parameters parameters;
+//	private class CalData {
+//		
+//	    // Image size.
+//	    private Size size;
+//
+//	    // Field of horizontal axis view in radians
+//	    private float fovX;
+//	    
+//	    // Field of vertical axis view in radians
+//	    private float fovY;
+//		
+//	}
+//	private CalData hardcodedCalData;
+//	private CalData defaultCalDada;
     
-    // Image size.  =+= Will this always be the same as onFrame() arg?
+    // Image size.
     private Size size;
-
-    // Image width in pixels
-    private int widthPixels;
-
-    // Image height in pixels
-    private int heightPixels;
 
     // Field of horizontal axis view in radians
     private float fovX;
     
     // Field of vertical axis view in radians
     private float fovY;
-
-//    private float projectionFieldOfView;
-
-//    private int projectionAspect;
+    
 
 	/**
 	 * Camera Parameters Constructor
@@ -78,7 +89,7 @@ public class CameraCalibration {
 	public CameraCalibration() {
 		
 		Camera camera = Camera.open();
-		parameters = camera.getParameters();
+		Parameters parameters = camera.getParameters();
 //		parameters.setPictureSize(1280, 720);  // Or 1920 x 1080
 		parameters.setPictureSize(1920, 1080);
 		parameters.setPreviewSize(1920, 1080);
@@ -86,8 +97,6 @@ public class CameraCalibration {
 		camera.release();
 		
 		size = parameters.getPictureSize();
-        widthPixels = size.width;
-        heightPixels = size.height;
         
         Log.v(Constants.TAG_CAL, "Reported image size from camera parameters: width=" + size.width + " height=" + size.height);
 
@@ -96,7 +105,7 @@ public class CameraCalibration {
 		fovX = parameters.getHorizontalViewAngle() * (float)(Math.PI / 180.0);
 		
 
-//      Log.e(Constants.TAG, "Width = " + widthPixels + " Height = " + heightPixels);  // 1920 by 1080 reported.
+//      Log.e(Constants.TAG, "Width = " + size.width + " Height = " + size.height);  // 1920 by 1080 reported.
 //      Log.e(Constants.TAG, "dPOV=" + diagnoalFOV + " dPx=" + diagonalPixels);
 //		Log.e(Constants.TAG, "Camera Focal Length in Pixels Calibration: " + focalLengthPixels);
 	}
@@ -123,16 +132,16 @@ public class CameraCalibration {
 	 */
 	public Mat getOpenCVCameraMatrix () {
 
-	    double focalLengthXPixels = widthPixels / ( 2.0 * Math.tan(0.5 * fovX));
-	    double focalLengthYPixels = heightPixels / ( 2.0 * Math.tan(0.5 * fovY));
+	    double focalLengthXPixels = size.width / ( 2.0 * Math.tan(0.5 * fovX));
+	    double focalLengthYPixels = size.height / ( 2.0 * Math.tan(0.5 * fovY));
 
 	    Mat cameraMatrix          = new Mat(3, 3, CvType.CV_64FC1);
 	    cameraMatrix.put(0, 0, focalLengthXPixels);   // should be X focal length in pixels.
 	    cameraMatrix.put(0, 1, 0.0);
-	    cameraMatrix.put(0, 2, widthPixels/2.0);
+	    cameraMatrix.put(0, 2, size.width/2.0);
 	    cameraMatrix.put(1, 0, 0.0);
 	    cameraMatrix.put(1, 1, focalLengthYPixels);  // should be Y focal length in pixels.
-	    cameraMatrix.put(1, 2, heightPixels/2.0);
+	    cameraMatrix.put(1, 2, size.height/2.0);
 	    cameraMatrix.put(2, 0, 0.0);
 	    cameraMatrix.put(2, 1, 0.0);
 	    cameraMatrix.put(2, 2, 1.0);
@@ -140,10 +149,7 @@ public class CameraCalibration {
 	    Log.v(Constants.TAG_CAL, "Android Camera Calibration Matrix: ");
 	    Log.v(Constants.TAG_CAL, cameraMatrix.dump());
 
-//	    // =+= PROBLEM
-//	    // =+= these numbers reflect a 1920 x 1080 screen.
-//	    // =+= Open CV is processing a 1200 x 780
-//	    // =+= And what is OpenGL doing????
+//	    =+= From Android Camera Calibration App at resolution 1920 x 1080
 //	    cameraMatrix.put(0, 0, 1686.1);
 //	    cameraMatrix.put(0, 1, 0.0);
 //	    cameraMatrix.put(0, 2, 959.5);
@@ -162,10 +168,13 @@ public class CameraCalibration {
 	
 	
 	/**
+	 * Return Camera Calibration Coefficients: specifically k1, k1 [, p3, p4 [, k3]] as defined by OpenCV
+	 * 
 	 * @return
 	 */
 	public double[] getDistortionCoefficients() {
 		
+//	    =+= From Android Camera Calibration App at resolution 1920 x 1080
 //		double [] distCoeff =  { 
 //				0.0940951391875556,
 //				0.856988256473992,
@@ -175,6 +184,7 @@ public class CameraCalibration {
 //
 //		return distCoeff;
 		
+		// No distortion coefficients used.
 		return null;
 
 	}

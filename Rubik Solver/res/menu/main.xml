@@ -82,6 +82,7 @@
         <menu>
             <group 
                 android:id="@+id/paramMenuGroup">
+                <!--
                 <item 
                     android:id="@+id/xRotationOffsetMenuItem" 
                     android:title="X Rotation Offset" />
@@ -103,6 +104,7 @@
                 <item 
                     android:id="@+id/scaleOffsetMenuItem" 
                     android:title="Scale Offset" />
+                    -->
                 <item 
                     android:id="@+id/boxBlurKernelSizeMenuItem" 
                     android:title="Gaussian Blur Kernel Size" />

@@ -179,10 +179,10 @@ public class CubePoseEstimator {
 		float y = -1.0f * (float) tvec.get(1, 0)[0];
 		float z = -1.0f * (float) tvec.get(2, 0)[0];
 		
-        // =+= Add manual offset correction to translation  
-        x += MenuAndParams.xTranslationOffsetParam.value;
-        y += MenuAndParams.yTranslationOffsetParam.value;
-        z += MenuAndParams.zTranslationOffsetParam.value;		
+//        // =+= Add manual offset correction to translation  
+//        x += MenuAndParams.xTranslationOffsetParam.value;
+//        y += MenuAndParams.yTranslationOffsetParam.value;
+//        z += MenuAndParams.zTranslationOffsetParam.value;		
 		
 		
 	    // Convert Rotation Vector from OpenCL polarity axes definition to OpenGL definition
@@ -190,10 +190,10 @@ public class CubePoseEstimator {
         rvec.put(1, 0, -1.0f * rvec.get(1, 0)[0]);  // y-axis
         rvec.put(2, 0, -1.0f * rvec.get(2, 0)[0]);  // z-axis
  
-        // =+= Add manual offset correction to Rotation
-        rvec.put(0, 0, rvec.get(0, 0)[0] + MenuAndParams.xRotationOffsetParam.value * Math.PI / 180.0);  // X rotation
-        rvec.put(1, 0, rvec.get(1, 0)[0] + MenuAndParams.yRotationOffsetParam.value * Math.PI / 180.0);  // Y rotation
-        rvec.put(2, 0, rvec.get(2, 0)[0] + MenuAndParams.zRotationOffsetParam.value * Math.PI / 180.0);  // Z rotation
+//        // =+= Add manual offset correction to Rotation
+//        rvec.put(0, 0, rvec.get(0, 0)[0] + MenuAndParams.xRotationOffsetParam.value * Math.PI / 180.0);  // X rotation
+//        rvec.put(1, 0, rvec.get(1, 0)[0] + MenuAndParams.yRotationOffsetParam.value * Math.PI / 180.0);  // Y rotation
+//        rvec.put(2, 0, rvec.get(2, 0)[0] + MenuAndParams.zRotationOffsetParam.value * Math.PI / 180.0);  // Z rotation
         
         // Package up as CubePose object
         CubePose cubePose = new CubePose();

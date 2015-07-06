@@ -37,11 +37,13 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+
 import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.AppStateEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 
 import android.opengl.Matrix;
 import android.os.Environment;
@@ -108,6 +110,12 @@ public class StateModel {
 
 	// Cube Location and Orientation deduced from Face.
 	public transient CubePose cubePose;
+	
+	// Display size of JavaCameraView and OpenCV InputFrame
+	public transient Size openCVSize;
+	
+	// Display size of OpenGL Rendering Surface
+	public transient Size openGLSize;
 	
 	// =+= DO
 	// Objects Kalman filter and Cube Reconstructor should be member data of Image Recognizer

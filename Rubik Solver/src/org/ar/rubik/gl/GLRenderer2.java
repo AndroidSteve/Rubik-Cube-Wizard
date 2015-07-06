@@ -52,6 +52,7 @@ import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -154,6 +155,8 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 
 		Log.v(Constants.TAG_CAL, "GLRenderer2.onSurfaceChange: width=" + width + " height=" + height);
+		
+		stateModel.openGLSize = new Size(width, height);
 
 		if (height == 0) height = 1;   // To prevent divide by zero
 

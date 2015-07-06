@@ -95,14 +95,14 @@ public class MenuAndParams {
 	 * These typically have been found empirically with respect to what works best.
 	 */
     
-    // Manual offset to Pose Estimator (i.e., opencv solvepnp()) results.
-    public static RubikMenuParam xRotationOffsetParam        = new RubikMenuParam("X Rotation Offset",         -20.0,  +20.0,   +0.0);
-    public static RubikMenuParam yRotationOffsetParam        = new RubikMenuParam("Y Rotation Offset",         -20.0,  +20.0,   +0.0);
-    public static RubikMenuParam zRotationOffsetParam        = new RubikMenuParam("Z Rotation Offset",         -20.0,  +20.0,   +0.0);
-    public static RubikMenuParam xTranslationOffsetParam     = new RubikMenuParam("X Translation Offset",      -2.0,    +2.0,   +0.0);
-    public static RubikMenuParam yTranslationOffsetParam     = new RubikMenuParam("Y Translation Offset",      -2.0,    +2.0,   -0.0);
-    public static RubikMenuParam zTranslationOffsetParam     = new RubikMenuParam("Z Translation Offset",      -2.0,    +2.0,   +0.0);
-    public static RubikMenuParam scaleOffsetParam            = new RubikMenuParam("Scale Offset",              +0.5,    +2.0,   +1.0);
+//    // Manual offset to Pose Estimator (i.e., opencv solvepnp()) results.
+//    public static RubikMenuParam xRotationOffsetParam        = new RubikMenuParam("X Rotation Offset",         -20.0,  +20.0,   +0.0);
+//    public static RubikMenuParam yRotationOffsetParam        = new RubikMenuParam("Y Rotation Offset",         -20.0,  +20.0,   +0.0);
+//    public static RubikMenuParam zRotationOffsetParam        = new RubikMenuParam("Z Rotation Offset",         -20.0,  +20.0,   +0.0);
+//    public static RubikMenuParam xTranslationOffsetParam     = new RubikMenuParam("X Translation Offset",      -2.0,    +2.0,   +0.0);
+//    public static RubikMenuParam yTranslationOffsetParam     = new RubikMenuParam("Y Translation Offset",      -2.0,    +2.0,   -0.0);
+//    public static RubikMenuParam zTranslationOffsetParam     = new RubikMenuParam("Z Translation Offset",      -2.0,    +2.0,   +0.0);
+//    public static RubikMenuParam scaleOffsetParam            = new RubikMenuParam("Scale Offset",              +0.5,    +2.0,   +1.0);
 
     
 	// Gaussian Blur Kernal Size
@@ -268,34 +268,34 @@ public class MenuAndParams {
             break;
 
 
-			// Adjustable Parameters
-		case R.id.xRotationOffsetMenuItem:
-		    seekerDialogNew(xRotationOffsetParam, ma);
-		    break;
-
-		case R.id.yRotationOffsetMenuItem:
-		    seekerDialogNew(yRotationOffsetParam, ma);
-		    break;
-
-		case R.id.zRotationOffsetMenuItem:
-		    seekerDialogNew(zRotationOffsetParam, ma);
-		    break;
-
-		case R.id.xTranslationOffsetMenuItem:
-		    seekerDialogNew(xTranslationOffsetParam, ma);
-		    break;
-
-		case R.id.yTranslationOffsetMenuItem:
-		    seekerDialogNew(yTranslationOffsetParam, ma);
-		    break;
-
-        case R.id.zTranslationOffsetMenuItem:
-            seekerDialogNew(zTranslationOffsetParam, ma);
-            break;
-            
-        case R.id.scaleOffsetMenuItem:
-            seekerDialogNew(scaleOffsetParam, ma);
-            break;
+//			// Adjustable Parameters
+//		case R.id.xRotationOffsetMenuItem:
+//		    seekerDialogNew(xRotationOffsetParam, ma);
+//		    break;
+//
+//		case R.id.yRotationOffsetMenuItem:
+//		    seekerDialogNew(yRotationOffsetParam, ma);
+//		    break;
+//
+//		case R.id.zRotationOffsetMenuItem:
+//		    seekerDialogNew(zRotationOffsetParam, ma);
+//		    break;
+//
+//		case R.id.xTranslationOffsetMenuItem:
+//		    seekerDialogNew(xTranslationOffsetParam, ma);
+//		    break;
+//
+//		case R.id.yTranslationOffsetMenuItem:
+//		    seekerDialogNew(yTranslationOffsetParam, ma);
+//		    break;
+//
+//        case R.id.zTranslationOffsetMenuItem:
+//            seekerDialogNew(zTranslationOffsetParam, ma);
+//            break;
+//            
+//        case R.id.scaleOffsetMenuItem:
+//            seekerDialogNew(scaleOffsetParam, ma);
+//            break;
 
 		case R.id.boxBlurKernelSizeMenuItem:
 			seekerDialogNew(gaussianBlurKernelSizeParam, ma);
