@@ -285,7 +285,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 
             // Instead of using pose esitmator coordinates, instead position cube at
             // fix location.  We really just desire to observe rotation.
-            Matrix.translateM(mvpMatrix, 0, -6.0f, 0.0f, -10.0f);
+            Matrix.translateM(mvpMatrix, 0, -6.0f, 0.0f, -15.0f);
 
             // Rotation Cube per Pose Estimator 
             GLUtil.rotateMatrix(mvpMatrix, poseRotationMatrix);
