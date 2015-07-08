@@ -38,7 +38,7 @@
 package org.ar.rubik;
 
 
-import org.ar.rubik.gl.GLRenderer2;
+import org.ar.rubik.gl.GLRenderer;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -187,7 +187,7 @@ public class AndroidActivity extends Activity {
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
         frameLayout.addView(gLSurfaceView);
-        GLRenderer2 gLRenderer = new GLRenderer2(stateModel, this);
+        GLRenderer gLRenderer = new GLRenderer(stateModel, this);
         gLSurfaceView.setRenderer(gLRenderer);
 
         // =+= Currently not in use, but is used to support OpenCL

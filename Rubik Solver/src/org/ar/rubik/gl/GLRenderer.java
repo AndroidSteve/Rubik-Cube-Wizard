@@ -46,8 +46,8 @@ import org.ar.rubik.MenuAndParams;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.StateModel;
 import org.ar.rubik.Util;
-import org.ar.rubik.gl.GLArrow2.Amount;
-import org.ar.rubik.gl.GLCube2.Transparency;
+import org.ar.rubik.gl.GLArrow.Amount;
+import org.ar.rubik.gl.GLCube.Transparency;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -64,7 +64,7 @@ import android.util.Log;
 /**
  *  OpenGL Custom renderer used with GLSurfaceView 
  */
-public class GLRenderer2 implements GLSurfaceView.Renderer {
+public class GLRenderer implements GLSurfaceView.Renderer {
 	
 	// Requested Rotation Type
 	public enum Rotation { CLOCKWISE, COUNTER_CLOCKWISE, ONE_HUNDRED_EIGHTY };
@@ -82,11 +82,11 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
     int programID;
     
 	// GL Objects that can be rendered
-	private GLArrow2 arrowQuarterTurn;
-	private GLArrow2 arrowHalfTurn;
-	private GLCube2  occlusionGLCube;
-    private GLCube2  pilotGLCube;
-	private GLCube2  overlayGLCube;
+	private GLArrow arrowQuarterTurn;
+	private GLArrow arrowHalfTurn;
+	private GLCube  occlusionGLCube;
+    private GLCube  pilotGLCube;
+	private GLCube  overlayGLCube;
 
     // Projection Matrix:  basically defines a Frustum 
     private float[] mProjectionMatrix = new float[16];
@@ -99,7 +99,7 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	 * @param stateModel
 	 * @param androidActivity 
 	 */
-	public GLRenderer2(StateModel stateModel, Context context) {
+	public GLRenderer(StateModel stateModel, Context context) {
 		
 		this.stateModel = stateModel;
 		this.context = context;
@@ -131,17 +131,17 @@ public class GLRenderer2 implements GLSurfaceView.Renderer {
 	    GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	    // Create the GL pilot cube
-	    pilotGLCube = new GLCube2(stateModel);
+	    pilotGLCube = new GLCube(stateModel);
 
 	    // Create the GL occlusion cube
-	    occlusionGLCube = new GLCube2(stateModel);
+	    occlusionGLCube = new GLCube(stateModel);
 	    
 	    // Create the GL overlay cube
-	    overlayGLCube = new GLCube2(stateModel);
+	    overlayGLCube = new GLCube(stateModel);
 	    
 	    // Create two arrows: one half turn, one quarter turn.
-	    arrowQuarterTurn = new GLArrow2(Amount.QUARTER_TURN);
-	    arrowHalfTurn = new GLArrow2(Amount.HALF_TURN);
+	    arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
+	    arrowHalfTurn = new GLArrow(Amount.HALF_TURN);
 	}
 
 

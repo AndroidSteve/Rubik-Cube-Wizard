@@ -48,7 +48,7 @@ import android.opengl.GLES20;
 /**
  * An arrow in three-dimensional space for use as a drawn object in OpenGL ES 2.0.
  */
-public class GLArrow2 {
+public class GLArrow {
 
     public enum Amount { QUARTER_TURN, HALF_TURN };
     
@@ -79,7 +79,7 @@ public class GLArrow2 {
      * Sets up the drawing object data for use in an OpenGL ES context.
      * @param programID2 
      */
-    public GLArrow2(Amount amount) {
+    public GLArrow(Amount amount) {
         
         double angleScale = (amount == Amount.QUARTER_TURN) ? 1.0 : 3.0;
         

@@ -53,7 +53,7 @@ import android.opengl.GLES20;
 /**
  * A three-dimensional cube use as a drawn object in OpenGL ES 2.0.
  */
-public class GLCube2 {
+public class GLCube {
     
     public enum Transparency { OPAQUE, TRANSLUCENT, TRANSPARENT, WIREFRAME };
     
@@ -125,7 +125,7 @@ public class GLCube2 {
      * @param stateModel 
      * @param programID2 
      */
-    public GLCube2(StateModel stateModel) {
+    public GLCube(StateModel stateModel) {
         
         this.stateModel = stateModel;
         
