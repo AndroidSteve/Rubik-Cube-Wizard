@@ -86,7 +86,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	private GLArrow arrowHalfTurn;
 	private GLCube  occlusionGLCube;
     private GLCube  pilotGLCube;
-	private GLCube  overlayGLCube;
+	private GLOverlayCube  overlayGLCube;
 
     // Projection Matrix:  basically defines a Frustum 
     private float[] mProjectionMatrix = new float[16];
@@ -137,7 +137,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	    occlusionGLCube = new GLCube(stateModel);
 	    
 	    // Create the GL overlay cube
-	    overlayGLCube = new GLCube(stateModel);
+	    overlayGLCube = new GLOverlayCube(stateModel);
 	    
 	    // Create two arrows: one half turn, one quarter turn.
 	    arrowQuarterTurn = new GLArrow(Amount.QUARTER_TURN);
@@ -258,7 +258,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             
             // Render wire frame cube overlay
             if(MenuAndParams.cubeOverlayDisplay == true)
-            	overlayGLCube.draw(mvpMatrix, Transparency.WIREFRAME, programID);
+            	overlayGLCube.draw(mvpMatrix, programID);
             
             // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
             switch(stateModel.appState) {
