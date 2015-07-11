@@ -92,6 +92,9 @@ public class Annotation {
 		
 		drawFaceOverlayAnnotation(image);
 		
+		drawFaceTileSymbolsAnnotation(image);
+		
+		
 		if(MenuAndParams.annotationMode != AnnotationModeEnum.NORMAL)
 			stateModel.renderPilotCube = false;
 		
@@ -139,7 +142,8 @@ public class Annotation {
 		return image;
 	}
 
-   
+ 
+
 
 	/**
 	 * Draw Unfolded Cube Layout Representations
@@ -309,19 +313,19 @@ public class Annotation {
 //			}
 //		}
 		
-		// Draw reported Logical Tile Color Characters in center of each tile.
-		if(face.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED)
-			for(int n=0; n<3; n++) {
-				for(int m=0; m<3; m++) {
-
-					// Draw tile character in UV plane
-					Point tileCenterInPixels = face.getTileCenterInPixels(n, m);
-					tileCenterInPixels.x -= 10.0;
-					tileCenterInPixels.y += 10.0;
-					String text = Character.toString(face.observedTileArray[n][m].symbol);
-					Core.putText(img, text, tileCenterInPixels, Constants.FontFace, 3, ColorTileEnum.BLACK.cvColor, 3);
-				}
-			}
+//		// Draw reported Logical Tile Color Characters in center of each tile.
+//		if(face.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED)
+//			for(int n=0; n<3; n++) {
+//				for(int m=0; m<3; m++) {
+//
+//					// Draw tile character in UV plane
+//					Point tileCenterInPixels = face.getTileCenterInPixels(n, m);
+//					tileCenterInPixels.x -= 10.0;
+//					tileCenterInPixels.y += 10.0;
+//					String text = Character.toString(face.observedTileArray[n][m].symbol);
+//					Core.putText(img, text, tileCenterInPixels, Constants.FontFace, 3, ColorTileEnum.BLACK.cvColor, 3);
+//				}
+//			}
 		
 		// Also draw recognized Rhombi for clarity.
 		if(face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
@@ -329,7 +333,39 @@ public class Annotation {
 				rhombus.draw(img, ColorTileEnum.GREEN.cvColor);
 	}
 
-	
+    
+    
+
+    /**
+     * Draw Face Tile Symbols Annotation
+     * 
+     * @param image
+     */
+    private void drawFaceTileSymbolsAnnotation(Mat image) {
+
+    	RubikFace face = stateModel.activeRubikFace;
+
+    	if(MenuAndParams.symbolOverlayDisplay == false)
+    		return;
+
+    	if(face == null)
+    		return;
+
+    	// Draw reported Logical Tile Color Characters in center of each tile.
+    	if(face.faceRecognitionStatus == FaceRecognitionStatusEnum.SOLVED)
+    		for(int n=0; n<3; n++) {
+    			for(int m=0; m<3; m++) {
+
+    				// Draw tile character in UV plane
+    				Point tileCenterInPixels = face.getTileCenterInPixels(n, m);
+    				tileCenterInPixels.x -= 10.0;
+    				tileCenterInPixels.y += 10.0;
+    				String text = Character.toString(face.observedTileArray[n][m].symbol);
+    				Core.putText(image, text, tileCenterInPixels, Constants.FontFace, 3, ColorTileEnum.BLACK.cvColor, 3);
+    			}
+    		}
+    }
+
 
 	/**
 	 * Draw Rhombus Recognition Metrics

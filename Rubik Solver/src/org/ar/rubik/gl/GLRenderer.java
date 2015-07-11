@@ -264,7 +264,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             switch(stateModel.appState) {
 
             case ROTATE_CUBE:
-            	if(MenuAndParams.cubeOverlayDisplay == false)  // Don't draw arrows if we are examining pose: too confusing.
+//            	if(MenuAndParams.cubeOverlayDisplay == false)  // Don't draw arrows if we are examining pose: too confusing.
             		renderCubeFullRotationArrow(mvpMatrix, getRotationInDegrees());
             	break;
 

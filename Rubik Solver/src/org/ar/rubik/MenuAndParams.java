@@ -64,10 +64,13 @@ public class MenuAndParams {
 	public static boolean userTextDisplay = true;
 	
     // Toggle Cube Overlay
-    public static boolean cubeOverlayDisplay = false;
+    public static boolean cubeOverlayDisplay = true;
 
     // Toggle Face Overlay
-    public static boolean faceOverlayDisplay = true;
+    public static boolean faceOverlayDisplay = false;
+    
+    // Toggle Symbol Overlay
+    public static boolean symbolOverlayDisplay = true;
 
     // Toggle Face Overlay
     public static boolean pilotCubeDisplay = true;
@@ -362,6 +365,10 @@ public class MenuAndParams {
 
         case R.id.toggleFaceOverlayMenuItem:
             faceOverlayDisplay ^= true;
+            break;
+
+        case R.id.toggleSymbolOverlayMenuItem:
+            symbolOverlayDisplay ^= true;
             break;
 
         case R.id.toggleCubeOverlayMenuItem:

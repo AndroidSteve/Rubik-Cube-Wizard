@@ -41,8 +41,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import org.ar.rubik.Constants;
 import org.ar.rubik.StateModel;
-
 import android.opengl.GLES20;
 
 /**
@@ -54,7 +54,6 @@ public class GLOverlayCube {
     private FloatBuffer vertexBuffer;
 
     // Used to obtain center tile color information
-    @SuppressWarnings("unused")
 	private StateModel stateModel; 
 
     // number of coordinates per vertex in this array
@@ -66,8 +65,9 @@ public class GLOverlayCube {
     // number of total bytes in vertex stride: 12 in this case.
     private static final int VERTEX_STRIDE = COORDS_PER_VERTEX * BYTES_PER_FLOAT;
 
-    // An opaque white OpenGL color
-    private static float [] opaqueWhite = { 1.0f, 1.0f, 1.0f, 1.0f};
+    // OpenGL Colors
+    private static float [] opaqueRed =   { 1.0f, 0.0f, 0.0f, 1.0f};
+    private static float [] opaqueGreen = { 0.0f, 1.0f, 0.0f, 1.0f};
     
     // Cube will be 2 units on a side by this definition and vertices table.
     private static final float unit = 1.01f / 3.0f;
@@ -209,9 +209,15 @@ public class GLOverlayCube {
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mvpMatrixID, 1, false, mvpMatrix, 0);
         GLUtil.checkGlError("glUniformMatrix4fv");
-        
-        // White line color
-    	GLES20.glUniform4fv(colorID, 1, opaqueWhite, 0);
+
+        // Select Red or Green lie color.
+        if(stateModel.gestureRecogniztionState == Constants.GestureRecogniztionStateEnum.STABLE ||
+        		stateModel.gestureRecogniztionState == Constants.GestureRecogniztionStateEnum.NEW_STABLE)
+        	// Green line color
+        	GLES20.glUniform4fv(colorID, 1, opaqueGreen, 0);
+        else
+        	// Red line color
+        	GLES20.glUniform4fv(colorID, 1, opaqueRed, 0);
     	
     	// Five pixel width ?
     	GLES20.glLineWidth(5.0f);

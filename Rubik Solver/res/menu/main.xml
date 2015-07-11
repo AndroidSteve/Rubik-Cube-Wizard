@@ -171,7 +171,10 @@
         			android:title="Toggle User Text"/>   
     			<item
         			android:id="@+id/toggleFaceOverlayMenuItem"
-        			android:title="Toggle Face Overlay"/>
+        			android:title="Toggle Face Overlay"/>   
+    			<item
+        			android:id="@+id/toggleSymbolOverlayMenuItem"
+        			android:title="Toggle Symbol Overlay"/>
     			<item
         			android:id="@+id/toggleCubeOverlayMenuItem"
         			android:title="Toggle Cube Overlay"/>

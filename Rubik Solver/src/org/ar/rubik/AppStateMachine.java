@@ -143,6 +143,11 @@ public class AppStateMachine {
 				stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.PENDING;
 				candidateRubikFace = rubikFace;
 				consecutiveCandiateRubikFaceCount = 0;
+				
+				// Create a new Kalman Filter
+				stateModel.kalmanFilter = new KalmanFilter();
+				// Create a new Kalman Filter ALSM machine
+				stateModel.kalmanFilterALSM = new KalmanFilterALSM();
 			}
 			else
 				; // stay in unknown state.
@@ -173,11 +178,23 @@ public class AppStateMachine {
 				}
 				//        			else if(false)
 					//        				;// =+= add partial match here
-				else
+				else {
 					stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.UNKNOWN;
+					// =+= triplicated
+					stateModel.kalmanFilter = null;
+					if(stateModel.kalmanFilterALSM != null)
+						stateModel.kalmanFilterALSM.calculateResults();
+					stateModel.kalmanFilterALSM = null;
+				}
 			}
-			else
-				stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.UNKNOWN;	
+			else {
+				stateModel.gestureRecogniztionState = GestureRecogniztionStateEnum.UNKNOWN;
+				// =+= triplicated
+				stateModel.kalmanFilter = null;
+				if(stateModel.kalmanFilterALSM != null)
+					stateModel.kalmanFilterALSM.calculateResults();
+				stateModel.kalmanFilterALSM = null;
+			}
 			break;
 
 
@@ -281,13 +298,6 @@ public class AppStateMachine {
 		default:
 			break;
 		}
-		
-		// =+= duplicated !
-		// Create a new Kalman Filter
-		stateModel.kalmanFilter = new KalmanFilter();
-		
-		// Create a new Kalman Filter ALSM machine
-		stateModel.kalmanFilterALSM = new KalmanFilterALSM();
 	}
 	
 	
@@ -314,6 +324,7 @@ public class AppStateMachine {
 			break;
 		}
 		
+		// =+= triplicated
 		stateModel.kalmanFilter = null;
 		if(stateModel.kalmanFilterALSM != null)
 			stateModel.kalmanFilterALSM.calculateResults();
@@ -340,10 +351,10 @@ public class AppStateMachine {
 
 		case START:
 			stateModel.adopt(candidateRubikFace);
-			if( MenuAndParams.cubeOverlayDisplay == false) {  // If true, we are in a diagnostic mode.
+//			if( MenuAndParams.cubeOverlayDisplay == false) {  // If true, we are in a diagnostic mode.
 				stateModel.appState = AppStateEnum.GOT_IT;
 				gotItCount = 0;
-			}
+//			}
 			break;
 
 		case SEARCHING:
@@ -372,13 +383,6 @@ public class AppStateMachine {
 		default:
 			break;
 		}
-		
-		// =+= duplicated !
-		// Create a new Kalman Filter
-		stateModel.kalmanFilter = new KalmanFilter();
-		
-		// Create a new Kalman Filter ALSM machine
-		stateModel.kalmanFilterALSM = new KalmanFilterALSM();
 	}
 	
 	

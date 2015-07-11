@@ -177,6 +177,7 @@ public class AndroidActivity extends Activity {
         
         
         // Setup and Add GL Surface View and GL Renderer
+        // =+= this could possibly instantiated in surface_view.xml
         gLSurfaceView = new GLSurfaceView(this);
         gLSurfaceView.setEGLContextClientVersion(2);         // Create an OpenGL ES 2.0 context.
         gLSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
@@ -186,7 +187,7 @@ public class AndroidActivity extends Activity {
         		new FrameLayout.LayoutParams(
         				FrameLayout.LayoutParams.MATCH_PARENT,
         				FrameLayout.LayoutParams.MATCH_PARENT));
-        frameLayout.addView(gLSurfaceView);
+        frameLayout.addView(gLSurfaceView);  // Frame Layout will add OpenGL view over OpenCV view above 
         GLRenderer gLRenderer = new GLRenderer(stateModel, this);
         gLSurfaceView.setRenderer(gLRenderer);
 
