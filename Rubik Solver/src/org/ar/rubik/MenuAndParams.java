@@ -80,6 +80,9 @@ public class MenuAndParams {
     
     // Toggle Kalman Filter ALSM Activity
     public static boolean kalmanFilterASLM = false;
+    
+    // Toggle Camera Calibration Diagnostic Mode
+    public static boolean cameraCalDiagMode = false;
         
     // Specifies where image comes from
     public static ImageSourceModeEnum imageSourceMode = ImageSourceModeEnum.NORMAL;
@@ -381,6 +384,10 @@ public class MenuAndParams {
 
         case R.id.toggleKalmanFilterMenuItem:
             kalmanFilter ^= true;
+            break;
+
+        case R.id.toggleCalDiagMenuItem:
+            cameraCalDiagMode ^= true;
             break;
 		}
 

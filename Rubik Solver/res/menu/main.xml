@@ -184,6 +184,9 @@
     			<item
         			android:id="@+id/toggleKalmanFilterMenuItem"
         			android:title="Toggle Kalman Filter"/>
+    			<item
+        			android:id="@+id/toggleCalDiagMenuItem"
+        			android:title="Toggle Cal Diag Mode"/>
             </group>   
         </menu>
     </item>

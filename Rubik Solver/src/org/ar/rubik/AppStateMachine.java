@@ -351,10 +351,12 @@ public class AppStateMachine {
 
 		case START:
 			stateModel.adopt(candidateRubikFace);
-//			if( MenuAndParams.cubeOverlayDisplay == false) {  // If true, we are in a diagnostic mode.
+			
+			// In camera calibration diagnostic mode, don't progress states.
+			if(MenuAndParams.cameraCalDiagMode == false) {
 				stateModel.appState = AppStateEnum.GOT_IT;
 				gotItCount = 0;
-//			}
+			}
 			break;
 
 		case SEARCHING:

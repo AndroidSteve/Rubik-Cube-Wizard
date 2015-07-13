@@ -16,24 +16,26 @@ Notice:
 
 To Do:
 
-  o  Calculate true Kalman Filter Gain feedback matrix
+
+  o  Improve frame rate, try out OpenCV 3.0 technology
   o  Change scan rotation so that pilot cube is more interesting
-  o  Setup device configuration support
-  o  
   o  Perform Edge detection on all three colors, drop grey scale step
+  o  Add user error recovery:
+     - top face as expected, but rotated
+     - different face being shown
+     - incorrect edge rotated
   o  Time and CPU measurements.  Possible use of DDMS
   o  Create image recognition test suite.
-  o  Improve frame rate, possible turn on OpenCL flag to OpenCV technology.
+  
+  o  Setup device configuration support
   o  Refactor and clean up state machines.
   o  Make gesture recognition process with respect to time instead of frames to be CPU independent.
   o  Introduce real Pilot Cube that demonstrates requested user activity.
-  o  Edge detection on 3 colors instead of just greyscale?
-  o  Improve Camera Calibration:
-     - Evaluate openCV checkboard calibration.
-     - Determine how to handle screen size != camera image size issue.
-     - Goal is accurate rendering without any need for corrections.
+  o  Edge detection on 3 colors instead of just greyscale?s.
   o  Custom OpenCL functions?
   o  Switch to Android Studio
+
+  o  Calculate true Kalman Filter Gain feedback matrix
   
 Open Issues:
   o  What if hardware does not provide intrinsic camera calibration parameters? 

@@ -260,21 +260,20 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             if(MenuAndParams.cubeOverlayDisplay == true)
             	overlayGLCube.draw(mvpMatrix, programID);
             
-            // Possibly Render either Entire Cube Rotation arrow or Cube Edge Rotation arrow.
-            switch(stateModel.appState) {
+			// Camera Calibration Diagnostic Test : Continually rotate an arrow through 360 degrees.
+			if (MenuAndParams.cameraCalDiagMode == true) {
+				renderTestRotationArrow(mvpMatrix, 4 * getRotationInDegrees());
+			}
 
-            case ROTATE_CUBE:
-//            	if(MenuAndParams.cubeOverlayDisplay == false)  // Don't draw arrows if we are examining pose: too confusing.
-            		renderCubeFullRotationArrow(mvpMatrix, getRotationInDegrees());
-            	break;
+			// Render big Rotate Cube Arrow
+			else if (stateModel.appState == AppStateEnum.ROTATE_CUBE) {
+				renderCubeFullRotationArrow(mvpMatrix, getRotationInDegrees());
+			}
 
-            case ROTATE_FACE:
-                renderCubeEdgeRotationArrow(mvpMatrix, getRotationInDegrees());
-                break;
-
-            default:
-                break;
-            }
+			// Render more slender Edge Rotate Arrow
+			else if (stateModel.appState == AppStateEnum.ROTATE_FACE) {
+				renderCubeEdgeRotationArrow(mvpMatrix, getRotationInDegrees());
+			}	
         }
 
 	    
@@ -379,13 +378,37 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 
 		// Calculate arrow animation rotation.
-		int arrowRotationInDegrees = (int) (( (time - timeReference) / 10 ) % 90);
+		int rate = MenuAndParams.cameraCalDiagMode ? 20 : 10; 
+		int arrowRotationInDegrees = (int) (( (time - timeReference) / rate ) % 90);
 		return arrowRotationInDegrees;
 	}
 	private boolean rotationActive = false;
 	private long timeReference = 0;;
 	
 	
+
+
+
+	/**
+	 * Render Test Rotation Arrow
+	 * 
+	 * Render an arrow that rotates 360 degrees around cube
+	 * 
+	 * @param mvpMatrix
+	 * @param arrowRotationInDegrees 
+	 * @param i
+	 */
+	private void renderTestRotationArrow(float[] mvpMatrix, int arrowRotationInDegrees) {
+
+		// Rotate arrow to give impression of movement.
+		Matrix.rotateM(mvpMatrix, 0, -1 * arrowRotationInDegrees + 180, 0.0f, 0.0f, 1.0f);
+
+		// Change Arrow Scale: make bigger and narrower
+		Matrix.scaleM(mvpMatrix, 0, 2.0f, 2.0f, 0.5f);
+
+		// Render Quarter Turn Arrow
+		arrowQuarterTurn.draw(mvpMatrix, ColorTileEnum.WHITE.cvColor, programID);		
+	}
     
     /**
 	 * Render Cube Edge Rotation Arrow
