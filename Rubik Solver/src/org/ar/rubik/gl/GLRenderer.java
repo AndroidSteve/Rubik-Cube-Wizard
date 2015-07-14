@@ -248,7 +248,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             //GLUtil.rotateMatrix(mvpMatrix, stateModel.additionalGLCubeRotation);
 
             // Scale
-            // =+= I believe the need for this has something to do with the difference between camera and screen dimensions.
+            // Not in use since correct calibration was achieved.
 //            float scale = (float) MenuAndParams.scaleOffsetParam.value;
 //            Matrix.scaleM(mvpMatrix, 0, scale, scale, scale);
                 
@@ -259,6 +259,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
             // Render wire frame cube overlay
             if(MenuAndParams.cubeOverlayDisplay == true)
             	overlayGLCube.draw(mvpMatrix, programID);
+            
             
 			// Camera Calibration Diagnostic Test : Continually rotate an arrow through 360 degrees.
 			if (MenuAndParams.cameraCalDiagMode == true) {
@@ -500,6 +501,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		else
 	         Matrix.rotateM(mvpMatrix, 0, -1 * arrowRotationInDegrees, 0.0f, 0.0f, 1.0f);  // 0 -> -90 degrees Z rotation
 		
+		// Set radius to 1.5 units.
+		Matrix.scaleM(mvpMatrix, 0, 1.5f, 1.5f, 1.0f);
+		
  
 		if(amount == Amount.QUARTER_TURN)
 			arrowQuarterTurn.draw(mvpMatrix, color, programID);
@@ -521,16 +525,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	 */
 	private void renderCubeFullRotationArrow(final float[] mvpMatrix, int arrowRotationInDegrees) {
 	            
-		// Render Front Face to Top Face Arrow Rotation
+		// Render arrow front to top, or right side to top.
 		if(stateModel.getNumObservedFaces() % 2 == 0) {
-            Matrix.translateM(mvpMatrix, 0, 0.0f, +1.5f, +1.5f);
             Matrix.rotateM(mvpMatrix, 0, -90f, 0.0f, 1.0f, 0.0f);  // Y rotation of -90
 		}
-		
-		// Render Right Face to Top Face Arrow Rotation
-		else {
-            Matrix.translateM(mvpMatrix, 0, +1.5f, +1.5f, 0.0f);
-		}	
 
 		// Roate arrow to give impression of movement.  Also, start back at -60 degrees: looks better.
         Matrix.rotateM(mvpMatrix, 0, arrowRotationInDegrees - 60, 0.0f, 0.0f, 1.0f);  // -60 -> +30 degrees Z rotation
@@ -539,8 +537,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         Matrix.rotateM(mvpMatrix, 0, -90f,  0.0f, 0.0f, 1.0f);  // Z rotation of -90
         Matrix.rotateM(mvpMatrix, 0, +180f, 0.0f, 1.0f, 0.0f);  // Y rotation of +180
 
-		// Make Arrow Wider than normal by a factor of three.
-        Matrix.scaleM(mvpMatrix, 0, 1.0f, 1.0f, 3.0f);
+		// Make Arrow Wider than normal by a factor of three and also with a 2 unit radius.
+        Matrix.scaleM(mvpMatrix, 0, 2.0f, 2.0f, 3.0f);
 		
 		// Render Quarter Turn Arrow
 		arrowQuarterTurn.draw(mvpMatrix, ColorTileEnum.WHITE.cvColor, programID);

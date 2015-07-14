@@ -118,7 +118,7 @@ public class Util {
 		for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values() ) {
 			for(int n=0; n<3; n++) {
 				for(int m=0; m<3; m++) {
-					numColorTilesArray[ rubikFace.observedTileArray[n][m].ordinal() ]++;    // constantTileColor.ordinal() ]++;
+					numColorTilesArray[ rubikFace.observedTileArray[n][m].ordinal() ]++;    // =+= saw null except: 20150713
 				}
 			}	
 		}
