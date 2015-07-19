@@ -18,6 +18,7 @@ To Do:
 
 
   o  Improve frame rate, try out OpenCV 3.0 technology
+  o  Improve arrow rotation motion: possibly a growing arrow instead. 
   o  Change scan rotation so that pilot cube is more interesting
   o  Perform Edge detection on all three colors, drop grey scale step
   o  Add user error recovery:

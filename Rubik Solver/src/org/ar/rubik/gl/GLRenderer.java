@@ -401,8 +401,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	 */
 	private void renderTestRotationArrow(float[] mvpMatrix, int arrowRotationInDegrees) {
 
-		// Rotate arrow to give impression of movement.
-		Matrix.rotateM(mvpMatrix, 0, -1 * arrowRotationInDegrees + 180, 0.0f, 0.0f, 1.0f);
+		// Rotate test arrow to give impression of movement.
+		Matrix.rotateM(mvpMatrix, 0, arrowRotationInDegrees , 0.0f, 1.0f, 0.0f);
+		
+		// Rotation axis of test arrow is now Y axis.
+		Matrix.rotateM(mvpMatrix, 0, 90, 1.0f, 0.0f, 0.0f);
 
 		// Change Arrow Scale: make bigger and narrower
 		Matrix.scaleM(mvpMatrix, 0, 2.0f, 2.0f, 0.5f);
