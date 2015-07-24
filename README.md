@@ -20,7 +20,7 @@ overlaid on the camera image.
 
 Video
 ============
-A vide of the application in action can be veiw at: https://www.youtube.com/watch?v=Kvmb-lyGrdw
+A vide of the application in action can be veiw at: http://youtu.be/4yRuhoLrG7s
 
 Goals
 ============
