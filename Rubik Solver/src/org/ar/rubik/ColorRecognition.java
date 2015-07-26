@@ -14,13 +14,15 @@
  *   Recognition" and "Face Color Recognition."
  *   
  *     Cube Color Recognition
- *     All six sides of the cube have now been observed.  There MUST be exactly 
+ *     It is assumed that all six sides of the cube have been observed, and this 
+ *     algorithm analyzes all 54 tiles together. There MUST be exactly 
  *     nine tiles assigned to each color.  A recursive algorithm is used
- *     to achieve a minimum total color error costs (i.e., distance in pixels
+ *     to achieve a minimum total color error-square costs (i.e., distance in pixels
  *     between measured color values (RGB) and expected color values) of all 
  *     54 tiles.
  *     
  *     Face Color Recognition
+ *     This algorithm attempts to analyze one Face independently of other faces.
  *     In this case, no restriction of tile assignments applies.  The algorithm
  *     used here:
  *     - Assigns measured tile to closest expected color.
@@ -363,7 +365,7 @@ public class ColorRecognition {
             
             TreeMap<Double, TileLocation> colorGroup = observedColorGroupMap.get(colorTile);
 			colorGroup.put(
-                    calculateColorErrorCost(new Scalar(rubikFace.measuredColorArray[tileLocation.n][tileLocation.m]), colorTile.cvColor),
+                    calculateColorErrorSqauresCost(new Scalar(rubikFace.measuredColorArray[tileLocation.n][tileLocation.m]), colorTile.cvColor),
                     tileLocation);
         }
 
@@ -388,7 +390,7 @@ public class ColorRecognition {
                     for(int m=0; m<3; m++) {
                         RubikFace rubikFace = this.stateModel.nameRubikFaceMap.get(faceNameEnum);
                         if(rubikFace.observedTileArray[n][m] != null)
-                            cost += calculateColorErrorCost(new Scalar(rubikFace.measuredColorArray[n][m]), rubikFace.observedTileArray[n][m].cvColor);
+                            cost += calculateColorErrorSqauresCost(new Scalar(rubikFace.measuredColorArray[n][m]), rubikFace.observedTileArray[n][m].cvColor);
                     }
 
             
@@ -452,7 +454,7 @@ public class ColorRecognition {
         
 
         /**
-         * Calculate the magnitude of the color error vector between 
+         * Calculate the magnitude-squared of the color error vector between 
          * the two provided color values.
          * 
          * =+= probably should make RubicFace.measuredColor a Scalar
@@ -461,7 +463,7 @@ public class ColorRecognition {
          * @param color2
          * @return
          */
-        private static double calculateColorErrorCost(Scalar color1, Scalar color2) {
+        private static double calculateColorErrorSqauresCost(Scalar color1, Scalar color2) {
 
             // Calculate distance
             double distance =
@@ -469,7 +471,7 @@ public class ColorRecognition {
                     (color1.val[1] - color2.val[1]) * (color1.val[1] - color2.val[1]) +
                     (color1.val[2] - color2.val[2]) * (color1.val[2] - color2.val[2]);
 
-            return Math.sqrt(distance);
+            return distance;
         }   
     }
     
