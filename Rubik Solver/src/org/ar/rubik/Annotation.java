@@ -35,15 +35,16 @@
 package org.ar.rubik;
 
 import java.util.List;
+
 import org.ar.rubik.Constants.AnnotationModeEnum;
 import org.ar.rubik.Constants.ColorTileEnum;
 import org.ar.rubik.Constants.FaceNameEnum;
 import org.ar.rubik.Constants.GestureRecogniztionStateEnum;
 import org.ar.rubik.RubikFace.FaceRecognitionStatusEnum;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import android.util.Log;
 
@@ -158,7 +159,7 @@ public class Annotation {
 	 */
     private void drawFlatCubeLayoutRepresentations(Mat image) {
     	
-    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
+    	Imgproc.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
 	    
 		final int tSize = 35;  // Tile Size in pixels
 		
@@ -196,11 +197,11 @@ public class Annotation {
     private void drawFlatFaceRepresentation(Mat image, RubikFace rubikFace, int x, int y, int tSize, boolean observed) {
 		
 		if(rubikFace == null) {
-			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), ColorTileEnum.GREY.cvColor, -1);
+			Imgproc.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), ColorTileEnum.GREY.cvColor, -1);
 		}
 
 		else if(rubikFace.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED) {
-			Core.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), ColorTileEnum.GREY.cvColor, -1);
+			Imgproc.rectangle(image, new Point( x, y), new Point( x + 3*tSize, y + 3*tSize), ColorTileEnum.GREY.cvColor, -1);
 		}
 		else
 
@@ -214,9 +215,9 @@ public class Annotation {
 
 			        // Draw tile
 					if(colorTile != null)
-						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), colorTile.cvColor, -1);
+						Imgproc.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), colorTile.cvColor, -1);
 					else
-						Core.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), ColorTileEnum.GREY.cvColor, -1);
+						Imgproc.rectangle(image, new Point( x + tSize * n, y + tSize * m), new Point( x + tSize * (n + 1), y + tSize * (m + 1)), ColorTileEnum.GREY.cvColor, -1);
 				}
 			}
     }
@@ -266,7 +267,7 @@ public class Annotation {
 		double y = face.lmsResult.origin.y - (face.alphaLatticLength * Math.sin(face.alphaAngle) + face.betaLatticLength * Math.sin(face.betaAngle) ) / 2;
 
 		for(int n=0; n<4; n++) {
-			Core.line(
+			Imgproc.line(
 					img,
 					new Point(
 							x + n * face.alphaLatticLength * Math.cos(face.alphaAngle),
@@ -279,7 +280,7 @@ public class Annotation {
 		}
 		
 		for(int m=0; m<4; m++) {
-			Core.line(
+			Imgproc.line(
 					img,
 					new Point(
 							x + m * face.betaLatticLength * Math.cos(face.betaAngle),
@@ -296,7 +297,7 @@ public class Annotation {
 //			for(int m=0; m<3; m++) {
 //				Rhombus rhombus = faceRhombusArray[n][m];
 //				if(rhombus != null)
-//					Core.circle(img, rhombus.center, 5, Constants.ColorBlue, 3);
+//					Imgproc.circle(img, rhombus.center, 5, Constants.ColorBlue, 3);
 //			}
 //		}
 //		
@@ -307,8 +308,8 @@ public class Annotation {
 //				if(rhombus != null) {
 //					
 //					Point tileCenter = getTileCenterInPixels(n, m);				
-//					Core.line(img, tileCenter, rhombus.center, Constants.ColorRed, 3);
-//					Core.circle(img, tileCenter, 5, Constants.ColorBlue, 1);
+//					Imgproc.line(img, tileCenter, rhombus.center, Constants.ColorRed, 3);
+//					Imgproc.circle(img, tileCenter, 5, Constants.ColorBlue, 1);
 //				}
 //			}
 //		}
@@ -323,7 +324,7 @@ public class Annotation {
 //					tileCenterInPixels.x -= 10.0;
 //					tileCenterInPixels.y += 10.0;
 //					String text = Character.toString(face.observedTileArray[n][m].symbol);
-//					Core.putText(img, text, tileCenterInPixels, Constants.FontFace, 3, ColorTileEnum.BLACK.cvColor, 3);
+//					Imgproc.putText(img, text, tileCenterInPixels, Constants.FontFace, 3, ColorTileEnum.BLACK.cvColor, 3);
 //				}
 //			}
 		
@@ -361,7 +362,7 @@ public class Annotation {
     				tileCenterInPixels.x -= 10.0;
     				tileCenterInPixels.y += 10.0;
     				String text = Character.toString(face.observedTileArray[n][m].symbol);
-    				Core.putText(image, text, tileCenterInPixels, Constants.FontFace, 3, ColorTileEnum.BLACK.cvColor, 3);
+    				Imgproc.putText(image, text, tileCenterInPixels, Constants.FontFace, 3, ColorTileEnum.BLACK.cvColor, 3);
     			}
     		}
     }
@@ -375,7 +376,7 @@ public class Annotation {
 	 */
     private void drawRhombusRecognitionMetrics(Mat image, List<Rhombus> rhombusList) {
 
-    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
+    	Imgproc.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
     	
 		int totalNumber = 0;
 		int totalNumberValid = 0;
@@ -418,14 +419,14 @@ public class Annotation {
 			totalNumber++;
 		}
 		
-		Core.putText(image, "Num Unknown: " + totalNumberUnknow,          new Point(50, 300), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, "Num Not 4 Points: " + totalNumberNot4Points, new Point(50, 350), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, "Num Not Convex: " + totalNumberNotConvex,    new Point(50, 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, "Num Bad Area: " + totalNumberBadArea,        new Point(50, 450), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, "Num Clockwise: " + totalNumberClockwise,     new Point(50, 500), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, "Num Outlier: " + totalNumberOutlier,         new Point(50, 550), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, "Num Valid: " + totalNumberValid,             new Point(50, 600), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, "Total Num: " + totalNumber,                  new Point(50, 650), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Num Unknown: " + totalNumberUnknow,          new Point(50, 300), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Num Not 4 Points: " + totalNumberNot4Points, new Point(50, 350), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Num Not Convex: " + totalNumberNotConvex,    new Point(50, 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Num Bad Area: " + totalNumberBadArea,        new Point(50, 450), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Num Clockwise: " + totalNumberClockwise,     new Point(50, 500), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Num Outlier: " + totalNumberOutlier,         new Point(50, 550), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Num Valid: " + totalNumberValid,             new Point(50, 600), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Total Num: " + totalNumber,                  new Point(50, 650), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
     }
 
 
@@ -437,7 +438,7 @@ public class Annotation {
 	 */
     private void drawRubikFaceMetrics(Mat image, RubikFace activeRubikFace) {
 
-    	Core.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
+    	Imgproc.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
     	
     	if(activeRubikFace == null)
     		return;
@@ -445,15 +446,15 @@ public class Annotation {
     	RubikFace face = activeRubikFace;
     	drawFlatFaceRepresentation(image, face, 50, 50, 50, true);
 
-		Core.putText(image, "Status = " + face.faceRecognitionStatus,                              new Point(50, 300), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("AlphaA = %4.1f", face.alphaAngle * 180.0 / Math.PI),    new Point(50, 350), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("BetaA  = %4.1f", face.betaAngle  * 180.0 / Math.PI),    new Point(50, 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("AlphaL = %4.0f", face.alphaLatticLength),               new Point(50, 450), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("Beta L = %4.0f", face.betaLatticLength),                new Point(50, 500), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("Gamma  = %4.2f", face.gammaRatio),                      new Point(50, 550), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("Sigma  = %5.0f", face.lmsResult.sigma),                 new Point(50, 600), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("Moves  = %d",    face.numRhombusMoves),                 new Point(50, 650), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-		Core.putText(image, String.format("#Rohmbi= %d",    face.rhombusList.size()),              new Point(50, 700), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, "Status = " + face.faceRecognitionStatus,                              new Point(50, 300), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("AlphaA = %4.1f", face.alphaAngle * 180.0 / Math.PI),    new Point(50, 350), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("BetaA  = %4.1f", face.betaAngle  * 180.0 / Math.PI),    new Point(50, 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("AlphaL = %4.0f", face.alphaLatticLength),               new Point(50, 450), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("Beta L = %4.0f", face.betaLatticLength),                new Point(50, 500), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("Gamma  = %4.2f", face.gammaRatio),                      new Point(50, 550), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("Sigma  = %5.0f", face.lmsResult.sigma),                 new Point(50, 600), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("Moves  = %d",    face.numRhombusMoves),                 new Point(50, 650), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.putText(image, String.format("#Rohmbi= %d",    face.rhombusList.size()),              new Point(50, 700), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
     }
     
     
@@ -470,18 +471,18 @@ public class Annotation {
 	 */
     private void drawFaceColorMetrics(Mat image, RubikFace face) {
     	
-    	Core.rectangle(image, new Point(0, 0), new Point(570, 720), ColorTileEnum.BLACK.cvColor, -1);
+    	Imgproc.rectangle(image, new Point(0, 0), new Point(570, 720), ColorTileEnum.BLACK.cvColor, -1);
     	
 		if(face == null || face.faceRecognitionStatus != FaceRecognitionStatusEnum.SOLVED)
 			return;
 
 		// Draw simple grid
-		Core.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);
-		Core.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);		
-		Core.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), ColorTileEnum.WHITE.cvColor);
-//		Core.putText(image, String.format("Luminosity Offset = %4.0f", face.luminousOffset), new Point(0, -256 + 400 - 60), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-//		Core.putText(image, String.format("Color Error Before Corr = %4.0f", face.colorErrorBeforeCorrection), new Point(0, -256 + 400 - 30), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
-//		Core.putText(image, String.format("Color Error After Corr = %4.0f", face.colorErrorAfterCorrection), new Point(0, -256 + 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		Imgproc.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);
+		Imgproc.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);		
+		Imgproc.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), ColorTileEnum.WHITE.cvColor);
+//		Imgproc.putText(image, String.format("Luminosity Offset = %4.0f", face.luminousOffset), new Point(0, -256 + 400 - 60), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+//		Imgproc.putText(image, String.format("Color Error Before Corr = %4.0f", face.colorErrorBeforeCorrection), new Point(0, -256 + 400 - 30), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+//		Imgproc.putText(image, String.format("Color Error After Corr = %4.0f", face.colorErrorAfterCorrection), new Point(0, -256 + 400), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 
 		for(int n=0; n<3; n++) {
 			for(int m=0; m<3; m++) {
@@ -499,13 +500,13 @@ public class Annotation {
 				String text = Character.toString(face.observedTileArray[n][m].symbol);
 				
 				// Draw tile character in UV plane
-				Core.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
+				Imgproc.putText(image, text, new Point(uChromananceScaled + 256, vChromananceScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
 				
 				// Draw tile characters on INSIDE right side for Y axis for adjusted luminosity.
-//				Core.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
+//				Imgproc.putText(image, text, new Point(512 - 40, luminousScaled + 400 + face.luminousOffset), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
 				
 				// Draw tile characters on OUTSIDE right side for Y axis as directly measured.
-				Core.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
+				Imgproc.putText(image, text, new Point(512 + 20, luminousScaled + 400), Constants.FontFace, 3, face.observedTileArray[n][m].cvColor, 3);
 //				Log.e(Constants.TAG, "Lum: " + logicalTileArray[n][m].character + "=" + luminousScaled);
 			}
 		}
@@ -519,20 +520,20 @@ public class Annotation {
 
 		
 		// Draw Color Calibration in UV plane as dots
-		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikRed.val)[1] +    256, 2*Util.getYUVfromRGB(rubikRed.val)[2] + 400), 10, rubikRed, -1);
-		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikOrange.val)[1] + 256, 2*Util.getYUVfromRGB(rubikOrange.val)[2] + 400), 10, rubikOrange, -1);
-		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikYellow.val)[1] + 256, 2*Util.getYUVfromRGB(rubikYellow.val)[2] + 400), 10, rubikYellow, -1);
-		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikGreen.val)[1] +  256, 2*Util.getYUVfromRGB(rubikGreen.val)[2] + 400), 10, rubikGreen, -1);
-		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikBlue.val)[1] +   256, 2*Util.getYUVfromRGB(rubikBlue.val)[2] + 400), 10, rubikBlue, -1);
-		Core.circle(image, new Point(2*Util.getYUVfromRGB(rubikWhite.val)[1] +  256, 2*Util.getYUVfromRGB(rubikWhite.val)[2] + 400), 10, rubikWhite, -1);
+		Imgproc.circle(image, new Point(2*Util.getYUVfromRGB(rubikRed.val)[1] +    256, 2*Util.getYUVfromRGB(rubikRed.val)[2] + 400), 10, rubikRed, -1);
+		Imgproc.circle(image, new Point(2*Util.getYUVfromRGB(rubikOrange.val)[1] + 256, 2*Util.getYUVfromRGB(rubikOrange.val)[2] + 400), 10, rubikOrange, -1);
+		Imgproc.circle(image, new Point(2*Util.getYUVfromRGB(rubikYellow.val)[1] + 256, 2*Util.getYUVfromRGB(rubikYellow.val)[2] + 400), 10, rubikYellow, -1);
+		Imgproc.circle(image, new Point(2*Util.getYUVfromRGB(rubikGreen.val)[1] +  256, 2*Util.getYUVfromRGB(rubikGreen.val)[2] + 400), 10, rubikGreen, -1);
+		Imgproc.circle(image, new Point(2*Util.getYUVfromRGB(rubikBlue.val)[1] +   256, 2*Util.getYUVfromRGB(rubikBlue.val)[2] + 400), 10, rubikBlue, -1);
+		Imgproc.circle(image, new Point(2*Util.getYUVfromRGB(rubikWhite.val)[1] +  256, 2*Util.getYUVfromRGB(rubikWhite.val)[2] + 400), 10, rubikWhite, -1);
 
 		// Draw Color Calibration on right side Y axis as dots
-		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikRed.val)[0] + 400),    new Point(522, -256 + 2*Util.getYUVfromRGB(rubikRed.val)[0] + 400), rubikRed, 3);
-		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikOrange.val)[0] + 400), new Point(522, -256 + 2*Util.getYUVfromRGB(rubikOrange.val)[0] + 400), rubikOrange, 3);
-		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikGreen.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikGreen.val)[0] + 400), rubikGreen, 3);
-		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikYellow.val)[0] + 400), new Point(522, -256 + 2*Util.getYUVfromRGB(rubikYellow.val)[0] + 400), rubikYellow, 3);
-		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400),   new Point(522, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400), rubikBlue, 3);
-		Core.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400), rubikWhite, 3); 
+		Imgproc.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikRed.val)[0] + 400),    new Point(522, -256 + 2*Util.getYUVfromRGB(rubikRed.val)[0] + 400), rubikRed, 3);
+		Imgproc.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikOrange.val)[0] + 400), new Point(522, -256 + 2*Util.getYUVfromRGB(rubikOrange.val)[0] + 400), rubikOrange, 3);
+		Imgproc.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikGreen.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikGreen.val)[0] + 400), rubikGreen, 3);
+		Imgproc.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikYellow.val)[0] + 400), new Point(522, -256 + 2*Util.getYUVfromRGB(rubikYellow.val)[0] + 400), rubikYellow, 3);
+		Imgproc.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400),   new Point(522, -256 + 2*Util.getYUVfromRGB(rubikBlue.val)[0] + 400), rubikBlue, 3);
+		Imgproc.line(image, new Point(502, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400),  new Point(522, -256 + 2*Util.getYUVfromRGB(rubikWhite.val)[0] + 400), rubikWhite, 3); 
     }
     
     
@@ -547,12 +548,12 @@ public class Annotation {
      */
     private void drawCubeColorMetrics(Mat image) {
         
-        Core.rectangle(image, new Point(0, 0), new Point(570, 720), ColorTileEnum.BLACK.cvColor, -1);
+        Imgproc.rectangle(image, new Point(0, 0), new Point(570, 720), ColorTileEnum.BLACK.cvColor, -1);
 
         // Draw simple grid
-        Core.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);
-        Core.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);       
-        Core.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), ColorTileEnum.WHITE.cvColor);
+        Imgproc.rectangle(image, new Point(-256 + 256, -256 + 400), new Point(256 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);
+        Imgproc.line(image, new Point(0 + 256, -256 + 400), new Point(0 + 256, 256 + 400), ColorTileEnum.WHITE.cvColor);       
+        Imgproc.line(image, new Point(-256 + 256, 0 + 400), new Point(256 + 256, 0 + 400), ColorTileEnum.WHITE.cvColor);
 
         
         // Draw measured tile color as solid small circles on both the UV plane and the Y axis.
@@ -571,10 +572,10 @@ public class Annotation {
                     double vChromananceScaled = measuredTileColorYUV[2] * 2;
 
                     // Draw solid circle in UV plane
-                    Core.circle(image, new Point(uChromananceScaled + 256, vChromananceScaled + 400), 10, new Scalar(face.observedTileArray[n][m].cvColor.val), -1);
+                    Imgproc.circle(image, new Point(uChromananceScaled + 256, vChromananceScaled + 400), 10, new Scalar(face.observedTileArray[n][m].cvColor.val), -1);
 
                     // Draw line on OUTSIDE right side for Y axis as directly measured.
-                    Core.line(image,
+                    Imgproc.line(image,
                     		new Point(522 + 20, luminousScaled + 400),
                     		new Point(542 + 20, luminousScaled + 400),
                     		face.observedTileArray[n][m].cvColor, 
@@ -600,10 +601,10 @@ public class Annotation {
             double y = 2*targetColorYUV[2] + 400;
             
             // Open large circle in UV plane
-            Core.circle(image, new Point(x, y), 15, colorTile.cvColor, +3); 
+            Imgproc.circle(image, new Point(x, y), 15, colorTile.cvColor, +3); 
             
             // Open large circle in Y plane
-            Core.circle(
+            Imgproc.circle(
             		image, 
             		new Point(512, -256 + 2*targetColorYUV[0] + 400),
             		15, 
@@ -624,12 +625,12 @@ public class Annotation {
 	 */
 	public void drawCubeMetrics(Mat image) {
 		
-		Core.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
+		Imgproc.rectangle(image, new Point(0, 0), new Point(450, 720), ColorTileEnum.BLACK.cvColor, -1);
 		
 		// Draw Face Types and their center tile color
 		int pos = 1;
 		for(RubikFace rubikFace : stateModel.nameRubikFaceMap.values()) {
-			Core.putText(image, String.format("%s:    %s", rubikFace.faceNameEnum, rubikFace.observedTileArray[1][1]),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+			Imgproc.putText(image, String.format("%s:    %s", rubikFace.faceNameEnum, rubikFace.observedTileArray[1][1]),    new Point(50, 100 + 50*pos++), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 		}
 		
     	// Count how many tile colors entire cube has as a first check.
@@ -646,7 +647,7 @@ public class Annotation {
 		for(ColorTileEnum colorTile : ColorTileEnum.values()) {
 		    if(colorTile.isRubikColor == true) {
 		        int count = numColorTilesArray[colorTile.ordinal()];
-		        Core.putText(image, String.format("%s:  %d", colorTile, count ),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+		        Imgproc.putText(image, String.format("%s:  %d", colorTile, count ),  new Point(50, 100 + 50*pos++), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
 		    }
 		}
 	}
@@ -661,62 +662,62 @@ public class Annotation {
 
    		// Create black area for text
    		if(MenuAndParams.userTextDisplay == true)
-   			Core.rectangle(image, new Point(0, 0), new Point(1270, 60), ColorTileEnum.BLACK.cvColor, -1);
+   			Imgproc.rectangle(image, new Point(0, 0), new Point(1270, 60), ColorTileEnum.BLACK.cvColor, -1);
 
    		switch(stateModel.appState) {
 
    		case START:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Show Me The Rubik Cube", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
+   				Imgproc.putText(image, "Show Me The Rubik Cube", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
 
    		case GOT_IT:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "OK, Got It", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
+   				Imgproc.putText(image, "OK, Got It", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
 
    		case ROTATE_CUBE:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Please Rotate: " + stateModel.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
+   				Imgproc.putText(image, "Please Rotate: " + stateModel.getNumObservedFaces(), new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
 
    		case SEARCHING:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Searching for Another Face", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
+   				Imgproc.putText(image, "Searching for Another Face", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
 
    		case COMPLETE:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Cube is Complete and has Good Colors", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+   				Imgproc.putText(image, "Cube is Complete and has Good Colors", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
    			break;
 
    		case WAIT_TABLES:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Waiting - Preload Next: " + appStateMachine.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
+   				Imgproc.putText(image, "Waiting - Preload Next: " + appStateMachine.pruneTableLoaderCount, new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
 
    		case BAD_COLORS:
-   				Core.putText(image, "Cube is Complete but has Bad Colors", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+   				Imgproc.putText(image, "Cube is Complete but has Bad Colors", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
    			break;
 
    		case VERIFIED:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Cube is Complete and Verified", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+   				Imgproc.putText(image, "Cube is Complete and Verified", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
    			break;
 
         case INCORRECT:
-            Core.putText(image, "Cube is Complete but Incorrect: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+            Imgproc.putText(image, "Cube is Complete but Incorrect: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
         break;
 
         case ERROR:
-            Core.putText(image, "Cube Solution Error: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+            Imgproc.putText(image, "Cube Solution Error: " + stateModel.verificationResults, new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
         break;
 
   		case SOLVED:
    			if(MenuAndParams.userTextDisplay == true) {
-   				Core.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
-   				Core.rectangle(image, new Point(0, 60), new Point(1270, 120), ColorTileEnum.BLACK.cvColor, -1);
-   				Core.putText(image, "" + stateModel.solutionResults, new Point(0, 120), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
+   				Imgproc.putText(image, "SOLUTION: ", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+   				Imgproc.rectangle(image, new Point(0, 60), new Point(1270, 120), ColorTileEnum.BLACK.cvColor, -1);
+   				Imgproc.putText(image, "" + stateModel.solutionResults, new Point(0, 120), Constants.FontFace, 2, ColorTileEnum.WHITE.cvColor, 2);
    			}
    			break;
 
@@ -742,28 +743,28 @@ public class Annotation {
    				moveDescription.append("?");
 
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, moveDescription.toString(), new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+   				Imgproc.putText(image, moveDescription.toString(), new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
 
    			break;
 
    		case WAITING_MOVE:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Waiting for move to be completed", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+   				Imgproc.putText(image, "Waiting for move to be completed", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
    			break;
 
    		case DONE:   			
    			if(MenuAndParams.userTextDisplay == true)
-				Core.putText(image, "Cube should now be solved.", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
+				Imgproc.putText(image, "Cube should now be solved.", new Point(0, 60), Constants.FontFace, 4, ColorTileEnum.WHITE.cvColor, 4);
    			break;
 
    		default:
    			if(MenuAndParams.userTextDisplay == true)
-   				Core.putText(image, "Oops", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
+   				Imgproc.putText(image, "Oops", new Point(0, 60), Constants.FontFace, 5, ColorTileEnum.WHITE.cvColor, 5);
    			break;
    		}
    		
    		// User indicator that tables have been computed.
-   		Core.line(image, new Point(0, 0), new Point(1270, 0), appStateMachine.pruneTableLoaderCount < 12 ? ColorTileEnum.RED.cvColor : ColorTileEnum.GREEN.cvColor, 4);
+   		Imgproc.line(image, new Point(0, 0), new Point(1270, 0), appStateMachine.pruneTableLoaderCount < 12 ? ColorTileEnum.RED.cvColor : ColorTileEnum.GREEN.cvColor, 4);
    	}
 
 }

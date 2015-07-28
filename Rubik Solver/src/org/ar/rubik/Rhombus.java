@@ -57,7 +57,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -340,7 +339,7 @@ public class Rhombus {
 		// Draw Polygone Edges
 		final LinkedList<MatOfPoint> listOfPolygons = new LinkedList<MatOfPoint>();
 		listOfPolygons.add(polygonMatrix);
-		Core.polylines(
+		Imgproc.polylines(
 				rgba_gray_image,
 				listOfPolygons,
 				true,

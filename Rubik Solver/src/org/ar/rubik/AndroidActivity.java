@@ -219,7 +219,7 @@ public class AndroidActivity extends Activity {
         super.onResume();
         if(gLSurfaceView != null)
         	gLSurfaceView.onResume();
-        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, this, mLoaderCallback);
+        OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
     }
 
     

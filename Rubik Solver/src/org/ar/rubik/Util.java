@@ -42,7 +42,7 @@ import org.ar.rubik.Constants.ColorTileEnum;
 import org.kociemba.twophase.PruneTableLoader;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.highgui.Highgui;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -446,7 +446,7 @@ public class Util {
 
 		Boolean bool = null;
 		filename = file.toString();
-		bool = Highgui.imwrite(filename, image);
+		bool = Imgcodecs.imwrite(filename, image);
 
 		if (bool == true)
 			Log.i(Constants.TAG_STATE, "SUCCESS writing image to external storage:" + filename);
@@ -468,7 +468,7 @@ public class Util {
 
 		filename = file.toString();
 
-		Mat image = Highgui.imread(filename);
+		Mat image = Imgcodecs.imread(filename);
 		return image;
 	}
 

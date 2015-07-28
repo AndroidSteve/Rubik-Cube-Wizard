@@ -327,7 +327,7 @@ public class MonoChromatic {
 				else {	
 
 //					Log.i(Constants.TAG, "Creating Mask at " + row +"," + col);
-					Core.rectangle(
+					Imgproc.rectangle(
 							mask, 
 							new Point(row, col), 
 							new Point(row + span, col + span),
@@ -346,7 +346,7 @@ public class MonoChromatic {
 						result_pixel= (byte) 0;
 //					Log.i(Constants.TAG, "Completed Mask at " + row +"," + col);
 					
-					Core.rectangle(
+					Imgproc.rectangle(
 							mask, 
 							new Point(row, col), 
 							new Point(row + span, col + span),
@@ -421,7 +421,7 @@ public class MonoChromatic {
 				else {	
 
 //					Log.i(Constants.TAG, "Creating Mask at " + row +"," + col);
-					Core.rectangle(
+					Imgproc.rectangle(
 							mask, 
 							new Point(row, col), 
 							new Point(row + span, col + span),
@@ -436,7 +436,7 @@ public class MonoChromatic {
 						result_pixel= (byte) 0;
 //					Log.i(Constants.TAG, "Completed Mask at " + row +"," + col);
 					
-					Core.rectangle(
+					Imgproc.rectangle(
 							mask, 
 							new Point(row, col), 
 							new Point(row + span, col + span),

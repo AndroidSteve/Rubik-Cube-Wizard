@@ -216,9 +216,9 @@ public class CubePoseEstimator {
 //		Log.e(Constants.TAG, "Translation: " + tvec.dump());
 		
 //		// Reporting in OpenGL World Coordinates
-//		Core.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
-//		Core.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
-//		Core.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
+//		Imgproc.rectangle(image, new Point(0, 50), new Point(1270, 150), Constants.ColorBlack, -1);
+//		Imgproc.putText(image, String.format("Translation  x=%4.2f y=%4.2f z=%4.2f", x, y, z), new Point(50, 100), Constants.FontFace, 3, Constants.ColorWhite, 3);
+//		Imgproc.putText(image, String.format("Rotation     x=%4.0f y=%4.0f z=%4.0f", cubeXrotation, cubeYrotation, cubeZrotation), new Point(50, 150), Constants.FontFace, 3, Constants.ColorWhite, 3);
         
 	    Log.v(Constants.TAG, "Cube Pose: " + cubePose);
 
